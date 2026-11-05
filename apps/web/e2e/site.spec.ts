@@ -80,6 +80,89 @@ test.describe('лента навыков', () => {
   });
 });
 
+test('в шапке логотип с инициалами ведёт на главную', async ({ page }) => {
+  await page.goto('/ru/skills');
+
+  const logo = page.getByRole('link', { name: 'Владислав Соболь' });
+  await expect(logo).toHaveText('ВС');
+  await logo.click();
+
+  await expect(page).toHaveURL(/\/ru$/);
+});
+
+test('навык ведёт на официальную документацию', async ({ page }) => {
+  await page.goto('/en/skills');
+
+  const link = page.getByRole('link', { name: 'TypeScript', exact: true });
+  await expect(link).toHaveAttribute(
+    'href',
+    'https://www.typescriptlang.org/docs/',
+  );
+  await expect(link).toHaveAttribute('target', '_blank');
+});
+
+test.describe('анимации', () => {
+  test('блок появляется, только когда до него доскроллили', async ({
+    page,
+  }) => {
+    await page.goto('/ru/work');
+    const last = page.getByRole('heading', { name: 'Vezetvsem' });
+    const block = last.locator(
+      'xpath=ancestor::*[contains(@class,"reveal")][1]',
+    );
+
+    await expect(block).toHaveCSS('opacity', '0');
+
+    await last.scrollIntoViewIfNeeded();
+
+    await expect(block).toHaveCSS('opacity', '1');
+  });
+
+  test('соседние проекты выезжают с разных сторон', async ({ page }) => {
+    await page.goto('/ru/work');
+
+    const first = page.locator('article').nth(0).locator('.reveal').first();
+    const second = page.locator('article').nth(1).locator('.reveal').first();
+
+    await expect(first).toHaveClass(/reveal-left/);
+    await expect(second).toHaveClass(/reveal-right/);
+  });
+
+  test('карточка разворачивается при наведении', async ({ page }) => {
+    await page.goto('/ru/experience');
+    const card = page.locator('.card-tilt').first();
+    await expect(card.locator('xpath=..')).toHaveCSS('opacity', '1');
+
+    await card.hover();
+
+    await expect(card).not.toHaveCSS('transform', 'none');
+  });
+
+  test.describe('при просьбе убрать анимацию', () => {
+    test.use({ reducedMotion: 'reduce' });
+
+    test('контент виден сразу', async ({ page }) => {
+      await page.goto('/ru/work');
+
+      await expect(page.locator('.reveal').last()).toHaveCSS('opacity', '1');
+      await expect(page.locator('.rail-enter').first()).toHaveCSS(
+        'animation-name',
+        'none',
+      );
+    });
+  });
+
+  test.describe('без JavaScript', () => {
+    test.use({ javaScriptEnabled: false });
+
+    test('контент виден сразу', async ({ page }) => {
+      await page.goto('/ru/work');
+
+      await expect(page.locator('.reveal').last()).toHaveCSS('opacity', '1');
+    });
+  });
+});
+
 test('разделы содержат нужный контент', async ({ page }) => {
   await page.goto('/ru/work');
   await expect(page.getByText('ПАО «Банк ВТБ»')).toBeVisible();

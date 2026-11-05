@@ -77,7 +77,7 @@ export function SideRails({
     <>
       <nav
         aria-label={dictionary.label}
-        className="fixed bottom-0 left-8 z-10 hidden flex-col items-center gap-6 xl:flex"
+        className="rail-enter fixed bottom-0 left-8 z-10 hidden flex-col items-center gap-6 xl:flex"
       >
         <SocialList
           contacts={contacts}
@@ -85,7 +85,7 @@ export function SideRails({
         />
         <span aria-hidden="true" className="h-24 w-px bg-line" />
       </nav>
-      <div className="fixed right-8 bottom-0 z-10 hidden flex-col items-center gap-6 xl:flex">
+      <div className="rail-enter fixed right-8 bottom-0 z-10 hidden flex-col items-center gap-6 xl:flex">
         <a
           href={`mailto:${contacts.email}`}
           className="font-mono text-xs tracking-widest text-muted transition-colors [writing-mode:vertical-rl] hover:text-accent"

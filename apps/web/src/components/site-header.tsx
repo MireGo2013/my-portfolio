@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Locale } from '@/i18n/config';
 import type { Dictionary } from '@/i18n/dictionaries/ru';
 import { LanguageSwitcher } from './language-switcher';
+import { Monogram } from './monogram';
 import { NavLink } from './nav-link';
 
 export function SiteHeader({
@@ -27,9 +28,10 @@ export function SiteHeader({
       <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-x-8 gap-y-3 px-6 py-5">
         <Link
           href={`/${locale}`}
-          className="font-semibold transition-colors hover:text-accent"
+          aria-label={name}
+          className="block transition-transform hover:scale-105"
         >
-          {name}
+          <Monogram fullName={name} className="size-11 text-sm" />
         </Link>
         <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
           <nav aria-label={nav.label}>

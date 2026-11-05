@@ -22,7 +22,7 @@ export function ProjectCard({
   labels: { code: string; site: string };
 }) {
   return (
-    <article className="flex h-full flex-col gap-3 rounded-sm border border-line bg-surface p-5">
+    <article className="card-tilt flex h-full flex-col gap-3 rounded-sm border border-line bg-surface p-5">
       <h3 className="text-lg font-semibold tracking-tight">{project.name}</h3>
       <p className="flex-1 leading-relaxed text-pretty text-muted">
         {project.description}

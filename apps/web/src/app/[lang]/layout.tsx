@@ -60,6 +60,9 @@ export default async function RootLayout({
       className={`${sans.variable} ${mono.variable} antialiased`}
     >
       <body className="flex min-h-dvh flex-col">
+        <noscript>
+          <style>{'.reveal { opacity: 1; transform: none; }'}</style>
+        </noscript>
         <SiteHeader
           name={profile.fullName}
           locale={locale}

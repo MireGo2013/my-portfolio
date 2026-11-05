@@ -27,8 +27,11 @@ describe('AboutHero', () => {
 
     expect(screen.getByText('Привет, меня зовут')).toBeTruthy();
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Тест');
-    expect(screen.getByText('Первый абзац')).toBeTruthy();
-    expect(screen.getByText('Второй абзац')).toBeTruthy();
+    const paragraphs = Array.from(document.querySelectorAll('p')).map(
+      (p) => p.textContent,
+    );
+    expect(paragraphs).toContain('Первый абзац');
+    expect(paragraphs).toContain('Второй абзац');
   });
 
   it('показывает аватар с именем в описании', () => {

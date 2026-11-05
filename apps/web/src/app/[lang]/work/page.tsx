@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { PageHeading } from '@/components/page-heading';
 import { ProjectCard } from '@/components/project-card';
+import { Reveal } from '@/components/reveal';
 import { WorkItem } from '@/components/work-item';
 import { getDictionary, pageMetadata, resolveLocale } from '@/i18n/server';
 import { getExperience, getProjects } from '@/lib/content';
@@ -30,8 +31,13 @@ export default async function WorkPage({ params }: PageProps<'/[lang]/work'>) {
       <PageHeading title={work.title} description={work.description} />
       <div className="flex flex-col gap-14">
         <div className="flex flex-col gap-12">
-          {experience.map((item) => (
-            <WorkItem key={item.slug} item={item} labels={work} />
+          {experience.map((item, index) => (
+            <WorkItem
+              key={item.slug}
+              item={item}
+              labels={work}
+              from={index % 2 === 0 ? 'left' : 'right'}
+            />
           ))}
         </div>
         <section className="flex flex-col gap-6 border-t border-line pt-8">
@@ -41,10 +47,15 @@ export default async function WorkPage({ params }: PageProps<'/[lang]/work'>) {
           <ul className="grid gap-4 sm:grid-cols-2">
             {projects
               .filter((project) => project.kind === 'FREELANCE')
-              .map((project) => (
-                <li key={project.slug}>
+              .map((project, index) => (
+                <Reveal
+                  key={project.slug}
+                  as="li"
+                  delay={index * 80}
+                  className="h-full"
+                >
                   <ProjectCard project={project} labels={projectLabels} />
-                </li>
+                </Reveal>
               ))}
           </ul>
         </section>

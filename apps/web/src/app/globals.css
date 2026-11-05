@@ -35,6 +35,110 @@ body {
   color: var(--on-accent);
 }
 
+/* Широкие выезды не должны создавать горизонтальный скролл */
+body {
+  overflow-x: clip;
+}
+
+:root {
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Появление при загрузке: чистый CSS, поэтому работает и без JavaScript */
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+}
+
+@keyframes enter-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+
+@keyframes rail-up {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+.enter {
+  animation: enter-up 0.8s var(--ease-out) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+
+.enter-scale {
+  animation: enter-scale 0.9s var(--ease-out) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+
+/* inline-block нужен, иначе transform на строчный элемент не действует */
+.enter-word {
+  display: inline-block;
+  animation: enter-up 0.6s var(--ease-out) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+
+.rail-enter {
+  animation: rail-up 1s var(--ease-out) 0.3s both;
+}
+
+/* Появление при скролле: атрибут data-visible ставит компонент Reveal */
+.reveal {
+  opacity: 0;
+  transition:
+    opacity 0.7s ease,
+    transform 0.9s var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-up {
+  transform: translateY(1.5rem);
+}
+
+.reveal-left {
+  transform: translateX(-4rem);
+}
+
+.reveal-right {
+  transform: translateX(4rem);
+}
+
+.reveal[data-visible] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Карточка немного отъезжает и разворачивается. Только там, где есть наведение */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .card-tilt {
+    transition:
+      transform 0.45s var(--ease-out),
+      border-color 0.3s ease,
+      box-shadow 0.45s var(--ease-out);
+  }
+
+  .card-tilt:hover,
+  .card-tilt:focus-within {
+    border-color: var(--accent);
+    box-shadow: -10px 14px 28px rgb(0 0 0 / 0.35);
+    transform: perspective(900px) translateX(8px) translateY(-4px)
+      rotateY(-5deg);
+  }
+
+  /* Правая колонка отъезжает в другую сторону, за край страницы */
+  li:nth-child(even) > .card-tilt:hover,
+  li:nth-child(even) > .card-tilt:focus-within {
+    box-shadow: 10px 14px 28px rgb(0 0 0 / 0.35);
+    transform: perspective(900px) translateX(-8px) translateY(-4px)
+      rotateY(5deg);
+  }
+}
+
 /* Бегущая лента: список продублирован, поэтому сдвиг на 50% даёт бесшовный цикл */
 @keyframes marquee {
   to {
@@ -52,6 +156,19 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .enter,
+  .enter-scale,
+  .enter-word,
+  .rail-enter {
+    animation: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
   .marquee-track {
     width: auto;
     animation: none;

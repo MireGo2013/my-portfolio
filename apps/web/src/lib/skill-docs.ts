@@ -1,0 +1,78 @@
+// Официальная документация навыков. У общих понятий (SPA, SOLID, REST API) одной
+// официальной страницы нет, поэтому они остаются обычным текстом.
+const SKILL_DOCS: Record<string, string> = {
+  'Ant Design': 'https://ant.design/docs/react/introduce',
+  Axios: 'https://axios-http.com/docs/intro',
+  Babel: 'https://babeljs.io/docs/',
+  'Chrome DevTools': 'https://developer.chrome.com/docs/devtools',
+  Confluence: 'https://support.atlassian.com/confluence-cloud/',
+  'CSS Modules': 'https://github.com/css-modules/css-modules',
+  Cypress: 'https://docs.cypress.io/',
+  Docker: 'https://docs.docker.com/',
+  ESLint: 'https://eslint.org/docs/latest/',
+  Express: 'https://expressjs.com/',
+  'Feature-Sliced Design': 'https://feature-sliced.design/docs',
+  Figma: 'https://help.figma.com/',
+  Formik: 'https://formik.org/docs/overview',
+  Git: 'https://git-scm.com/doc',
+  GitLab: 'https://docs.gitlab.com/',
+  HeroUI: 'https://www.heroui.com/docs/guide/introduction',
+  HTTP: 'https://developer.mozilla.org/en-US/docs/Web/HTTP',
+  Husky: 'https://typicode.github.io/husky/',
+  JavaScript: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
+  'JavaScript (ES6+ / ES2023)':
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
+  Jest: 'https://jestjs.io/docs/getting-started',
+  Jira: 'https://support.atlassian.com/jira-software-cloud/',
+  JSON: 'https://developer.mozilla.org/en-US/docs/Glossary/JSON',
+  'lint-staged': 'https://github.com/lint-staged/lint-staged',
+  'Material UI': 'https://mui.com/material-ui/',
+  MobX: 'https://mobx.js.org/',
+  MongoDB: 'https://www.mongodb.com/docs/',
+  NestJS: 'https://docs.nestjs.com/',
+  'Next.js': 'https://nextjs.org/docs',
+  Nginx: 'https://nginx.org/en/docs/',
+  'Node.js': 'https://nodejs.org/docs/latest/api/',
+  OpenAPI: 'https://spec.openapis.org/oas/latest.html',
+  'openapi-fetch': 'https://openapi-ts.dev/openapi-fetch/',
+  Playwright: 'https://playwright.dev/docs/intro',
+  PostgreSQL: 'https://www.postgresql.org/docs/',
+  Prettier: 'https://prettier.io/docs/',
+  Prisma: 'https://www.prisma.io/docs',
+  React: 'https://react.dev/',
+  'React Hook Form': 'https://react-hook-form.com/docs',
+  'React Router': 'https://reactrouter.com/',
+  'React Testing Library':
+    'https://testing-library.com/docs/react-testing-library/intro/',
+  Recharts: 'https://recharts.github.io/',
+  Redux: 'https://redux.js.org/',
+  'Redux Toolkit': 'https://redux-toolkit.js.org/',
+  'RTK Query': 'https://redux-toolkit.js.org/rtk-query/overview',
+  SCSS: 'https://sass-lang.com/documentation/',
+  'SCSS / Sass': 'https://sass-lang.com/documentation/',
+  'Styled Components': 'https://styled-components.com/docs',
+  Swagger: 'https://swagger.io/docs/',
+  'Tailwind CSS': 'https://tailwindcss.com/docs',
+  TanStack: 'https://tanstack.com/',
+  'TanStack Query': 'https://tanstack.com/query/latest/docs',
+  'TanStack React Query': 'https://tanstack.com/query/latest/docs',
+  'TanStack React Router': 'https://tanstack.com/router/latest/docs',
+  'TanStack Router': 'https://tanstack.com/router/latest/docs',
+  'Testing Library': 'https://testing-library.com/docs/',
+  TypeScript: 'https://www.typescriptlang.org/docs/',
+  Vite: 'https://vite.dev/guide/',
+  Vitest: 'https://vitest.dev/guide/',
+  Webpack: 'https://webpack.js.org/concepts/',
+  WebSocket: 'https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API',
+  WordPress: 'https://developer.wordpress.org/',
+  Zod: 'https://zod.dev/',
+  Zustand: 'https://zustand.docs.pmnd.rs/',
+};
+
+/** Адрес документации. Номер версии в названии не важен: "React 19" -> React. */
+export function skillDocsUrl(skill: string): string | undefined {
+  return SKILL_DOCS[skill] ?? SKILL_DOCS[skill.replace(/\s+\d+$/, '')];
+}
+
+/** Для проверки ссылок. */
+export const SKILL_DOCS_URLS = Object.values(SKILL_DOCS);

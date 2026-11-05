@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { PageHeading } from '@/components/page-heading';
 import { ProjectCard } from '@/components/project-card';
+import { Reveal } from '@/components/reveal';
 import { getDictionary, pageMetadata, resolveLocale } from '@/i18n/server';
 import { getProfile, getProjects } from '@/lib/content';
 
@@ -33,10 +34,15 @@ export default async function ExperiencePage({
         <ul className="grid gap-4 sm:grid-cols-2">
           {projects
             .filter((project) => project.kind === 'OPEN_SOURCE')
-            .map((project) => (
-              <li key={project.slug}>
+            .map((project, index) => (
+              <Reveal
+                key={project.slug}
+                as="li"
+                delay={(index % 2) * 120}
+                className="h-full"
+              >
                 <ProjectCard project={project} labels={dictionary} />
-              </li>
+              </Reveal>
             ))}
         </ul>
         <a
