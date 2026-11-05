@@ -12,7 +12,9 @@ describe('NavLink', () => {
     render(<NavLink href="/projects" label="Проекты" />);
 
     expect(
-      screen.getByRole('link', { name: 'Проекты' }).getAttribute('aria-current'),
+      screen
+        .getByRole('link', { name: 'Проекты' })
+        .getAttribute('aria-current'),
     ).toBe('page');
   });
 

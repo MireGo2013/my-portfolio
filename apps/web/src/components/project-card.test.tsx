@@ -20,9 +20,9 @@ describe('ProjectCard', () => {
   it('показывает ссылку на код и не показывает пустую ссылку на сайт', () => {
     render(<ProjectCard project={project} />);
 
-    expect(
-      screen.getByRole('link', { name: 'Код' }).getAttribute('href'),
-    ).toBe('https://github.com/test/a');
+    expect(screen.getByRole('link', { name: 'Код' }).getAttribute('href')).toBe(
+      'https://github.com/test/a',
+    );
     expect(screen.queryByRole('link', { name: 'Сайт' })).toBeNull();
   });
 

@@ -45,7 +45,9 @@ test.describe('форма контактов', () => {
     await client.end();
   });
 
-  test('показывает ошибки и не отправляет неверные данные', async ({ page }) => {
+  test('показывает ошибки и не отправляет неверные данные', async ({
+    page,
+  }) => {
     let requests = 0;
     page.on('request', (request) => {
       if (request.url().includes('/api/v1/contact')) requests += 1;
@@ -63,10 +65,14 @@ test.describe('форма контактов', () => {
     await page.goto('/contact');
     await page.getByLabel('Имя').fill('Анна');
     await page.getByLabel('Email').fill(EMAIL);
-    await page.getByLabel('Сообщение').fill('Здравствуйте! Это проверка формы.');
+    await page
+      .getByLabel('Сообщение')
+      .fill('Здравствуйте! Это проверка формы.');
     await page.getByRole('button', { name: 'Отправить' }).click();
 
-    await expect(page.getByRole('status')).toContainText('Сообщение отправлено');
+    await expect(page.getByRole('status')).toContainText(
+      'Сообщение отправлено',
+    );
     await expect(page.getByLabel('Имя')).toHaveValue('');
 
     const { rows } = await client.query(

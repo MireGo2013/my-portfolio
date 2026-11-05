@@ -58,6 +58,8 @@ describe('createContentApi', () => {
       ),
     );
 
-    await expect(createContentApi(BASE_URL).getProfile()).rejects.toThrow('404');
+    await expect(createContentApi(BASE_URL).getProfile()).rejects.toThrow(
+      '404',
+    );
   });
 });

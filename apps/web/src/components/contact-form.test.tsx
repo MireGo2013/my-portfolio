@@ -55,25 +55,26 @@ describe('ContactForm', () => {
       expect.any(String),
       expect.objectContaining({ name: 'Анна', email: 'anna@example.com' }),
     );
-    expect((screen.getByLabelText('Имя') as HTMLInputElement).value).toBe('');
+    expect(screen.getByLabelText<HTMLInputElement>('Имя').value).toBe('');
   });
 
   it.each([
     ['rate-limited', 'Слишком много отправок'],
     ['failed', 'Не удалось отправить'],
-  ] as const)('при %s сообщает об ошибке и сохраняет текст', async (result, text) => {
-    send.mockResolvedValue(result);
-    const user = userEvent.setup();
-    render(<ContactForm />);
+  ] as const)(
+    'при %s сообщает об ошибке и сохраняет текст',
+    async (result, text) => {
+      send.mockResolvedValue(result);
+      const user = userEvent.setup();
+      render(<ContactForm />);
 
-    await fillValid(user);
-    await submit(user);
+      await fillValid(user);
+      await submit(user);
 
-    expect((await screen.findByRole('alert')).textContent).toContain(text);
-    expect((screen.getByLabelText('Имя') as HTMLInputElement).value).toBe(
-      'Анна',
-    );
-  });
+      expect((await screen.findByRole('alert')).textContent).toContain(text);
+      expect(screen.getByLabelText<HTMLInputElement>('Имя').value).toBe('Анна');
+    },
+  );
 
   it('honeypot недоступен с клавиатуры и скрыт от скринридеров', () => {
     const { container } = render(<ContactForm />);

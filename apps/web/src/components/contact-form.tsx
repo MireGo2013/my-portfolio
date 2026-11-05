@@ -13,7 +13,8 @@ const RESULT_TEXT: Record<SendResult, string> = {
   sent: 'Сообщение отправлено. Спасибо, отвечу в ближайшее время!',
   'rate-limited':
     'Слишком много отправок с вашего адреса. Попробуйте позже или напишите напрямую.',
-  failed: 'Не удалось отправить сообщение. Попробуйте ещё раз или напишите напрямую.',
+  failed:
+    'Не удалось отправить сообщение. Попробуйте ещё раз или напишите напрямую.',
 };
 
 function Field({
@@ -73,7 +74,7 @@ export function ContactForm() {
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={(event) => void handleSubmit(onSubmit)(event)}
       noValidate
       className="relative flex max-w-xl flex-col gap-5"
     >

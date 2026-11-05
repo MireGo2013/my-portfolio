@@ -6,7 +6,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "db:up": "docker compose up -d --wait",
+    "db:up": "docker compose up -d --wait db",
     "db:down": "docker compose down",
     "db:migrate": "pnpm --filter @portfolio/api db:migrate",
     "db:seed": "pnpm --filter @portfolio/api db:seed",
@@ -18,6 +18,29 @@
     "typecheck": "pnpm build:deps && pnpm -r run typecheck",
     "test": "pnpm build:deps && pnpm -r run test",
     "test:e2e": "pnpm build:deps && pnpm --filter @portfolio/api test:e2e",
-    "test:browser": "pnpm build:deps && pnpm --filter @portfolio/web test:e2e"
+    "test:browser": "pnpm build:deps && pnpm --filter @portfolio/web test:e2e",
+    "lint": "pnpm build:deps && eslint . --max-warnings=0",
+    "lint:fix": "pnpm build:deps && eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,mjs}": [
+      "eslint --fix --max-warnings=0 --no-warn-ignored",
+      "prettier --write"
+    ],
+    "*.{json,yaml,yml,css,md}": "prettier --write --ignore-unknown"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.14.0",
+    "eslint-config-next": "16.4.5",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.10",
+    "typescript": "catalog:",
+    "typescript-eslint": "^8.72.1"
   }
 }

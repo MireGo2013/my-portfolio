@@ -24,7 +24,9 @@ export function ProjectCard({ project }: { project: Project }) {
       <StackList items={project.stack} />
       <div className="flex gap-4 pt-1">
         {project.repoUrl && <ExternalLink href={project.repoUrl} label="Код" />}
-        {project.liveUrl && <ExternalLink href={project.liveUrl} label="Сайт" />}
+        {project.liveUrl && (
+          <ExternalLink href={project.liveUrl} label="Сайт" />
+        )}
       </div>
     </article>
   );

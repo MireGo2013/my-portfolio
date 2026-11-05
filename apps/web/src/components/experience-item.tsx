@@ -9,7 +9,9 @@ export function ExperienceItem({ item }: { item: Experience }) {
         <p className="font-mono text-sm text-muted">
           {formatPeriod(item.startDate, item.endDate)}
         </p>
-        <h2 className="text-2xl font-semibold tracking-tight">{item.project}</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          {item.project}
+        </h2>
         <p className="text-accent">
           {item.company ? `${item.role}, ${item.company}` : item.role}
         </p>

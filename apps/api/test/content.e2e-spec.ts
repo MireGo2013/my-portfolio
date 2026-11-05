@@ -88,9 +88,9 @@ describe('API контента', () => {
         (path) => `${API_PREFIX}/${path}`,
       ),
     );
-    expect(body.components.schemas.ExperienceDto.properties.endDate).toMatchObject(
-      { nullable: true },
-    );
+    expect(
+      body.components.schemas.ExperienceDto.properties.endDate,
+    ).toMatchObject({ nullable: true });
     expect(body.components.schemas.ProjectKind.enum).toEqual([
       'OPEN_SOURCE',
       'FREELANCE',
@@ -99,9 +99,7 @@ describe('API контента', () => {
 
   it('openapi.json в репозитории совпадает с текущим кодом', async () => {
     const { body } = await get('/api/docs-json').expect(200);
-    const committed: unknown = JSON.parse(
-      readFileSync('openapi.json', 'utf8'),
-    );
+    const committed: unknown = JSON.parse(readFileSync('openapi.json', 'utf8'));
 
     // Упал? Контракт изменился: выполни pnpm gen:api и закоммить результат
     expect(body).toEqual(committed);
