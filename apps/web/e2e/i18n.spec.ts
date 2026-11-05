@@ -86,6 +86,14 @@ for (const path of ['/favicon.ico', '/robots.txt', '/ru/foo.bar']) {
   });
 }
 
+test('страница 404 не объявляет главную каноническим адресом', async ({
+  page,
+}) => {
+  await page.goto('/en/no-such-page');
+
+  await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+});
+
 test('неизвестная страница показывает 404 на языке адреса', async ({
   page,
 }) => {

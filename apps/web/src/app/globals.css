@@ -87,24 +87,28 @@ body {
   animation: rail-up 1s var(--ease-out) 0.3s both;
 }
 
-/* Появление при скролле: атрибут data-visible ставит компонент Reveal */
+/* Появление при скролле: атрибут data-visible ставит компонент Reveal.
+   Блоки скрыты, только пока на html есть reveal-js (см. REVEAL_GUARD_SCRIPT) */
 .reveal {
-  opacity: 0;
   transition:
     opacity 0.7s ease,
     transform 0.9s var(--ease-out);
   transition-delay: var(--reveal-delay, 0ms);
 }
 
-.reveal-up {
+.reveal-js .reveal:not([data-visible]) {
+  opacity: 0;
+}
+
+.reveal-js .reveal-up:not([data-visible]) {
   transform: translateY(1.5rem);
 }
 
-.reveal-left {
+.reveal-js .reveal-left:not([data-visible]) {
   transform: translateX(-4rem);
 }
 
-.reveal-right {
+.reveal-js .reveal-right:not([data-visible]) {
   transform: translateX(4rem);
 }
 
@@ -130,8 +134,10 @@ body {
     transform: perspective(900px) translateX(8px) translateY(-4px)
       rotateY(10deg);
   }
+}
 
-  /* Правая колонка отъезжает в другую сторону, за край страницы */
+/* Правая колонка разворачивается зеркально. Колонок две начиная с sm (40rem) */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) and (width >= 40rem) {
   li:nth-child(even) > .card-tilt:hover,
   li:nth-child(even) > .card-tilt:focus-within {
     box-shadow: 10px 14px 28px rgb(0 0 0 / 0.35);
@@ -164,7 +170,8 @@ body {
     animation: none;
   }
 
-  .reveal {
+  .reveal,
+  .reveal-js .reveal:not([data-visible]) {
     opacity: 1;
     transform: none;
     transition: none;

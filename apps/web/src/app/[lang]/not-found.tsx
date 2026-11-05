@@ -4,6 +4,7 @@ import { lang } from 'next/root-params';
 import { PageHeading } from '@/components/page-heading';
 import { FALLBACK_LOCALE, hasLocale } from '@/i18n/config';
 import { getDictionary } from '@/i18n/server';
+import { TEXT_LINK_CLASS } from '@/lib/styles';
 
 // not-found не получает params, поэтому язык читаем через root-params
 async function notFoundLocale() {
@@ -13,7 +14,8 @@ async function notFoundLocale() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await notFoundLocale();
-  return { title: getDictionary(locale).notFound.title };
+  // Иначе страница унаследует canonical и hreflang главной
+  return { title: getDictionary(locale).notFound.title, alternates: {} };
 }
 
 export default async function NotFound() {
@@ -23,10 +25,7 @@ export default async function NotFound() {
   return (
     <>
       <PageHeading title={title} description={description} />
-      <Link
-        href={`/${locale}`}
-        className="underline decoration-line underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
-      >
+      <Link href={`/${locale}`} className={TEXT_LINK_CLASS}>
         {home}
       </Link>
     </>

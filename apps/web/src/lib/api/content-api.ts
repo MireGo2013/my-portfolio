@@ -23,7 +23,13 @@ function unwrap<T>(
 
 /** Типизированный доступ к API контента. Ничего не знает про кэш и Next.js. */
 export function createContentApi(baseUrl: string) {
-  const client = createClient<paths>({ baseUrl });
+  const client = createClient<paths>({
+    baseUrl,
+    // Кэшированием управляет только 'use cache' в lib/content.ts. Без no-store
+    // Next.js дополнительно сохранял бы ответы в свой кэш запросов, а он
+    // переживает сборки: новая сборка показала бы контент из прошлой
+    fetch: (request) => fetch(request, { cache: 'no-store' }),
+  });
 
   return {
     async getProfile(locale: Locale): Promise<Profile> {

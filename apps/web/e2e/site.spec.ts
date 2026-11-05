@@ -152,6 +152,18 @@ test.describe('анимации', () => {
     });
   });
 
+  test('если JavaScript сайта не загрузился, контент появляется сам', async ({
+    page,
+  }) => {
+    // Сеть отдаёт HTML, но блокирует скрипты сайта, как медленная сеть или блокировщик
+    await page.route('**/_next/static/chunks/**', (route) => route.abort());
+    await page.goto('/ru/projects');
+
+    await expect(page.locator('.reveal').last()).toHaveCSS('opacity', '1', {
+      timeout: 6000,
+    });
+  });
+
   test.describe('без JavaScript', () => {
     test.use({ javaScriptEnabled: false });
 

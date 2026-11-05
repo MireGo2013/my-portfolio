@@ -1,4 +1,5 @@
 import { LOCALES, type Locale } from '@portfolio/shared';
+import { isOneOf } from '@/lib/guards';
 
 export { LOCALES, type Locale };
 
@@ -9,7 +10,7 @@ export const FALLBACK_LOCALE: Locale = 'en';
 export const LOCALE_COOKIE = 'locale';
 
 export function hasLocale(value: string): value is Locale {
-  return (LOCALES as readonly string[]).includes(value);
+  return isOneOf(LOCALES, value);
 }
 
 /** Адрес PDF с резюме на нужном языке. */

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
+import { REVEAL_GUARD_SCRIPT } from '@/components/reveal';
 import { SiteHeader } from '@/components/site-header';
 import { SideRails, SiteFooter } from '@/components/social-links';
 import { LOCALES } from '@/i18n/config';
@@ -62,11 +63,13 @@ export default async function RootLayout({
     <html
       lang={locale}
       className={`${sans.variable} ${mono.variable} antialiased`}
+      // Скрипт ниже меняет классы html до гидратации, это ожидаемо
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: REVEAL_GUARD_SCRIPT }} />
+      </head>
       <body className="flex min-h-dvh flex-col">
-        <noscript>
-          <style>{'.reveal { opacity: 1; transform: none; }'}</style>
-        </noscript>
         <SiteHeader
           name={profile.fullName}
           locale={locale}

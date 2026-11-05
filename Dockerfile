@@ -23,8 +23,7 @@ RUN pnpm --filter @portfolio/api build
 RUN pnpm --filter @portfolio/api --prod deploy /prod/api
 
 # Сайт. Сборке Next.js нужен работающий API, а при docker build его нет,
-# поэтому сборка идёт при старте контейнера. Кэш данных прошлого запуска
-# очищаем, иначе после перезапуска сайт показал бы старый контент. Образ только для локального запуска:
+# поэтому сборка идёт при старте контейнера. Образ только для локального запуска:
 # в проде сайт собирает Vercel.
 FROM deps AS web
 RUN chown -R node:node apps/web

@@ -1,5 +1,6 @@
 import type { Project } from '@/lib/api/content-api';
 import { StackList } from './stack-list';
+import { TEXT_LINK_CLASS } from '@/lib/styles';
 
 function ExternalLink({ href, label }: { href: string; label: string }) {
   return (
@@ -7,7 +8,7 @@ function ExternalLink({ href, label }: { href: string; label: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="underline decoration-line underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
+      className={TEXT_LINK_CLASS}
     >
       {label}
     </a>

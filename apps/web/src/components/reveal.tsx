@@ -10,6 +10,12 @@ import {
 
 type RevealFrom = 'up' | 'left' | 'right';
 
+// Модуль загрузился, значит JavaScript работает: скрипт в layout не будет
+// снимать скрытие блоков (см. REVEAL_GUARD_SCRIPT)
+if (typeof document !== 'undefined') {
+  document.documentElement.setAttribute('data-reveal-ready', '');
+}
+
 let observer: IntersectionObserver | undefined;
 
 /** Один наблюдатель на все блоки страницы: это дешевле, чем по одному на каждый. */
@@ -31,8 +37,8 @@ function getObserver(): IntersectionObserver {
 
 /**
  * Показывает блок, когда до него доскроллили. Сама анимация лежит в CSS, а здесь
- * только атрибут data-visible. Браузер сам отключает её при prefers-reduced-motion,
- * а без JavaScript контент показывает noscript-стиль из layout.
+ * только атрибут data-visible. Блок скрыт, только пока на html есть класс
+ * reveal-js: его ставит и при необходимости снимает REVEAL_GUARD_SCRIPT.
  */
 export function Reveal({
   children,
@@ -80,3 +86,10 @@ export function Reveal({
     </div>
   );
 }
+
+/**
+ * Выполняется в head до первой отрисовки. Прячет блоки только там, где есть
+ * JavaScript, а если он не загрузился за 3 секунды (медленная сеть, блокировщик),
+ * снимает скрытие: контент важнее анимации.
+ */
+export const REVEAL_GUARD_SCRIPT = `(function(){var d=document.documentElement;d.classList.add('reveal-js');setTimeout(function(){if(!d.hasAttribute('data-reveal-ready'))d.classList.remove('reveal-js')},3000)})();`;

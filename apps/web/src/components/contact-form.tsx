@@ -10,13 +10,14 @@ import {
 import { useId, useState, type ComponentProps } from 'react';
 import { useForm, type FieldError } from 'react-hook-form';
 import type { Dictionary } from '@/i18n/dictionaries/ru';
+import { isOneOf } from '@/lib/guards';
 import { sendContactMessage, type SendResult } from '@/lib/api/contact-api';
 
 const inputClass =
   'w-full rounded-sm border border-line bg-surface px-3 py-2 outline-none transition-colors focus-visible:border-accent aria-invalid:border-accent';
 
 function isContactErrorCode(value: string): value is ContactErrorCode {
-  return (CONTACT_ERROR_CODES as readonly string[]).includes(value);
+  return isOneOf(CONTACT_ERROR_CODES, value);
 }
 
 function Field({

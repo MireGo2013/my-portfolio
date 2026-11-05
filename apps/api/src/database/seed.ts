@@ -25,69 +25,74 @@ function toRows<T extends object>(
  * Таблицу contact_messages не трогает: там сообщения реальных людей.
  */
 async function main(): Promise<void> {
-  await prisma.$transaction(async (tx) => {
-    await tx.experience.deleteMany();
-    await tx.project.deleteMany();
-    await tx.skillCategory.deleteMany(); // навыки и переводы удалятся каскадом
+  await prisma.$transaction(
+    async (tx) => {
+      await tx.experience.deleteMany();
+      await tx.project.deleteMany();
+      await tx.skillCategory.deleteMany(); // навыки и переводы удалятся каскадом
 
-    const { translations: profileTranslations, ...profileData } = profile;
-    await tx.profile.upsert({
-      where: { id: 1 },
-      create: { id: 1, ...profileData },
-      update: profileData,
-    });
-    await tx.profileTranslation.deleteMany({ where: { profileId: 1 } });
-    await tx.profileTranslation.createMany({
-      data: toRows(profileTranslations).map((row) => ({
-        ...row,
-        profileId: 1,
-      })),
-    });
-
-    for (const [position, item] of experience.entries()) {
-      await tx.experience.create({
-        data: {
-          slug: item.slug,
-          role: item.role,
-          startDate: new Date(item.startDate),
-          endDate: new Date(item.endDate),
-          stack: item.stack,
-          position,
-          translations: { create: toRows(item.translations) },
-        },
+      const { translations: profileTranslations, ...profileData } = profile;
+      await tx.profile.upsert({
+        where: { id: 1 },
+        create: { id: 1, ...profileData },
+        update: profileData,
       });
-    }
-
-    for (const [position, item] of projects.entries()) {
-      await tx.project.create({
-        data: {
-          slug: item.slug,
-          kind: item.kind,
-          stack: item.stack,
-          repoUrl: item.repoUrl,
-          liveUrl: item.liveUrl,
-          position,
-          translations: { create: toRows(item.translations) },
-        },
+      await tx.profileTranslation.deleteMany({ where: { profileId: 1 } });
+      await tx.profileTranslation.createMany({
+        data: toRows(profileTranslations).map((row) => ({
+          ...row,
+          profileId: 1,
+        })),
       });
-    }
 
-    for (const [position, category] of skillCategories.entries()) {
-      await tx.skillCategory.create({
-        data: {
-          slug: category.slug,
-          position,
-          translations: { create: toRows(category.translations) },
-          skills: {
-            create: category.skills.map((name, skillPosition) => ({
-              name,
-              position: skillPosition,
-            })),
+      for (const [position, item] of experience.entries()) {
+        await tx.experience.create({
+          data: {
+            slug: item.slug,
+            role: item.role,
+            startDate: new Date(item.startDate),
+            endDate: new Date(item.endDate),
+            stack: item.stack,
+            position,
+            translations: { create: toRows(item.translations) },
           },
-        },
-      });
-    }
-  });
+        });
+      }
+
+      for (const [position, item] of projects.entries()) {
+        await tx.project.create({
+          data: {
+            slug: item.slug,
+            kind: item.kind,
+            stack: item.stack,
+            repoUrl: item.repoUrl,
+            liveUrl: item.liveUrl,
+            position,
+            translations: { create: toRows(item.translations) },
+          },
+        });
+      }
+
+      for (const [position, category] of skillCategories.entries()) {
+        await tx.skillCategory.create({
+          data: {
+            slug: category.slug,
+            position,
+            translations: { create: toRows(category.translations) },
+            skills: {
+              create: category.skills.map((name, skillPosition) => ({
+                name,
+                position: skillPosition,
+              })),
+            },
+          },
+        });
+      }
+    },
+    // По умолчанию у транзакции 5 секунд. На удалённой базе при выкладке
+    // десятки последовательных запросов могут в них не уложиться
+    { timeout: 60_000 },
+  );
 
   console.log(
     `Seed готов: опыт ${experience.length}, проекты ${projects.length}, категории навыков ${skillCategories.length}`,

@@ -34,6 +34,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Мимо proxy проходят только служебные файлы Next.js и настоящие файлы сайта
-  matcher: ['/((?!_next/|cv/|icon\\.svg).*)'],
+  // Мимо proxy проходят служебные файлы Next.js и файлы сайта. Новые файлы
+  // в public кладём в assets/ (или cv/), иначе proxy ответит на них 404
+  matcher: ['/((?!_next/|assets/|cv/|icon\\.svg).*)'],
 };
