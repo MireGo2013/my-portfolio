@@ -32,3 +32,6 @@ test-results/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Личные конспекты: хранятся только локально
+docs/

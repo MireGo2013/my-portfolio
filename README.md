@@ -33,12 +33,11 @@ pnpm dev:web   # в другом
    └──────────форма контактов, REST, CORS──────────────────────▲    └──▶ Telegram Bot API
 ```
 
-| Папка             | Что внутри                                                         |
-| ----------------- | ------------------------------------------------------------------ |
-| `apps/web`        | Next.js App Router, Tailwind CSS, React Hook Form                  |
-| `apps/api`        | NestJS, Prisma, Swagger, миграции и seed                           |
-| `packages/shared` | Zod-схема формы и константы, общие для сайта и API                 |
-| `docs/konspekt`   | Разбор каждого шага: что сделано, почему так и какие были варианты |
+| Папка             | Что внутри                                         |
+| ----------------- | -------------------------------------------------- |
+| `apps/web`        | Next.js App Router, Tailwind CSS, React Hook Form  |
+| `apps/api`        | NestJS, Prisma, Swagger, миграции и seed           |
+| `packages/shared` | Zod-схема формы и константы, общие для сайта и API |
 
 ## Почему так
 
