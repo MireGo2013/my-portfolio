@@ -20,7 +20,12 @@ export class ProfileService {
         linkedinUrl: true,
         translations: {
           where: { locale },
-          select: { fullName: true, summary: true },
+          select: {
+            fullName: true,
+            shortName: true,
+            summary: true,
+            about: true,
+          },
         },
       },
     });

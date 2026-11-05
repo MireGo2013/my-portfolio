@@ -14,11 +14,23 @@ export const profile = {
   translations: {
     ru: {
       fullName: 'Владислав Соболь',
+      shortName: 'Влад',
+      about: [
+        'Я frontend-разработчик с 6+ годами коммерческого опыта на React и TypeScript. Работал над высоконагруженными SPA, B2B-системами и CRM с ролевым доступом в банковском секторе, LegalTech, логистике и микромобильности.',
+        'Проектирую архитектуру frontend-приложений, микрофронтендов и UI Kit, запускаю проекты с нуля, оптимизирую производительность и строю системы тестирования. Провожу code review, онбординг и менторинг, работаю в кросс-функциональной команде полного цикла.',
+        'Работаю с Node.js (NestJS, Express), проектирую и интегрирую REST API (OpenAPI), имею практический опыт с PostgreSQL, MongoDB, Docker и Nginx. Этого хватает, чтобы закрыть вертикаль фичи end-to-end.',
+      ],
       summary:
         'Frontend Engineer с 6+ годами коммерческого опыта на React и TypeScript: высоконагруженные SPA, B2B-системы и CRM с ролевым доступом. Проектирую архитектуру frontend-приложений, микрофронтендов и UI Kit, запускаю проекты с нуля, оптимизирую производительность и строю системы тестирования. Backend на Node.js и NestJS, REST API, PostgreSQL и Docker знаю достаточно, чтобы закрыть вертикаль фичи end-to-end.',
     },
     en: {
       fullName: 'Vladislav Sobol',
+      shortName: 'Vlad',
+      about: [
+        'I am a Frontend Engineer with 6+ years of commercial experience in React and TypeScript. I have worked on high-load SPAs, B2B systems and CRMs with role-based access in banking, LegalTech, logistics and micromobility.',
+        'I design the architecture of frontend applications, microfrontends and UI Kits, launch projects from scratch, optimize performance and build testing systems. I conduct code review, onboarding and mentoring, and work in cross-functional full-cycle teams.',
+        'I work with Node.js (NestJS, Express), design and integrate REST APIs (OpenAPI), and have hands-on experience with PostgreSQL, MongoDB, Docker and Nginx. That is enough to deliver a feature vertical end-to-end.',
+      ],
       summary:
         'Frontend Engineer with 6+ years of commercial experience in React and TypeScript: high-load SPAs, B2B systems and CRMs with role-based access. I design the architecture of frontend applications, microfrontends and UI Kits, launch projects from scratch, optimize performance and build testing systems. I work with Node.js and NestJS, REST APIs, PostgreSQL and Docker, enough to deliver a feature vertical end-to-end.',
     },
@@ -37,7 +49,8 @@ interface ExperienceSeed {
       company: string | null;
       project: string;
       summary: string;
-      highlights: string[];
+      responsibilities: string[];
+      achievements: string[];
     }
   >;
 }
@@ -51,42 +64,65 @@ export const experience: ExperienceSeed[] = [
     stack: [
       'React',
       'TypeScript',
+      'JavaScript',
       'MobX',
       'React Router',
+      'REST API',
+      'Axios',
       'Webpack',
+      'Babel',
+      'Docker',
+      'Nginx',
+      'Git',
+      'CI/CD',
       'Jest',
       'React Testing Library',
       'Cypress',
-      'Docker',
-      'Nginx',
+      'SPA',
+      'Microfrontend',
+      'Feature-Sliced Design',
     ],
     translations: {
       ru: {
         company: 'ПАО «Банк ВТБ»',
         project: 'Кабинет агента и партнёра, система управления договорами',
         summary:
-          'Личный кабинет и система управления договорами для агентов и партнёров банка (СМБ, B2B): оформление договоров, подача заявок, управление банковскими продуктами.',
-        highlights: [
-          'Спроектировал и внедрил микрофронтенд-архитектуру, провёл масштабный рефакторинг legacy-кода с переходом с Node.js 14 на 24.',
-          'Сократил размер bundle более чем на 55% (tree shaking, lazy loading, code splitting, анализ зависимостей), улучшив FCP, LCP и TBT.',
-          'Расширил UI Kit с 10 до 30 компонентов, сократив время разработки новых экранов примерно на 40%.',
-          'Построил тестирование с нуля и довёл покрытие до 80%: unit-тесты, integration-тесты с настоящим MobX RootStore и моками сети, 30+ e2e-сценариев на Cypress.',
-          'Перевёл конфигурацию Webpack и инфраструктурный код на TypeScript; внедрил ESLint, Prettier, Husky, lint-staged и проверки в CI/CD.',
-          'Проводил code review, онбординг и менторинг 5 разработчиков, участвовал в планировании и оценке задач.',
+          'Личный кабинет (СМБ) и система управления договорами для агентов и партнёров банка: оформление договоров, подача заявок, управление банковскими продуктами.',
+        responsibilities: [
+          'Разрабатывал клиентские интерфейсы личного кабинета агентов и партнёров для оформления договоров, подачи заявок и управления банковскими продуктами.',
+          'Спроектировал и внедрил микрофронтенд-архитектуру приложения, провёл масштабный рефакторинг legacy-кода с переходом с Node.js 14 на 24.',
+          'Развивал внутренний UI Kit переиспользуемых компонентов.',
+          'Построил тестирование с нуля: unit-тесты, integration-тесты с настоящим MobX RootStore и моками сети, e2e на Cypress.',
+          'Перевёл конфигурацию Webpack и инфраструктурные настройки с JavaScript на TypeScript.',
+          'Внедрил инженерные практики качества кода: ESLint, Prettier, Husky, lint-staged, проверки в CI/CD.',
+          'Проводил code review, онбординг и менторинг 5 разработчиков, распределял задачи, участвовал в планировании и оценке.',
+        ],
+        achievements: [
+          'Сократил размер bundle более чем на 55% (tree shaking, lazy loading, code splitting, анализ зависимостей): уменьшился объём загружаемого JavaScript, улучшились FCP, LCP и TBT.',
+          'Расширил UI Kit с 10 до 30 компонентов, сократив время разработки новых экранов для команды примерно на 40%.',
+          'Довёл покрытие кода тестами до 80%, написал 30+ e2e-сценариев.',
+          'Автоматизировал проверку кода перед коммитами и релизами.',
         ],
       },
       en: {
         company: 'VTB Bank',
         project: 'Agent & Partner Portal, Contract Management System',
         summary:
-          "Self-service portal and contract management system for the bank's agents and partners (SMB, B2B): contract execution, application submission and banking product management.",
-        highlights: [
-          'Designed and implemented a microfrontend architecture and carried out a large-scale legacy refactoring, upgrading Node.js from 14 to 24.',
-          'Reduced bundle size by more than 55% (tree shaking, lazy loading, code splitting, dependency analysis), improving FCP, LCP and TBT.',
+          "Self-service portal (SMB) and contract management system for the bank's agents and partners: contract execution, application submission and banking product management.",
+        responsibilities: [
+          'Developed client-facing interfaces of the agent and partner portal for contract execution, application submission and banking product management.',
+          "Designed and implemented the application's microfrontend architecture and carried out a large-scale legacy refactoring, upgrading Node.js from 14 to 24.",
+          'Developed the internal UI Kit of reusable components.',
+          'Built testing from scratch: unit tests, integration tests with a real MobX RootStore and mocked network, e2e in Cypress.',
+          'Migrated the Webpack configuration and infrastructure settings from JavaScript to TypeScript.',
+          'Introduced code quality practices: ESLint, Prettier, Husky, lint-staged, checks in CI/CD.',
+          'Conducted code review, onboarding and mentoring for 5 developers; distributed tasks, took part in planning and estimation.',
+        ],
+        achievements: [
+          'Reduced bundle size by more than 55% (tree shaking, lazy loading, code splitting, dependency analysis): less JavaScript to load, improved FCP, LCP and TBT.',
           "Expanded the UI Kit from 10 to 30 components, reducing the team's development time for new screens by about 40%.",
-          'Built testing from scratch and brought coverage up to 80%: unit tests, integration tests with a real MobX RootStore and mocked network, 30+ e2e scenarios in Cypress.',
-          'Migrated the Webpack configuration and infrastructure code to TypeScript; introduced ESLint, Prettier, Husky, lint-staged and CI/CD checks.',
-          'Conducted code review, onboarding and mentoring for 5 developers; took part in planning and estimation.',
+          'Brought test coverage up to 80% and wrote 30+ e2e scenarios.',
+          'Automated code checks before commits and releases.',
         ],
       },
     },
@@ -99,39 +135,49 @@ export const experience: ExperienceSeed[] = [
     stack: [
       'React',
       'TypeScript',
-      'TanStack Query',
-      'TanStack Router',
+      'TanStack React Query',
+      'TanStack React Router',
       'openapi-fetch',
       'Zustand',
       'Tailwind CSS',
       'HeroUI',
       'Vite',
+      'NestJS',
+      'PostgreSQL',
     ],
     translations: {
       ru: {
         company: 'Sparkit / BE Happy',
         project: 'Scooter Admin CRM',
         summary:
-          'CRM для управления и мониторинга парка электросамокатов. Единственный frontend-разработчик на проекте.',
-        highlights: [
-          'Довёл веб-приложение с нуля до рабочего продукта примерно за 3 месяца: выбор стека, архитектура, стандарты команды.',
-          'Реализовал ролевой доступ (администратор, оператор, техник) на TanStack Router.',
-          'Интегрировал клиент с backend по OpenAPI через openapi-fetch и настроил кэширование на TanStack Query.',
-          'Сделал таблицы с сортировкой, фильтрацией и пагинацией и мониторинг парка из 500+ самокатов.',
-          'Заложенные архитектура и стандарты стали основой, на которой продукт продолжила развивать штатная команда.',
+          'CRM для управления и мониторинга парка электросамокатов: контроль самокатов, пользователей, зон передвижения и операционных процессов. Единственный frontend-разработчик на проекте.',
+        responsibilities: [
+          'Спроектировал структуру проекта, настроил инженерную инфраструктуру, окружение разработки и стандарты команды, принял ключевые технические решения по стеку.',
+          'Реализовал маршрутизацию и ролевой доступ (администратор, оператор, техник) через TanStack React Router.',
+          'Интегрировал клиент с backend по OpenAPI через openapi-fetch, настроил кэширование данных через TanStack React Query.',
+          'Реализовал таблицы с сортировкой, фильтрацией и пагинацией и интерфейсы мониторинга парка (статус, заряд, геолокация), адаптивная вёрстка на Tailwind CSS и HeroUI.',
+        ],
+        achievements: [
+          'Довёл веб-приложение с нуля до рабочего продукта примерно за 3 месяца.',
+          'Мониторинг парка поддерживает более 500 единиц техники.',
+          'Заложенные архитектура, dev-окружение и стандарты стали основой, на которой продукт продолжила развивать штатная команда.',
         ],
       },
       en: {
         company: 'Sparkit / BE Happy',
         project: 'Scooter Admin CRM',
         summary:
-          'CRM for managing and monitoring an e-scooter fleet. Sole frontend developer on the project.',
-        highlights: [
-          'Took the web application from scratch to a working product in about 3 months: stack selection, architecture, team standards.',
-          'Implemented role-based access (administrator, operator, technician) using TanStack Router.',
-          'Integrated the client with the backend via OpenAPI using openapi-fetch and set up data caching with TanStack Query.',
-          'Built tables with sorting, filtering and pagination, and monitoring for a fleet of 500+ vehicles.',
-          'The architecture and standards I established became the foundation on which the in-house team continued to develop the product.',
+          'CRM for managing and monitoring an e-scooter fleet: control of scooters, users, riding zones and operational processes. Sole frontend developer on the project.',
+        responsibilities: [
+          'Designed the project structure, set up the engineering infrastructure, development environment and team standards; made key technical decisions on the stack.',
+          'Implemented routing and role-based access (administrator, operator, technician) using TanStack React Router.',
+          'Integrated the client with the backend via OpenAPI using openapi-fetch; set up data caching with TanStack React Query.',
+          'Built tables with sorting, filtering and pagination, and fleet monitoring interfaces (status, battery level, geolocation); responsive layout with Tailwind CSS and HeroUI.',
+        ],
+        achievements: [
+          'Took the web application from scratch to a working product in about 3 months.',
+          'Fleet monitoring supports more than 500 vehicles.',
+          'The architecture, dev environment and standards I established became the foundation on which the in-house team continued to develop the product.',
         ],
       },
     },
@@ -147,31 +193,45 @@ export const experience: ExperienceSeed[] = [
       'Redux',
       'React Router',
       'Recharts',
+      'Axios',
       'Styled Components',
-      'WebSocket',
+      'Webpack',
       'Docker',
+      'WebSocket',
     ],
     translations: {
       ru: {
         company: 'General Soft',
         project: 'Law Portal',
         summary:
-          'LegalTech-платформа сопровождения судебных процессов: ведение дел, отслеживание статусов, финансовые данные и ролевой доступ.',
-        highlights: [
-          'Разработал интерфейсы для более чем шести пользовательских ролей, реализовал авторизацию и ролевой доступ.',
-          'Сделал интерактивные дашборды на Recharts для финансовых показателей и статусов дел.',
-          'Реализовал внутренний чат на WebSocket и уведомления об изменении статусов дел.',
+          'Платформа сопровождения гражданских, административных и уголовных процессов: ведение дел, отслеживание статусов, работа с финансовыми данными, ролевое управление доступом.',
+        responsibilities: [
+          'Разрабатывал клиентские и внутренние интерфейсы юридической платформы для более чем шести пользовательских ролей.',
+          'Реализовал авторизацию, регистрацию и ролевой доступ (юрист, истец, клиент, свидетель, ответчик).',
+          'Реализовал интерактивные дашборды с графиками (Recharts) для финансовых показателей и статусов дел.',
+          'Настроил систему уведомлений об изменениях статусов дел через всплывающие окна.',
+          'Реализовал внутренний чат приложения на WebSocket.',
+        ],
+        achievements: [
+          'Оптимизировал производительность интерфейсов при работе с большими объёмами данных и финансовыми дашбордами.',
+          'Обеспечил обмен сообщениями между участниками процесса в реальном времени.',
         ],
       },
       en: {
         company: 'General Soft',
         project: 'Law Portal',
         summary:
-          'LegalTech platform supporting legal proceedings: case management, status tracking, financial data and role-based access.',
-        highlights: [
-          'Developed interfaces for more than six user roles; implemented authentication and role-based access.',
-          'Built interactive Recharts dashboards for financial metrics and case statuses.',
-          'Implemented the in-app WebSocket chat and notifications about case status changes.',
+          'A platform supporting civil, administrative and criminal proceedings: case management, status tracking, financial data handling and role-based access control.',
+        responsibilities: [
+          'Developed client-facing and internal interfaces of the legal platform for more than six user roles.',
+          'Implemented authentication, registration and role-based access (lawyer, plaintiff, client, witness, defendant).',
+          'Built interactive dashboards with charts (Recharts) for financial metrics and case statuses.',
+          'Set up a notification system for case status changes via pop-up windows.',
+          'Implemented the in-app chat using WebSocket.',
+        ],
+        achievements: [
+          'Optimized interface performance when working with large data volumes and financial dashboards.',
+          'Enabled real-time messaging between case participants.',
         ],
       },
     },
@@ -187,15 +247,17 @@ export const experience: ExperienceSeed[] = [
         company: null,
         project: 'Kitchen Space',
         summary:
-          'Платформа аренды коммерческих кухонь: управление заказами и заявками, валидация форм, интеграция с API платежей и счетов.',
-        highlights: [],
+          'Платформа аренды коммерческих кухонь: интерфейс управления заказами и заявками, валидация форм, интеграция с API платежей и счетов.',
+        responsibilities: [],
+        achievements: [],
       },
       en: {
         company: null,
         project: 'Kitchen Space',
         summary:
-          'Commercial kitchen rental platform: order and request management, form validation, integration with payment and invoicing APIs.',
-        highlights: [],
+          'A commercial kitchen rental platform: order and request management interface, form validation, integration with payment and invoicing APIs.',
+        responsibilities: [],
+        achievements: [],
       },
     },
   },
@@ -211,14 +273,16 @@ export const experience: ExperienceSeed[] = [
         project: 'Vezetvsem',
         summary:
           'Платформа заявок на грузоперевозки: интерфейсы заявок с фильтрацией, сортировкой и поиском, интеграция API статусов доставки.',
-        highlights: [],
+        responsibilities: [],
+        achievements: [],
       },
       en: {
         company: null,
         project: 'Vezetvsem',
         summary:
-          'Freight transportation request platform: request interfaces with filtering, sorting and search, integration with delivery status APIs.',
-        highlights: [],
+          'A freight transportation request platform: request interfaces with filtering, sorting and search, integration with delivery status APIs.',
+        responsibilities: [],
+        achievements: [],
       },
     },
   },
@@ -425,97 +489,139 @@ export const projects = [
   },
 ];
 
+// Группы и состав как в разделе «Ключевые компетенции» резюме. Vitest, Playwright
+// и Prisma в резюме нет, но они используются в этом проекте и открытых проектах.
 export const skillCategories = [
   {
     slug: 'languages',
     translations: { ru: { name: 'Языки' }, en: { name: 'Languages' } },
-    skills: ['TypeScript', 'JavaScript (ES2023)'],
+    skills: ['TypeScript', 'JavaScript (ES6+ / ES2023)'],
   },
   {
-    slug: 'frontend',
-    translations: { ru: { name: 'Frontend' }, en: { name: 'Frontend' } },
+    slug: 'frameworks',
+    translations: {
+      ru: { name: 'Фреймворки и платформы' },
+      en: { name: 'Frameworks and platforms' },
+    },
     skills: [
       'React',
       'Next.js',
+      'Node.js',
+      'NestJS',
+      'Express',
       'React Router',
-      'TanStack Router',
-      'SSR / SSG',
-      'Microfrontends',
-      'Feature-Sliced Design',
+      'TanStack React Router',
+      'WordPress',
     ],
   },
   {
     slug: 'state',
     translations: {
-      ru: { name: 'Состояние и данные' },
-      en: { name: 'State and data' },
+      ru: { name: 'Управление состоянием' },
+      en: { name: 'State management' },
     },
     skills: [
-      'MobX',
       'Redux Toolkit',
       'RTK Query',
+      'MobX',
       'Zustand',
-      'TanStack Query',
-      'openapi-fetch',
-      'Axios',
-      'WebSocket',
+      'TanStack React Query',
     ],
   },
   {
     slug: 'ui',
-    translations: { ru: { name: 'UI и формы' }, en: { name: 'UI and forms' } },
+    translations: { ru: { name: 'UI' }, en: { name: 'UI' } },
     skills: [
-      'Tailwind CSS',
       'Material UI',
       'Ant Design',
       'HeroUI',
+      'Tailwind CSS',
       'Styled Components',
       'CSS Modules',
-      'SCSS',
-      'React Hook Form',
-      'Formik',
-      'Zod',
+      'SCSS / Sass',
     ],
   },
   {
-    slug: 'backend',
-    translations: { ru: { name: 'Backend' }, en: { name: 'Backend' } },
-    skills: [
-      'Node.js',
-      'NestJS',
-      'Express',
-      'REST API',
-      'OpenAPI',
-      'PostgreSQL',
-      'MongoDB',
-      'Prisma',
-    ],
+    slug: 'forms',
+    translations: {
+      ru: { name: 'Формы и валидация' },
+      en: { name: 'Forms and validation' },
+    },
+    skills: ['React Hook Form', 'Formik', 'Zod'],
   },
   {
     slug: 'testing',
     translations: { ru: { name: 'Тестирование' }, en: { name: 'Testing' } },
     skills: [
       'Jest',
-      'Vitest',
       'React Testing Library',
       'Cypress',
+      'Vitest',
       'Playwright',
     ],
   },
   {
-    slug: 'devops',
+    slug: 'architecture',
     translations: {
-      ru: { name: 'Инфраструктура и качество' },
-      en: { name: 'Infrastructure and quality' },
+      ru: { name: 'Архитектура и подходы' },
+      en: { name: 'Architecture and approaches' },
     },
     skills: [
-      'Docker',
-      'Nginx',
+      'SPA',
+      'SSR',
+      'SSG',
+      'Microfrontend',
+      'Feature-Sliced Design',
+      'SOLID',
+      'Design patterns',
+    ],
+  },
+  {
+    slug: 'databases',
+    translations: { ru: { name: 'Базы данных' }, en: { name: 'Databases' } },
+    skills: ['PostgreSQL', 'MongoDB', 'Prisma'],
+  },
+  {
+    slug: 'devops',
+    translations: {
+      ru: { name: 'DevOps и CI/CD' },
+      en: { name: 'DevOps and CI/CD' },
+    },
+    skills: [
+      'Git',
       'GitLab',
       'CI/CD',
+      'Docker',
+      'Nginx',
       'Vite',
       'Webpack',
       'Babel',
+    ],
+  },
+  {
+    slug: 'integrations',
+    translations: { ru: { name: 'Интеграции' }, en: { name: 'Integrations' } },
+    skills: [
+      'REST API',
+      'OpenAPI',
+      'openapi-fetch',
+      'Axios',
+      'HTTP',
+      'JSON',
+      'WebSocket',
+    ],
+  },
+  {
+    slug: 'tools',
+    translations: {
+      ru: { name: 'Инструменты' },
+      en: { name: 'Tools' },
+    },
+    skills: [
+      'Jira',
+      'Confluence',
+      'Figma',
+      'Chrome DevTools',
       'ESLint',
       'Prettier',
       'Husky',

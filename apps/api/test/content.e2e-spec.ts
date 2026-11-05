@@ -46,7 +46,8 @@ describe('API контента', () => {
       startDate: '2021-12',
       endDate: '2026-07',
     });
-    expect(body[0].highlights.length).toBeGreaterThan(0);
+    expect(body[0].responsibilities.length).toBeGreaterThan(0);
+    expect(body[0].achievements.length).toBeGreaterThan(0);
     expect(body[0]).not.toHaveProperty('id');
     expect(body[0]).not.toHaveProperty('position');
     expect(body.map((item: { slug: string }) => item.slug)).toEqual([
@@ -77,7 +78,7 @@ describe('API контента', () => {
     expect(body[0]).toEqual({
       slug: 'languages',
       name: 'Языки',
-      skills: ['TypeScript', 'JavaScript (ES2023)'],
+      skills: ['TypeScript', 'JavaScript (ES6+ / ES2023)'],
     });
   });
 
@@ -91,6 +92,9 @@ describe('API контента', () => {
       expect(russian.body.fullName).toBe('Владислав Соболь');
       expect(english.body.fullName).toBe('Vladislav Sobol');
       expect(english.body).not.toHaveProperty('translations');
+      expect(russian.body.shortName).toBe('Влад');
+      expect(english.body.shortName).toBe('Vlad');
+      expect(english.body.about.length).toBeGreaterThan(0);
     });
 
     it('общие данные одинаковы на обоих языках, а тексты различаются', async () => {

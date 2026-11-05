@@ -33,7 +33,10 @@ export class ExperienceDto {
   endDate!: string | null;
 
   @ApiProperty({ type: [String] })
-  highlights!: string[];
+  responsibilities!: string[];
+
+  @ApiProperty({ type: [String] })
+  achievements!: string[];
 
   @ApiProperty({ type: [String] })
   stack!: string[];

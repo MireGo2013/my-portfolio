@@ -267,8 +267,21 @@
             "type": "string",
             "example": "React / TypeScript / Node.js / NestJS"
           },
+          "shortName": {
+            "type": "string",
+            "example": "Влад",
+            "description": "Имя для приветствия"
+          },
           "summary": {
-            "type": "string"
+            "type": "string",
+            "description": "Короткое описание для поисковиков"
+          },
+          "about": {
+            "description": "История о себе, по абзацам",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "email": {
             "type": "string",
@@ -291,7 +304,9 @@
           "fullName",
           "title",
           "specialization",
+          "shortName",
           "summary",
+          "about",
           "email",
           "telegramUrl",
           "githubUrl",
@@ -333,7 +348,13 @@
             "example": "2025-11",
             "description": "Месяц окончания, YYYY-MM. null, если работа продолжается"
           },
-          "highlights": {
+          "responsibilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "achievements": {
             "type": "array",
             "items": {
               "type": "string"
@@ -354,7 +375,8 @@
           "summary",
           "startDate",
           "endDate",
-          "highlights",
+          "responsibilities",
+          "achievements",
           "stack"
         ]
       },

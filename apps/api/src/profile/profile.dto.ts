@@ -10,8 +10,14 @@ export class ProfileDto {
   @ApiProperty({ example: 'React / TypeScript / Node.js / NestJS' })
   specialization!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Влад', description: 'Имя для приветствия' })
+  shortName!: string;
+
+  @ApiProperty({ description: 'Короткое описание для поисковиков' })
   summary!: string;
+
+  @ApiProperty({ type: [String], description: 'История о себе, по абзацам' })
+  about!: string[];
 
   @ApiProperty({ format: 'email' })
   email!: string;
