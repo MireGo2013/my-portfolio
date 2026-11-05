@@ -16,7 +16,7 @@ export const profile = {
 export const experience = [
   {
     slug: 'vtb',
-    company: 'ВТБ',
+    company: 'ПАО «Банк ВТБ»',
     project: 'Кабинет агента и партнёра, система управления договорами',
     role: 'Senior Frontend Engineer',
     summary:

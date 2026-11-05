@@ -33,6 +33,7 @@ describe('Hero', () => {
       screen.getByRole('link', { name }).getAttribute('href');
 
     expect(href('Связаться')).toBe('/contact');
+    expect(href('Скачать резюме')).toBe('/cv/Sobol_Vladislav_CV_RU.pdf');
     expect(href('Telegram')).toBe('https://t.me/test');
     expect(href('GitHub')).toBe('https://github.com/test');
   });
