@@ -1,14 +1,25 @@
 import { FALLBACK_LOCALE, hasLocale, type Locale } from './config';
 
-/** "ru-RU,ru;q=0.9,en;q=0.8" -> ["ru", "ru", "en"], по убыванию приоритета q. */
+/** Вес языка из параметра "q=0.8". Без параметра вес 1, как требует стандарт. */
+function parseWeight(params: string[]): number {
+  const q = params.find((param) => param.startsWith('q='));
+  return q ? Number(q.slice(2)) : 1;
+}
+
+/**
+ * "ru-RU,ru;q=0.9, en; q=0.8" -> ["ru", "ru", "en"] по убыванию веса.
+ * Стандарт разрешает пробелы вокруг ";", поэтому каждую часть обрезаем.
+ */
 function parseAcceptLanguage(header: string): string[] {
   return header
     .split(',')
     .map((part) => {
-      const [tag = '', q] = part.trim().split(';q=');
+      const [tag = '', ...params] = part
+        .split(';')
+        .map((piece) => piece.trim());
       return {
         language: tag.split('-')[0]?.toLowerCase() ?? '',
-        q: Number(q ?? 1),
+        q: parseWeight(params),
       };
     })
     .filter(({ q }) => q > 0)
@@ -25,5 +36,5 @@ export function pickLocale(
     return cookie;
   }
   const preferred = parseAcceptLanguage(acceptLanguage ?? '').find(hasLocale);
-  return preferred && hasLocale(preferred) ? preferred : FALLBACK_LOCALE;
+  return preferred ?? FALLBACK_LOCALE;
 }

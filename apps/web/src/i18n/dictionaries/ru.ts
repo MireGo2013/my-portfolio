@@ -13,11 +13,16 @@ export const ru = {
   language: {
     label: 'Язык сайта',
   },
+  links: {
+    code: 'Код',
+    site: 'Сайт',
+  },
   about: {
     greeting: 'Привет, меня зовут',
     viewResume: 'Посмотреть резюме',
     downloadResume: 'Скачать',
     downloadResumeLabel: 'Скачать резюме',
+    contact: 'Связаться',
     skillsLabel: 'Навыки и инструменты',
   },
   projects: {
@@ -37,8 +42,6 @@ export const ru = {
     description:
       'Открытые проекты на GitHub: навыки, которые можно проверить по коду.',
     allProjects: 'Все репозитории на GitHub',
-    code: 'Код',
-    site: 'Сайт',
   },
   skills: {
     title: 'Стек',
@@ -63,6 +66,7 @@ export const ru = {
         failed:
           'Не удалось отправить сообщение. Попробуйте ещё раз или напишите напрямую.',
       },
+      invalidField: 'Проверьте это поле',
       errors: {
         nameTooShort: 'Укажите имя: минимум 2 символа',
         nameTooLong: 'Слишком длинное имя: максимум 100 символов',

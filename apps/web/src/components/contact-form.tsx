@@ -67,10 +67,12 @@ export function ContactForm({
   });
 
   const errorText = (error: FieldError | undefined) => {
-    const code = error?.message;
+    if (!error) return undefined;
+    const code = error.message;
+    // Ошибка без нашего кода тоже должна что-то сказать, а не только подсветить поле
     return code && isContactErrorCode(code)
       ? dictionary.errors[code]
-      : undefined;
+      : dictionary.invalidField;
   };
 
   const onSubmit = async (values: ContactMessage) => {

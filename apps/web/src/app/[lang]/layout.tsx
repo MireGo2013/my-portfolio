@@ -33,16 +33,20 @@ export async function generateMetadata({
   const locale = await resolveLocale(params);
   const profile = await getProfile(locale);
 
+  const defaultTitle = `${profile.fullName}, ${profile.title}`;
+
   return {
-    metadataBase: new URL(siteUrl),
-    title: {
-      default: `${profile.fullName}, ${profile.title}`,
-      template: `%s | ${profile.fullName}`,
-    },
     ...pageMetadata(locale, '', {
-      title: `${profile.fullName}, ${profile.title}`,
+      title: defaultTitle,
       description: profile.summary,
     }),
+    metadataBase: new URL(siteUrl),
+    // Шаблон идёт после pageMetadata: иначе его заменила бы строка title,
+    // и подстраницы потеряли бы имя в заголовке вкладки
+    title: {
+      default: defaultTitle,
+      template: `%s | ${profile.fullName}`,
+    },
   };
 }
 

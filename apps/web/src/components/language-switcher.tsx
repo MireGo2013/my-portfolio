@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import type { MouseEvent } from 'react';
 import {
   LOCALE_COOKIE,
   LOCALES,
@@ -24,6 +25,19 @@ export function LanguageSwitcher({
   label: string;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const switchTo = (event: MouseEvent<HTMLAnchorElement>, locale: Locale) => {
+    rememberLocale(locale);
+    // Новая вкладка и прочие клики с модификаторами работают как обычная ссылка
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+    // Параметры адреса (например, utm-метки) и якорь не должны теряться
+    event.preventDefault();
+    const { search, hash } = window.location;
+    router.push(`${switchLocalePath(pathname, locale)}${search}${hash}`);
+  };
 
   return (
     <ul aria-label={label} className="flex gap-2 font-mono text-sm uppercase">
@@ -33,8 +47,8 @@ export function LanguageSwitcher({
             href={switchLocalePath(pathname, locale)}
             hrefLang={locale}
             aria-current={locale === current ? 'true' : undefined}
-            onClick={() => {
-              rememberLocale(locale);
+            onClick={(event) => {
+              switchTo(event, locale);
             }}
             className="text-muted transition-colors hover:text-accent aria-[current=true]:text-accent"
           >

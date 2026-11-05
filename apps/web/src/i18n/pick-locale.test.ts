@@ -10,6 +10,8 @@ describe('pickLocale', () => {
     ['de-DE,ru;q=0.5', 'ru'],
     ['en;q=0.5,ru;q=0.9', 'ru'],
     ['ru;q=0,en', 'en'],
+    ['ru-RU; q=1, en; q=0.5', 'ru'],
+    ['en ; q=0.4 , ru ; q=0.6', 'ru'],
     ['', 'en'],
   ])('заголовок "%s" даёт язык %s', (header, expected) => {
     expect(pickLocale(undefined, header)).toBe(expected);

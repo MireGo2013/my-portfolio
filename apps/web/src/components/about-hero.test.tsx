@@ -34,6 +34,14 @@ describe('AboutHero', () => {
     expect(paragraphs).toContain('Второй абзац');
   });
 
+  it('ведёт на контакты третьей кнопкой', () => {
+    render(<AboutHero profile={profile} locale="en" dictionary={en.about} />);
+
+    expect(
+      screen.getByRole('link', { name: 'Get in touch' }).getAttribute('href'),
+    ).toBe('/en/contact');
+  });
+
   it('показывает аватар с именем в описании', () => {
     render(<AboutHero profile={profile} locale="ru" dictionary={ru.about} />);
 

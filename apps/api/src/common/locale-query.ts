@@ -5,7 +5,7 @@ import { ZodValidationPipe } from './zod-validation.pipe.js';
 
 /** Параметр ?locale=: проверяет значение и подставляет язык по умолчанию. */
 export const LocaleQuery = () =>
-  Query('locale', new ZodValidationPipe(localeSchema));
+  Query('locale', new ZodValidationPipe(localeSchema, 'locale'));
 
 /** Описание параметра ?locale= для OpenAPI. */
 export const ApiLocaleQuery = () =>

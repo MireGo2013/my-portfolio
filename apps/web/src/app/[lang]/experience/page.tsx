@@ -18,7 +18,8 @@ export default async function ExperiencePage({
   params,
 }: PageProps<'/[lang]/experience'>) {
   const locale = await resolveLocale(params);
-  const dictionary = getDictionary(locale).experience;
+  // Раздел «Опыт» показывает открытые проекты: в API это эндпоинт /projects
+  const { experience: dictionary, links } = getDictionary(locale);
   const [projects, profile] = await Promise.all([
     getProjects(locale),
     getProfile(locale),
@@ -41,7 +42,7 @@ export default async function ExperiencePage({
                 delay={(index % 2) * 120}
                 className="h-full"
               >
-                <ProjectCard project={project} labels={dictionary} />
+                <ProjectCard project={project} labels={links} />
               </Reveal>
             ))}
         </ul>

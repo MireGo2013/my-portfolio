@@ -32,7 +32,7 @@ WORKDIR /repo/apps/web
 ENV PATH=/repo/apps/web/node_modules/.bin:$PATH
 USER node
 EXPOSE 3000
-CMD ["sh", "-c", "node scripts/clear-content-cache.mjs && next build && next start"]
+CMD ["sh", "-c", "node --run build && next start"]
 
 # API в проде: только собранный код и production-зависимости.
 # Этап последний: без явного target (так собирает Railway) получится именно он.

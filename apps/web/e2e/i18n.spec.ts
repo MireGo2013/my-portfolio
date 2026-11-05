@@ -61,6 +61,31 @@ test.describe('резюме', () => {
   }
 });
 
+test('переключатель сохраняет параметры адреса и якорь', async ({ page }) => {
+  await page.goto('/ru/contact?utm_source=test#form');
+
+  await page.getByRole('link', { name: 'en', exact: true }).click();
+
+  await expect(page).toHaveURL(/\/en\/contact\?utm_source=test#form$/);
+});
+
+test('заголовок вкладки содержит имя', async ({ page }) => {
+  await page.goto('/en/skills');
+
+  await expect(page).toHaveTitle('Skills | Vladislav Sobol');
+});
+
+for (const path of ['/favicon.ico', '/robots.txt', '/ru/foo.bar']) {
+  test(`несуществующий файл ${path} показывает оформленную 404`, async ({
+    page,
+  }) => {
+    const response = await page.goto(path);
+
+    expect(response?.status()).toBe(404);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  });
+}
+
 test('неизвестная страница показывает 404 на языке адреса', async ({
   page,
 }) => {

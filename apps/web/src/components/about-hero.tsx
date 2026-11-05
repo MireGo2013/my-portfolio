@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { resumeUrl, type Locale } from '@/i18n/config';
 import type { Dictionary } from '@/i18n/dictionaries/ru';
 import type { Profile } from '@/lib/api/content-api';
@@ -78,6 +79,12 @@ export function AboutHero({
           >
             {dictionary.downloadResume}
           </a>
+          <Link
+            href={`/${locale}/contact`}
+            className="rounded-sm border border-line px-5 py-3 font-medium transition-colors hover:border-accent hover:text-accent"
+          >
+            {dictionary.contact}
+          </Link>
         </div>
       </div>
 

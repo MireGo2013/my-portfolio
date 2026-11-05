@@ -16,11 +16,16 @@ export const en: Dictionary = {
   language: {
     label: 'Site language',
   },
+  links: {
+    code: 'Code',
+    site: 'Website',
+  },
   about: {
     greeting: 'Hi, my name is',
     viewResume: 'View resume',
     downloadResume: 'Download',
     downloadResumeLabel: 'Download resume',
+    contact: 'Get in touch',
     skillsLabel: 'Skills and tools',
   },
   projects: {
@@ -40,8 +45,6 @@ export const en: Dictionary = {
     description:
       'Open-source projects on GitHub: skills you can check in the code.',
     allProjects: 'All repositories on GitHub',
-    code: 'Code',
-    site: 'Website',
   },
   skills: {
     title: 'Skills',
@@ -65,6 +68,7 @@ export const en: Dictionary = {
         failed:
           'Could not send the message. Please try again or contact me directly.',
       },
+      invalidField: 'Please check this field',
       errors: {
         nameTooShort: 'Enter your name: at least 2 characters',
         nameTooLong: 'Name is too long: 100 characters at most',

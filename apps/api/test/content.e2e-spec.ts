@@ -123,7 +123,9 @@ describe('API контента', () => {
     });
 
     it('неизвестный язык отклоняется с кодом 400', async () => {
-      await get(`${API_PREFIX}/profile?locale=de`).expect(400);
+      const { body } = await get(`${API_PREFIX}/profile?locale=de`).expect(400);
+
+      expect(body.errors.locale).toHaveLength(1);
     });
   });
 
