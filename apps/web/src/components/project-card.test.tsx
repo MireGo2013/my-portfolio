@@ -4,6 +4,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { Project } from '@/lib/api/content-api';
 import { ProjectCard } from './project-card';
 
+const labels = { code: 'Код', site: 'Сайт' };
+
 const project: Project = {
   slug: 'a',
   name: 'Проект',
@@ -18,7 +20,7 @@ afterEach(cleanup);
 
 describe('ProjectCard', () => {
   it('показывает ссылку на код и не показывает пустую ссылку на сайт', () => {
-    render(<ProjectCard project={project} />);
+    render(<ProjectCard project={project} labels={labels} />);
 
     expect(screen.getByRole('link', { name: 'Код' }).getAttribute('href')).toBe(
       'https://github.com/test/a',
@@ -29,6 +31,7 @@ describe('ProjectCard', () => {
   it('открывает внешние ссылки в новой вкладке безопасно', () => {
     render(
       <ProjectCard
+        labels={labels}
         project={{ ...project, repoUrl: null, liveUrl: 'https://example.com' }}
       />,
     );

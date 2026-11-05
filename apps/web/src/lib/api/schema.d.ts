@@ -206,7 +206,7 @@ export interface components {
             /**
              * @example {
              *       "email": [
-             *         "Укажите корректный email"
+             *         "emailInvalid"
              *       ]
              *     }
              */

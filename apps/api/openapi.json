@@ -491,7 +491,7 @@
             },
             "example": {
               "email": [
-                "Укажите корректный email"
+                "emailInvalid"
               ]
             }
           }

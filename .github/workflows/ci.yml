@@ -104,7 +104,7 @@ jobs:
         run: docker compose up --build --detach --wait --wait-timeout 300
       - name: Check site and API
         run: |
-          curl --fail --silent --output /dev/null http://localhost:3000/experience
+          curl --fail --silent --output /dev/null http://localhost:3000/ru/experience
           curl --fail --silent --output /dev/null http://localhost:3001/api/v1/health
       - name: Show logs
         if: failure()

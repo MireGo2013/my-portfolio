@@ -1,4 +1,5 @@
 import 'server-only';
+import type { Locale } from '@portfolio/shared';
 import { cacheLife, cacheTag } from 'next/cache';
 import {
   createContentApi,
@@ -18,35 +19,36 @@ function contentApi() {
 
 // Результаты попадают в статический HTML страниц. Профиль кэша content описан
 // в next.config.ts, а теги нужны для точечного обновления из админки в v2.
+// Аргумент locale входит в ключ кэша, поэтому у каждого языка своя запись.
 
-export async function getProfile(): Promise<Profile> {
+export async function getProfile(locale: Locale): Promise<Profile> {
   'use cache';
   cacheLife('content');
   cacheTag('profile');
 
-  return contentApi().getProfile();
+  return contentApi().getProfile(locale);
 }
 
-export async function getExperience(): Promise<Experience[]> {
+export async function getExperience(locale: Locale): Promise<Experience[]> {
   'use cache';
   cacheLife('content');
   cacheTag('experience');
 
-  return contentApi().getExperience();
+  return contentApi().getExperience(locale);
 }
 
-export async function getProjects(): Promise<Project[]> {
+export async function getProjects(locale: Locale): Promise<Project[]> {
   'use cache';
   cacheLife('content');
   cacheTag('projects');
 
-  return contentApi().getProjects();
+  return contentApi().getProjects(locale);
 }
 
-export async function getSkills(): Promise<SkillCategory[]> {
+export async function getSkills(locale: Locale): Promise<SkillCategory[]> {
   'use cache';
   cacheLife('content');
   cacheTag('skills');
 
-  return contentApi().getSkills();
+  return contentApi().getSkills(locale);
 }

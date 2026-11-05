@@ -7,7 +7,7 @@ const DATABASE_URL =
 const EMAIL = 'anna@playwright-e2e.example.com';
 
 test('навигация ведёт по всем разделам сайта', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/ru');
   await expect(
     page.getByRole('heading', { level: 1, name: 'Владислав Соболь' }),
   ).toBeVisible();
@@ -53,7 +53,7 @@ test.describe('форма контактов', () => {
       if (request.url().includes('/api/v1/contact')) requests += 1;
     });
 
-    await page.goto('/contact');
+    await page.goto('/ru/contact');
     await page.getByLabel('Email').fill('не-почта');
     await page.getByRole('button', { name: 'Отправить' }).click();
 
@@ -62,7 +62,7 @@ test.describe('форма контактов', () => {
   });
 
   test('сообщение из браузера доходит до базы', async ({ page }) => {
-    await page.goto('/contact');
+    await page.goto('/ru/contact');
     await page.getByLabel('Имя').fill('Анна');
     await page.getByLabel('Email').fill(EMAIL);
     await page
@@ -82,5 +82,15 @@ test.describe('форма контактов', () => {
     expect(rows).toEqual([
       { name: 'Анна', message: 'Здравствуйте! Это проверка формы.' },
     ]);
+  });
+
+  test('ошибки на английской версии показаны на английском', async ({
+    page,
+  }) => {
+    await page.goto('/en/contact');
+    await page.getByLabel('Email').fill('not-an-email');
+    await page.getByRole('button', { name: 'Send' }).click();
+
+    await expect(page.getByText('Enter a valid email')).toBeVisible();
   });
 });

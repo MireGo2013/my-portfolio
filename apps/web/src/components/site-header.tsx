@@ -1,32 +1,47 @@
 import Link from 'next/link';
+import type { Locale } from '@/i18n/config';
+import type { Dictionary } from '@/i18n/dictionaries/ru';
+import { LanguageSwitcher } from './language-switcher';
 import { NavLink } from './nav-link';
 
-const NAV_ITEMS = [
-  { href: '/experience', label: 'Опыт' },
-  { href: '/projects', label: 'Проекты' },
-  { href: '/skills', label: 'Стек' },
-  { href: '/contact', label: 'Контакты' },
-];
+export function SiteHeader({
+  name,
+  locale,
+  dictionary,
+}: {
+  name: string;
+  locale: Locale;
+  dictionary: Pick<Dictionary, 'nav' | 'language'>;
+}) {
+  const { nav, language } = dictionary;
+  const items = [
+    { href: `/${locale}/experience`, label: nav.experience },
+    { href: `/${locale}/projects`, label: nav.projects },
+    { href: `/${locale}/skills`, label: nav.skills },
+    { href: `/${locale}/contact`, label: nav.contact },
+  ];
 
-export function SiteHeader({ name }: { name: string }) {
   return (
     <header className="border-b border-line">
-      <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-x-8 gap-y-2 px-6 py-5">
+      <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-x-8 gap-y-3 px-6 py-5">
         <Link
-          href="/"
+          href={`/${locale}`}
           className="font-semibold transition-colors hover:text-accent"
         >
           {name}
         </Link>
-        <nav aria-label="Основная навигация">
-          <ul className="flex gap-6 font-mono text-sm">
-            {NAV_ITEMS.map((item) => (
-              <li key={item.href}>
-                <NavLink {...item} />
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+          <nav aria-label={nav.label}>
+            <ul className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm">
+              {items.map((item) => (
+                <li key={item.href}>
+                  <NavLink {...item} />
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <LanguageSwitcher current={locale} label={language.label} />
+        </div>
       </div>
     </header>
   );

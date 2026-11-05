@@ -20,12 +20,26 @@ const endpoints = [
 
 describe.each(endpoints)('createContentApi.%s', (method, path, body) => {
   const url = `${BASE_URL}${path}`;
-  const call = () => createContentApi(BASE_URL)[method]();
+  const call = () => createContentApi(BASE_URL)[method]('en');
 
   it('возвращает данные из ответа API', async () => {
     server.use(http.get(url, () => HttpResponse.json(body)));
 
     await expect(call()).resolves.toEqual(body);
+  });
+
+  it('передаёт язык в запросе', async () => {
+    let locale: string | null = null;
+    server.use(
+      http.get(url, ({ request }) => {
+        locale = new URL(request.url).searchParams.get('locale');
+        return HttpResponse.json(body);
+      }),
+    );
+
+    await call();
+
+    expect(locale).toBe('en');
   });
 
   it('бросает ошибку с кодом ответа', async () => {
@@ -47,7 +61,9 @@ describe('createContentApi', () => {
       http.get(`${BASE_URL}/api/v1/projects`, () => HttpResponse.json([])),
     );
 
-    await expect(createContentApi(BASE_URL).getProjects()).resolves.toEqual([]);
+    await expect(createContentApi(BASE_URL).getProjects('ru')).resolves.toEqual(
+      [],
+    );
   });
 
   it('отвечает ошибкой на 404, если база не заполнена', async () => {
@@ -58,7 +74,7 @@ describe('createContentApi', () => {
       ),
     );
 
-    await expect(createContentApi(BASE_URL).getProfile()).rejects.toThrow(
+    await expect(createContentApi(BASE_URL).getProfile('ru')).rejects.toThrow(
       '404',
     );
   });

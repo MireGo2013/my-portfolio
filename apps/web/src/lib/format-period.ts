@@ -5,6 +5,10 @@ function formatMonth(month: string): string {
 }
 
 /** Период работы: "12.2021 — 07.2026" или "12.2021 — настоящее время". */
-export function formatPeriod(start: string, end: string | null): string {
-  return `${formatMonth(start)} — ${end ? formatMonth(end) : 'настоящее время'}`;
+export function formatPeriod(
+  start: string,
+  end: string | null,
+  presentLabel: string,
+): string {
+  return `${formatMonth(start)} — ${end ? formatMonth(end) : presentLabel}`;
 }

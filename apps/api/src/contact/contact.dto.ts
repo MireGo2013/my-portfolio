@@ -40,7 +40,7 @@ export class ValidationErrorDto {
   @ApiProperty({
     type: 'object',
     additionalProperties: { type: 'array', items: { type: 'string' } },
-    example: { email: ['Укажите корректный email'] },
+    example: { email: ['emailInvalid'] },
   })
   errors!: Record<string, string[]>;
 }

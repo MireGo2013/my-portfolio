@@ -1,4 +1,5 @@
 import createClient from 'openapi-fetch';
+import type { Locale } from '@portfolio/shared';
 import type { components, paths } from './schema';
 
 export type Profile = components['schemas']['ProfileDto'];
@@ -25,17 +26,31 @@ export function createContentApi(baseUrl: string) {
   const client = createClient<paths>({ baseUrl });
 
   return {
-    async getProfile(): Promise<Profile> {
-      return unwrap('/profile', await client.GET('/api/v1/profile'));
+    async getProfile(locale: Locale): Promise<Profile> {
+      return unwrap(
+        '/profile',
+        await client.GET('/api/v1/profile', { params: { query: { locale } } }),
+      );
     },
-    async getExperience(): Promise<Experience[]> {
-      return unwrap('/experience', await client.GET('/api/v1/experience'));
+    async getExperience(locale: Locale): Promise<Experience[]> {
+      return unwrap(
+        '/experience',
+        await client.GET('/api/v1/experience', {
+          params: { query: { locale } },
+        }),
+      );
     },
-    async getProjects(): Promise<Project[]> {
-      return unwrap('/projects', await client.GET('/api/v1/projects'));
+    async getProjects(locale: Locale): Promise<Project[]> {
+      return unwrap(
+        '/projects',
+        await client.GET('/api/v1/projects', { params: { query: { locale } } }),
+      );
     },
-    async getSkills(): Promise<SkillCategory[]> {
-      return unwrap('/skills', await client.GET('/api/v1/skills'));
+    async getSkills(locale: Locale): Promise<SkillCategory[]> {
+      return unwrap(
+        '/skills',
+        await client.GET('/api/v1/skills', { params: { query: { locale } } }),
+      );
     },
   };
 }

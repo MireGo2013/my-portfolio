@@ -14,7 +14,13 @@ function ExternalLink({ href, label }: { href: string; label: string }) {
   );
 }
 
-export function ProjectCard({ project }: { project: Project }) {
+export function ProjectCard({
+  project,
+  labels,
+}: {
+  project: Project;
+  labels: { code: string; site: string };
+}) {
   return (
     <article className="flex h-full flex-col gap-3 rounded-sm border border-line bg-surface p-5">
       <h3 className="text-lg font-semibold tracking-tight">{project.name}</h3>
@@ -23,9 +29,11 @@ export function ProjectCard({ project }: { project: Project }) {
       </p>
       <StackList items={project.stack} />
       <div className="flex gap-4 pt-1">
-        {project.repoUrl && <ExternalLink href={project.repoUrl} label="Код" />}
+        {project.repoUrl && (
+          <ExternalLink href={project.repoUrl} label={labels.code} />
+        )}
         {project.liveUrl && (
-          <ExternalLink href={project.liveUrl} label="Сайт" />
+          <ExternalLink href={project.liveUrl} label={labels.site} />
         )}
       </div>
     </article>

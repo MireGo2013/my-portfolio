@@ -1,21 +1,23 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { contactMessageSchema, type ContactMessage } from '@portfolio/shared';
+import {
+  CONTACT_ERROR_CODES,
+  contactMessageSchema,
+  type ContactErrorCode,
+  type ContactMessage,
+} from '@portfolio/shared';
 import { useId, useState, type ComponentProps } from 'react';
 import { useForm, type FieldError } from 'react-hook-form';
+import type { Dictionary } from '@/i18n/dictionaries/ru';
 import { sendContactMessage, type SendResult } from '@/lib/api/contact-api';
 
 const inputClass =
   'w-full rounded-sm border border-line bg-surface px-3 py-2 outline-none transition-colors focus-visible:border-accent aria-invalid:border-accent';
 
-const RESULT_TEXT: Record<SendResult, string> = {
-  sent: 'Сообщение отправлено. Спасибо, отвечу в ближайшее время!',
-  'rate-limited':
-    'Слишком много отправок с вашего адреса. Попробуйте позже или напишите напрямую.',
-  failed:
-    'Не удалось отправить сообщение. Попробуйте ещё раз или напишите напрямую.',
-};
+function isContactErrorCode(value: string): value is ContactErrorCode {
+  return (CONTACT_ERROR_CODES as readonly string[]).includes(value);
+}
 
 function Field({
   label,
@@ -23,7 +25,7 @@ function Field({
   children,
 }: {
   label: string;
-  error: FieldError | undefined;
+  error: string | undefined;
   children: (props: ComponentProps<'input'>) => React.ReactNode;
 }) {
   const id = useId();
@@ -41,14 +43,18 @@ function Field({
       })}
       {error && (
         <p id={errorId} className="text-sm text-accent">
-          {error.message}
+          {error}
         </p>
       )}
     </div>
   );
 }
 
-export function ContactForm() {
+export function ContactForm({
+  dictionary,
+}: {
+  dictionary: Dictionary['contact']['form'];
+}) {
   const [result, setResult] = useState<SendResult | null>(null);
   const {
     register,
@@ -59,6 +65,13 @@ export function ContactForm() {
     resolver: zodResolver(contactMessageSchema),
     defaultValues: { name: '', email: '', message: '', website: '' },
   });
+
+  const errorText = (error: FieldError | undefined) => {
+    const code = error?.message;
+    return code && isContactErrorCode(code)
+      ? dictionary.errors[code]
+      : undefined;
+  };
 
   const onSubmit = async (values: ContactMessage) => {
     setResult(null);
@@ -78,7 +91,7 @@ export function ContactForm() {
       noValidate
       className="relative flex max-w-xl flex-col gap-5"
     >
-      <Field label="Имя" error={errors.name}>
+      <Field label={dictionary.name} error={errorText(errors.name)}>
         {(props) => (
           <input
             {...props}
@@ -89,7 +102,7 @@ export function ContactForm() {
         )}
       </Field>
 
-      <Field label="Email" error={errors.email}>
+      <Field label={dictionary.email} error={errorText(errors.email)}>
         {(props) => (
           <input
             {...props}
@@ -101,7 +114,7 @@ export function ContactForm() {
         )}
       </Field>
 
-      <Field label="Сообщение" error={errors.message}>
+      <Field label={dictionary.message} error={errorText(errors.message)}>
         {({ id, 'aria-invalid': invalid, 'aria-describedby': describedBy }) => (
           <textarea
             id={id}
@@ -117,7 +130,7 @@ export function ContactForm() {
       {/* Honeypot: убран за экран, а не через display:none, который боты распознают */}
       <div aria-hidden="true" className="absolute -left-[9999px]">
         <label>
-          Сайт
+          {dictionary.honeypot}
           <input
             {...register('website')}
             type="text"
@@ -133,7 +146,7 @@ export function ContactForm() {
           disabled={isSubmitting}
           className="rounded-sm bg-accent px-5 py-3 font-medium text-on-accent transition-opacity hover:opacity-90 disabled:opacity-60"
         >
-          {isSubmitting ? 'Отправка...' : 'Отправить'}
+          {isSubmitting ? dictionary.sending : dictionary.submit}
         </button>
 
         {result && (
@@ -141,7 +154,7 @@ export function ContactForm() {
             role={result === 'sent' ? 'status' : 'alert'}
             className={result === 'sent' ? '' : 'text-accent'}
           >
-            {RESULT_TEXT[result]}
+            {dictionary.results[result]}
           </p>
         )}
       </div>

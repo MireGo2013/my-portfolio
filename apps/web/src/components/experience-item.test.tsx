@@ -20,7 +20,7 @@ afterEach(cleanup);
 
 describe('ExperienceItem', () => {
   it('показывает проект, роль с компанией, период и достижения', () => {
-    render(<ExperienceItem item={item} />);
+    render(<ExperienceItem item={item} presentLabel="present" />);
 
     expect(screen.getByRole('heading', { name: 'Проект' })).toBeTruthy();
     expect(screen.getByText('Engineer, Компания')).toBeTruthy();
@@ -30,13 +30,23 @@ describe('ExperienceItem', () => {
   });
 
   it('показывает только роль, если компании нет', () => {
-    render(<ExperienceItem item={{ ...item, company: null }} />);
+    render(
+      <ExperienceItem
+        item={{ ...item, company: null }}
+        presentLabel="present"
+      />,
+    );
 
     expect(screen.getByText('Engineer')).toBeTruthy();
   });
 
   it('не выводит пустой список достижений', () => {
-    render(<ExperienceItem item={{ ...item, highlights: [], stack: [] }} />);
+    render(
+      <ExperienceItem
+        item={{ ...item, highlights: [], stack: [] }}
+        presentLabel="present"
+      />,
+    );
 
     expect(screen.queryAllByRole('listitem')).toHaveLength(0);
   });

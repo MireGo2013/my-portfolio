@@ -3,6 +3,8 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { sendContactMessage } from '@/lib/api/contact-api';
+import { en } from '@/i18n/dictionaries/en';
+import { ru } from '@/i18n/dictionaries/ru';
 import { ContactForm } from './contact-form';
 
 vi.mock('@/lib/api/contact-api', () => ({ sendContactMessage: vi.fn() }));
@@ -25,9 +27,20 @@ beforeEach(() => send.mockReset());
 afterEach(cleanup);
 
 describe('ContactForm', () => {
+  it('показывает ошибки на языке словаря', async () => {
+    render(<ContactForm dictionary={en.contact.form} />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Send' }));
+
+    expect(await screen.findByText('Enter a valid email')).toBeTruthy();
+    expect(
+      screen.getByText('Enter your name: at least 2 characters'),
+    ).toBeTruthy();
+  });
+
   it('показывает ошибки и не отправляет неверные данные', async () => {
     const user = userEvent.setup();
-    render(<ContactForm />);
+    render(<ContactForm dictionary={ru.contact.form} />);
 
     await user.type(screen.getByLabelText('Email'), 'не-почта');
     await submit(user);
@@ -43,7 +56,7 @@ describe('ContactForm', () => {
   it('после отправки показывает успех и очищает форму', async () => {
     send.mockResolvedValue('sent');
     const user = userEvent.setup();
-    render(<ContactForm />);
+    render(<ContactForm dictionary={ru.contact.form} />);
 
     await fillValid(user);
     await submit(user);
@@ -66,7 +79,7 @@ describe('ContactForm', () => {
     async (result, text) => {
       send.mockResolvedValue(result);
       const user = userEvent.setup();
-      render(<ContactForm />);
+      render(<ContactForm dictionary={ru.contact.form} />);
 
       await fillValid(user);
       await submit(user);
@@ -77,7 +90,7 @@ describe('ContactForm', () => {
   );
 
   it('honeypot недоступен с клавиатуры и скрыт от скринридеров', () => {
-    const { container } = render(<ContactForm />);
+    const { container } = render(<ContactForm dictionary={ru.contact.form} />);
 
     const honeypot = container.querySelector('input[name="website"]');
     expect(honeypot?.getAttribute('tabindex')).toBe('-1');
