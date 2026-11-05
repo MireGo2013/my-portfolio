@@ -127,7 +127,8 @@ body {
   .card-tilt:focus-within {
     border-color: var(--accent);
     box-shadow: -10px 14px 28px rgb(0 0 0 / 0.35);
-    transform: perspective(900px) translateX(8px) translateY(-4px) rotateY(5deg);
+    transform: perspective(900px) translateX(8px) translateY(-4px)
+      rotateY(10deg);
   }
 
   /* Правая колонка отъезжает в другую сторону, за край страницы */
@@ -135,7 +136,7 @@ body {
   li:nth-child(even) > .card-tilt:focus-within {
     box-shadow: 10px 14px 28px rgb(0 0 0 / 0.35);
     transform: perspective(900px) translateX(-8px) translateY(-4px)
-      rotateY(-5deg);
+      rotateY(-10deg);
   }
 }
 

@@ -108,11 +108,11 @@ JavaScript не загрузился   → <noscript><style>.reveal { opacity: 1
 ```css
 /* ❌ у левой карточки к посетителю вышел правый край */
 .card-tilt:hover {
-  transform: perspective(900px) rotateY(-5deg);
+  transform: perspective(900px) rotateY(-10deg);
 }
 /* ✅ левый край вперёд */
 .card-tilt:hover {
-  transform: perspective(900px) rotateY(5deg);
+  transform: perspective(900px) rotateY(10deg);
 }
 ```
 
