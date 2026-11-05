@@ -1,27 +1,20 @@
 @import 'tailwindcss';
 
+/* Единственная тема сайта: графит с медным акцентом */
 :root {
-  --paper: #f6f4ef;
-  --ink: #1c1b18;
-  --muted: #5f5b52;
-  --line: #c9c4b8;
-  --accent: #a83e1a;
-  --on-accent: #fffaf5;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #14130f;
-    --ink: #ece8df;
-    --muted: #a39e92;
-    --line: #4a463d;
-    --accent: #ee8a63;
-    --on-accent: #1a0d07;
-  }
+  color-scheme: dark;
+  --paper: #1a1c1f;
+  --surface: #23262a;
+  --ink: #ece9e3;
+  --muted: #a9acb0;
+  --line: #3b3f45;
+  --accent: #e0935f;
+  --on-accent: #1c1008;
 }
 
 @theme inline {
   --color-paper: var(--paper);
+  --color-surface: var(--surface);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
@@ -35,4 +28,9 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans), sans-serif;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
 }

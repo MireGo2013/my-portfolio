@@ -12,3 +12,4 @@
 8. [Docker: весь проект одной командой](./08-docker.md)
 9. [CI: проверка каждого изменения в GitHub Actions](./09-ci.md)
 10. [Деплой: Railway, Vercel и README](./10-deploy.md)
+11. [Графитовая палитра на CSS-переменных](./11-graphite-theme.md)

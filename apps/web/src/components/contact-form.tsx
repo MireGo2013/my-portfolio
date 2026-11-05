@@ -7,7 +7,7 @@ import { useForm, type FieldError } from 'react-hook-form';
 import { sendContactMessage, type SendResult } from '@/lib/api/contact-api';
 
 const inputClass =
-  'w-full rounded-sm border border-line bg-transparent px-3 py-2 outline-none transition-colors focus-visible:border-accent aria-invalid:border-accent';
+  'w-full rounded-sm border border-line bg-surface px-3 py-2 outline-none transition-colors focus-visible:border-accent aria-invalid:border-accent';
 
 const RESULT_TEXT: Record<SendResult, string> = {
   sent: 'Сообщение отправлено. Спасибо, отвечу в ближайшее время!',
