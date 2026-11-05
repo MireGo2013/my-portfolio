@@ -1,5 +1,11 @@
+# Весь проект одной командой: docker compose up --build
+# Сайт: http://localhost:3000, API: http://localhost:3001/api/docs
+#
 # Только для локальной разработки: логин и пароль здесь не секрет,
-# а порт доступен лишь с этой машины. Настройки прода живут на хостинге.
+# а порты доступны лишь с этой машины. Настройки прода живут на хостинге.
+
+x-database-url: &database-url postgresql://portfolio:portfolio@db:5432/portfolio
+
 services:
   db:
     image: postgres:18-alpine
@@ -17,6 +23,71 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+  # Применяет миграции и заполняет контент, затем завершается
+  migrate:
+    build:
+      context: .
+      target: migrate
+    environment:
+      DATABASE_URL: *database-url
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      target: api
+    # Отсюда приезжают настройки Telegram, если они есть
+    env_file:
+      - path: apps/api/.env
+        required: false
+    environment:
+      DATABASE_URL: *database-url
+      PORT: 3001
+      CORS_ORIGIN: http://localhost:3000
+    ports:
+      - '127.0.0.1:3001:3001'
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3001/api/v1/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      target: web
+    environment:
+      # Сервер Next.js ходит к API внутри сети Docker
+      API_URL: http://api:3001
+      # А браузер пользователя находится снаружи и использует опубликованный порт
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    ports:
+      - '127.0.0.1:3000:3000'
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      # Сборка идёт при старте контейнера
+      start_period: 5m
+      start_interval: 3s
 
 volumes:
   db-data:

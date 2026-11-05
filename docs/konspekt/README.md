@@ -9,3 +9,4 @@
 5. [Разделы сайта и навигация](./05-site-sections.md)
 6. [Форма контактов: Zod, throttler, honeypot, Telegram и Playwright](./06-contact-form.md)
 7. [Качество кода: ESLint, Prettier, Husky, lint-staged](./07-quality-tools.md)
+8. [Docker: весь проект одной командой](./08-docker.md)

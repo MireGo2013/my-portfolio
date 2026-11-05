@@ -6,6 +6,7 @@
     "node": ">=24"
   },
   "scripts": {
+    "dev:all": "docker compose up --build",
     "db:up": "docker compose up -d --wait db",
     "db:down": "docker compose down",
     "db:migrate": "pnpm --filter @portfolio/api db:migrate",

@@ -1,0 +1,26 @@
+# Личные данные и рабочие инструкции не должны попасть в образ
+private/
+CLAUDE.md
+
+# Секреты
+**/.env
+**/.env.*
+!**/.env.example
+
+# Всё это собирается внутри образа заново
+**/node_modules/
+**/dist/
+**/.next/
+apps/api/src/generated/
+**/*.tsbuildinfo
+
+# Не нужно для сборки
+.git/
+.github/
+.husky/
+.idea/
+.vscode/
+docs/
+**/coverage/
+**/playwright-report/
+**/test-results/
