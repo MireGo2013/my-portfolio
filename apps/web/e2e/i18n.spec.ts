@@ -30,12 +30,12 @@ test.describe('браузер на другом языке', () => {
 test('переключатель сохраняет страницу и запоминает выбор', async ({
   page,
 }) => {
-  await page.goto('/ru/work');
+  await page.goto('/ru/projects');
   await expect(page.getByText('ПАО «Банк ВТБ»')).toBeVisible();
 
   await page.getByRole('link', { name: 'en', exact: true }).click();
 
-  await expect(page).toHaveURL(/\/en\/work$/);
+  await expect(page).toHaveURL(/\/en\/projects$/);
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.getByText('VTB Bank')).toBeVisible();
 

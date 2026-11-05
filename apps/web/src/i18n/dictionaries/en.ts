@@ -5,9 +5,9 @@ export const en: Dictionary = {
   nav: {
     label: 'Main navigation',
     about: 'About',
-    work: 'Work',
-    experience: 'Experience',
+    projects: 'Projects',
     skills: 'Skills',
+    experience: 'Experience',
     contact: 'Contact',
   },
   social: {
@@ -23,8 +23,8 @@ export const en: Dictionary = {
     downloadResumeLabel: 'Download resume',
     skillsLabel: 'Skills and tools',
   },
-  work: {
-    title: 'Work',
+  projects: {
+    title: 'Projects',
     description:
       'Commercial projects under NDA: no code or screenshots, but with tasks and results.',
     metaDescription:

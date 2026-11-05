@@ -145,3 +145,5 @@ Next.js сохраняет результаты `use cache` на диск и и�
 - [Next.js: use cache](https://nextjs.org/docs/app/api-reference/directives/use-cache)
 - [Simple Icons](https://simpleicons.org/)
 - [Next.js: redirects](https://nextjs.org/docs/app/api-reference/config/next-config-js/redirects)
+
+> Обновление: меню стало «Обо мне, Проекты, Стек, Опыт, Контакты». Коммерческие проекты переехали с `/work` на `/projects`, раздел навыков называется «Стек». Перенаправление со старого `/projects` убрано: теперь это сам раздел.

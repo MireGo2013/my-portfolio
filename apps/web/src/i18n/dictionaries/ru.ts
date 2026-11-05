@@ -2,9 +2,9 @@ export const ru = {
   nav: {
     label: 'Основная навигация',
     about: 'Обо мне',
-    work: 'Работа',
+    projects: 'Проекты',
+    skills: 'Стек',
     experience: 'Опыт',
-    skills: 'Навыки',
     contact: 'Контакты',
   },
   social: {
@@ -20,8 +20,8 @@ export const ru = {
     downloadResumeLabel: 'Скачать резюме',
     skillsLabel: 'Навыки и инструменты',
   },
-  work: {
-    title: 'Работа',
+  projects: {
+    title: 'Проекты',
     description:
       'Коммерческие проекты под NDA: без кода и скриншотов, зато с задачами и результатами.',
     metaDescription:
@@ -41,7 +41,7 @@ export const ru = {
     site: 'Сайт',
   },
   skills: {
-    title: 'Навыки',
+    title: 'Стек',
     description: 'Технологии и инструменты, с которыми я работаю, по областям.',
   },
   contact: {

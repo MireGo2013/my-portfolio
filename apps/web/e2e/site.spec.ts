@@ -12,9 +12,9 @@ test('навигация ведёт по всем разделам сайта', 
   const nav = page.getByRole('navigation', { name: 'Основная навигация' });
   for (const [link, heading] of [
     ['Обо мне', 'Влад'],
-    ['Работа', 'Работа'],
+    ['Проекты', 'Проекты'],
+    ['Стек', 'Стек'],
     ['Опыт', 'Опыт'],
-    ['Навыки', 'Навыки'],
     ['Контакты', 'Контакты'],
   ] as const) {
     await nav.getByRole('link', { name: link }).click();
@@ -105,7 +105,7 @@ test.describe('анимации', () => {
   test('блок появляется, только когда до него доскроллили', async ({
     page,
   }) => {
-    await page.goto('/ru/work');
+    await page.goto('/ru/projects');
     const last = page.getByRole('heading', { name: 'Vezetvsem' });
     const block = last.locator(
       'xpath=ancestor::*[contains(@class,"reveal")][1]',
@@ -119,7 +119,7 @@ test.describe('анимации', () => {
   });
 
   test('соседние проекты выезжают с разных сторон', async ({ page }) => {
-    await page.goto('/ru/work');
+    await page.goto('/ru/projects');
 
     const first = page.locator('article').nth(0).locator('.reveal').first();
     const second = page.locator('article').nth(1).locator('.reveal').first();
@@ -142,7 +142,7 @@ test.describe('анимации', () => {
     test.use({ reducedMotion: 'reduce' });
 
     test('контент виден сразу', async ({ page }) => {
-      await page.goto('/ru/work');
+      await page.goto('/ru/projects');
 
       await expect(page.locator('.reveal').last()).toHaveCSS('opacity', '1');
       await expect(page.locator('.rail-enter').first()).toHaveCSS(
@@ -156,7 +156,7 @@ test.describe('анимации', () => {
     test.use({ javaScriptEnabled: false });
 
     test('контент виден сразу', async ({ page }) => {
-      await page.goto('/ru/work');
+      await page.goto('/ru/projects');
 
       await expect(page.locator('.reveal').last()).toHaveCSS('opacity', '1');
     });
@@ -164,7 +164,7 @@ test.describe('анимации', () => {
 });
 
 test('разделы содержат нужный контент', async ({ page }) => {
-  await page.goto('/ru/work');
+  await page.goto('/ru/projects');
   await expect(page.getByText('ПАО «Банк ВТБ»')).toBeVisible();
   await expect(
     page
@@ -179,10 +179,17 @@ test('разделы содержат нужный контент', async ({ pag
   await expect(page.getByText('Детский центр «Сова»')).toHaveCount(0);
 });
 
-test('старый адрес проектов ведёт в новый раздел', async ({ page }) => {
-  await page.goto('/ru/projects');
+test('меню идёт в нужном порядке', async ({ page }) => {
+  await page.goto('/en');
 
-  await expect(page).toHaveURL(/\/ru\/experience$/);
+  const nav = page.getByRole('navigation', { name: 'Main navigation' });
+  await expect(nav.getByRole('link')).toHaveText([
+    'About',
+    'Projects',
+    'Skills',
+    'Experience',
+    'Contact',
+  ]);
 });
 
 test.describe('форма контактов', () => {

@@ -33,7 +33,7 @@ export function WorkItem({
 }: {
   item: Experience;
   labels: Pick<
-    Dictionary['work'],
+    Dictionary['projects'],
     'present' | 'responsibilities' | 'achievements' | 'stack'
   >;
   /** С какой стороны проект выезжает на экран. */

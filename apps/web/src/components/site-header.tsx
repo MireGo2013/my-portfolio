@@ -17,9 +17,9 @@ export function SiteHeader({
   const { nav, language } = dictionary;
   const items = [
     { href: `/${locale}`, label: nav.about },
-    { href: `/${locale}/work`, label: nav.work },
-    { href: `/${locale}/experience`, label: nav.experience },
+    { href: `/${locale}/projects`, label: nav.projects },
     { href: `/${locale}/skills`, label: nav.skills },
+    { href: `/${locale}/experience`, label: nav.experience },
     { href: `/${locale}/contact`, label: nav.contact },
   ];
 

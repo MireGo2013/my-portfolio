@@ -8,19 +8,21 @@ import { getExperience, getProjects } from '@/lib/content';
 
 export async function generateMetadata({
   params,
-}: PageProps<'/[lang]/work'>): Promise<Metadata> {
+}: PageProps<'/[lang]/projects'>): Promise<Metadata> {
   const locale = await resolveLocale(params);
-  const { title, metaDescription } = getDictionary(locale).work;
+  const { title, metaDescription } = getDictionary(locale).projects;
 
-  return pageMetadata(locale, '/work', {
+  return pageMetadata(locale, '/projects', {
     title,
     description: metaDescription,
   });
 }
 
-export default async function WorkPage({ params }: PageProps<'/[lang]/work'>) {
+export default async function ProjectsPage({
+  params,
+}: PageProps<'/[lang]/projects'>) {
   const locale = await resolveLocale(params);
-  const { work, experience: projectLabels } = getDictionary(locale);
+  const { projects: work, experience: projectLabels } = getDictionary(locale);
   const [experience, projects] = await Promise.all([
     getExperience(locale),
     getProjects(locale),

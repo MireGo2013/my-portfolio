@@ -22,24 +22,24 @@ afterEach(cleanup);
 
 describe('WorkItem', () => {
   it('показывает проект, роль, период, обязанности, достижения и стек', () => {
-    render(<WorkItem item={item} labels={ru.work} />);
+    render(<WorkItem item={item} labels={ru.projects} />);
 
     expect(screen.getByRole('heading', { name: 'Проект' })).toBeTruthy();
     expect(screen.getByText('Engineer, Компания')).toBeTruthy();
     expect(screen.getByText('12.2021 — 07.2026')).toBeTruthy();
     expect(
-      screen.getByRole('heading', { name: ru.work.responsibilities }),
+      screen.getByRole('heading', { name: ru.projects.responsibilities }),
     ).toBeTruthy();
     expect(screen.getByText('Обязанность')).toBeTruthy();
     expect(
-      screen.getByRole('heading', { name: ru.work.achievements }),
+      screen.getByRole('heading', { name: ru.projects.achievements }),
     ).toBeTruthy();
     expect(screen.getByText('Достижение')).toBeTruthy();
     expect(screen.getByText('React')).toBeTruthy();
   });
 
   it('показывает только роль, если компании нет', () => {
-    render(<WorkItem item={{ ...item, company: null }} labels={ru.work} />);
+    render(<WorkItem item={{ ...item, company: null }} labels={ru.projects} />);
 
     expect(screen.getByText('Engineer')).toBeTruthy();
   });
@@ -48,15 +48,15 @@ describe('WorkItem', () => {
     render(
       <WorkItem
         item={{ ...item, responsibilities: [], achievements: [] }}
-        labels={ru.work}
+        labels={ru.projects}
       />,
     );
 
     expect(
-      screen.queryByRole('heading', { name: ru.work.responsibilities }),
+      screen.queryByRole('heading', { name: ru.projects.responsibilities }),
     ).toBeNull();
     expect(
-      screen.queryByRole('heading', { name: ru.work.achievements }),
+      screen.queryByRole('heading', { name: ru.projects.achievements }),
     ).toBeNull();
   });
 });
