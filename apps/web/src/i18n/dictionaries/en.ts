@@ -4,38 +4,48 @@ import type { Dictionary } from './ru';
 export const en: Dictionary = {
   nav: {
     label: 'Main navigation',
+    about: 'About',
+    work: 'Work',
     experience: 'Experience',
-    projects: 'Projects',
     skills: 'Skills',
     contact: 'Contact',
+  },
+  social: {
+    label: 'Profile links',
   },
   language: {
     label: 'Site language',
   },
-  hero: {
-    contact: 'Get in touch',
+  about: {
+    greeting: 'Hi, my name is',
     viewResume: 'View resume',
     downloadResume: 'Download',
     downloadResumeLabel: 'Download resume',
+    skillsLabel: 'Skills and tools',
+  },
+  work: {
+    title: 'Work',
+    description:
+      'Commercial projects under NDA: no code or screenshots, but with tasks and results.',
+    metaDescription:
+      'Commercial projects: responsibilities, achievements and tech stack. Freelance.',
+    present: 'present',
+    responsibilities: 'Responsibilities',
+    achievements: 'Results and achievements',
+    stack: 'Tech stack',
+    freelance: 'Freelance',
   },
   experience: {
     title: 'Experience',
     description:
-      'Commercial projects under NDA: no code or screenshots, but with tasks and results.',
-    metaDescription: 'Commercial projects: tasks, achievements and tech stack.',
-    present: 'present',
-  },
-  projects: {
-    title: 'Projects',
-    description: 'Open-source projects on GitHub and freelance work.',
-    openSource: 'Open source',
-    freelance: 'Freelance',
+      'Open-source projects on GitHub: skills you can check in the code.',
+    allProjects: 'All repositories on GitHub',
     code: 'Code',
     site: 'Website',
   },
   skills: {
     title: 'Skills',
-    description: 'Technologies I work with, grouped by area.',
+    description: 'Technologies and tools I work with, grouped by area.',
   },
   contact: {
     title: 'Contact',

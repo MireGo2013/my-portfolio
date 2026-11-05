@@ -123,7 +123,15 @@ export interface components {
             title: string;
             /** @example React / TypeScript / Node.js / NestJS */
             specialization: string;
+            /**
+             * @description Имя для приветствия
+             * @example Влад
+             */
+            shortName: string;
+            /** @description Короткое описание для поисковиков */
             summary: string;
+            /** @description История о себе, по абзацам */
+            about: string[];
             /** Format: email */
             email: string;
             /** Format: uri */
@@ -156,7 +164,8 @@ export interface components {
              * @example 2025-11
              */
             endDate: string | null;
-            highlights: string[];
+            responsibilities: string[];
+            achievements: string[];
             stack: string[];
         };
         /** @enum {string} */

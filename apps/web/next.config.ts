@@ -4,6 +4,15 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   agentRules: false, // не создавать AGENTS.md в репозитории
+  // Раздел переименован, старые ссылки должны продолжать работать
+  redirects: () =>
+    Promise.resolve([
+      {
+        source: '/:lang(ru|en)/projects',
+        destination: '/:lang/experience',
+        permanent: true,
+      },
+    ]),
   cacheLife: {
     // Контент меняется редко, а заходят на сайт нечасто. Длинный expire нужен,
     // чтобы посетитель всегда сразу получал страницу, а не ждал ответа API,

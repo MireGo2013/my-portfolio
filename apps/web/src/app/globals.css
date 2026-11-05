@@ -34,3 +34,36 @@ body {
   background: var(--accent);
   color: var(--on-accent);
 }
+
+/* Бегущая лента: список продублирован, поэтому сдвиг на 50% даёт бесшовный цикл */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee 60s linear infinite;
+}
+
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    width: auto;
+    animation: none;
+  }
+
+  .marquee-list {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-right: 0;
+  }
+
+  .marquee-copy {
+    display: none;
+  }
+}

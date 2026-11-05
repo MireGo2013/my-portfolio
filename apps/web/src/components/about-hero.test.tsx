@@ -1,16 +1,18 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import type { Profile } from '@/lib/api/content-api';
 import { en } from '@/i18n/dictionaries/en';
 import { ru } from '@/i18n/dictionaries/ru';
-import { Hero } from './hero';
+import type { Profile } from '@/lib/api/content-api';
+import { AboutHero } from './about-hero';
 
 const profile: Profile = {
   fullName: 'Тест Тестов',
+  shortName: 'Тест',
   title: 'Engineer',
   specialization: 'TypeScript',
-  summary: 'Описание',
+  summary: 'Кратко',
+  about: ['Первый абзац', 'Второй абзац'],
   email: 'test@example.com',
   telegramUrl: 'https://t.me/test',
   githubUrl: 'https://github.com/test',
@@ -19,36 +21,30 @@ const profile: Profile = {
 
 afterEach(cleanup);
 
-describe('Hero', () => {
-  it('показывает имя главным заголовком и описание', () => {
-    render(<Hero profile={profile} locale="ru" dictionary={ru.hero} />);
+describe('AboutHero', () => {
+  it('показывает приветствие, имя и историю', () => {
+    render(<AboutHero profile={profile} locale="ru" dictionary={ru.about} />);
 
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(
-      'Тест Тестов',
-    );
-    expect(screen.getByText('Описание')).toBeTruthy();
+    expect(screen.getByText('Привет, меня зовут')).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Тест');
+    expect(screen.getByText('Первый абзац')).toBeTruthy();
+    expect(screen.getByText('Второй абзац')).toBeTruthy();
   });
 
-  it('ведёт на контакты из профиля', () => {
-    render(<Hero profile={profile} locale="ru" dictionary={ru.hero} />);
+  it('показывает аватар с именем в описании', () => {
+    render(<AboutHero profile={profile} locale="ru" dictionary={ru.about} />);
 
-    const href = (name: string) =>
-      screen.getByRole('link', { name }).getAttribute('href');
-
-    expect(href('Связаться')).toBe('/ru/contact');
-    expect(href('LinkedIn')).toBe('https://www.linkedin.com/in/test');
-    expect(href('Telegram')).toBe('https://t.me/test');
-    expect(href('GitHub')).toBe('https://github.com/test');
+    expect(screen.getByRole('img', { name: 'Тест Тестов' })).toBeTruthy();
   });
 
   it.each([
-    ['ru', ru.hero, '/cv/Sobol_Vladislav_CV_RU.pdf'],
-    ['en', en.hero, '/cv/Sobol_Vladislav_CV_EN.pdf'],
+    ['ru', ru.about, '/cv/Sobol_Vladislav_CV_RU.pdf'],
+    ['en', en.about, '/cv/Sobol_Vladislav_CV_EN.pdf'],
   ] as const)(
     'резюме на языке %s открывается и скачивается отдельно',
     (locale, dictionary, url) => {
       render(
-        <Hero profile={profile} locale={locale} dictionary={dictionary} />,
+        <AboutHero profile={profile} locale={locale} dictionary={dictionary} />,
       );
 
       const view = screen.getByRole('link', { name: dictionary.viewResume });

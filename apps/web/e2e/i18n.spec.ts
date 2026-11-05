@@ -9,7 +9,7 @@ test.describe('браузер на русском', () => {
     await expect(page).toHaveURL(/\/ru$/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'ru');
     await expect(
-      page.getByRole('heading', { level: 1, name: 'Владислав Соболь' }),
+      page.getByRole('heading', { level: 1, name: 'Влад' }),
     ).toBeVisible();
   });
 });
@@ -30,12 +30,12 @@ test.describe('браузер на другом языке', () => {
 test('переключатель сохраняет страницу и запоминает выбор', async ({
   page,
 }) => {
-  await page.goto('/ru/experience');
+  await page.goto('/ru/work');
   await expect(page.getByText('ПАО «Банк ВТБ»')).toBeVisible();
 
   await page.getByRole('link', { name: 'en', exact: true }).click();
 
-  await expect(page).toHaveURL(/\/en\/experience$/);
+  await expect(page).toHaveURL(/\/en\/work$/);
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.getByText('VTB Bank')).toBeVisible();
 

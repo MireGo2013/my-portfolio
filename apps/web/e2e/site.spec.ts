@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
 
 const DATABASE_URL =
@@ -7,16 +7,14 @@ const DATABASE_URL =
 const EMAIL = 'anna@playwright-e2e.example.com';
 
 test('навигация ведёт по всем разделам сайта', async ({ page }) => {
-  await page.goto('/ru');
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Владислав Соболь' }),
-  ).toBeVisible();
+  await page.goto('/ru/contact');
 
   const nav = page.getByRole('navigation', { name: 'Основная навигация' });
   for (const [link, heading] of [
+    ['Обо мне', 'Влад'],
+    ['Работа', 'Работа'],
     ['Опыт', 'Опыт'],
-    ['Проекты', 'Проекты'],
-    ['Стек', 'Стек'],
+    ['Навыки', 'Навыки'],
     ['Контакты', 'Контакты'],
   ] as const) {
     await nav.getByRole('link', { name: link }).click();
@@ -28,6 +26,80 @@ test('навигация ведёт по всем разделам сайта', 
       'page',
     );
   }
+});
+
+test('главная показывает историю, ленту навыков и ссылки', async ({ page }) => {
+  await page.goto('/en');
+
+  await expect(page.getByText('Hi, my name is')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Vlad' }),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole('region', { name: 'Skills and tools' })
+      .getByText('NestJS')
+      .first(),
+  ).toBeVisible();
+
+  const links = page.getByRole('navigation', { name: 'Profile links' });
+  await expect(links.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
+    'href',
+    'https://www.linkedin.com/in/vlad-sobol-59458b214/',
+  );
+});
+
+test.describe('лента навыков', () => {
+  const track = '.marquee-track';
+  const animation = (page: Page) =>
+    page
+      .locator(track)
+      .evaluate((element) => getComputedStyle(element).animationName);
+
+  test('движется и останавливается при наведении', async ({ page }) => {
+    await page.goto('/ru');
+    expect(await animation(page)).toBe('marquee');
+
+    await page.locator('.marquee').hover();
+
+    await expect(page.locator(track)).toHaveCSS(
+      'animation-play-state',
+      'paused',
+    );
+  });
+
+  test.describe('при просьбе убрать анимацию', () => {
+    test.use({ reducedMotion: 'reduce' });
+
+    test('стоит на месте и не показывает копию', async ({ page }) => {
+      await page.goto('/ru');
+
+      expect(await animation(page)).toBe('none');
+      await expect(page.locator('.marquee-copy')).toBeHidden();
+    });
+  });
+});
+
+test('разделы содержат нужный контент', async ({ page }) => {
+  await page.goto('/ru/work');
+  await expect(page.getByText('ПАО «Банк ВТБ»')).toBeVisible();
+  await expect(
+    page
+      .getByRole('heading', { name: 'Задачи и зона ответственности' })
+      .first(),
+  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Фриланс' })).toBeVisible();
+  await expect(page.getByText('Детский центр «Сова»')).toBeVisible();
+
+  await page.goto('/ru/experience');
+  await expect(page.getByText('Paint Online')).toBeVisible();
+  await expect(page.getByText('Детский центр «Сова»')).toHaveCount(0);
+});
+
+test('старый адрес проектов ведёт в новый раздел', async ({ page }) => {
+  await page.goto('/ru/projects');
+
+  await expect(page).toHaveURL(/\/ru\/experience$/);
 });
 
 test.describe('форма контактов', () => {

@@ -1,19 +1,16 @@
 import type { Metadata } from 'next';
-import { ExperienceItem } from '@/components/experience-item';
 import { PageHeading } from '@/components/page-heading';
+import { ProjectCard } from '@/components/project-card';
 import { getDictionary, pageMetadata, resolveLocale } from '@/i18n/server';
-import { getExperience } from '@/lib/content';
+import { getProfile, getProjects } from '@/lib/content';
 
 export async function generateMetadata({
   params,
 }: PageProps<'/[lang]/experience'>): Promise<Metadata> {
   const locale = await resolveLocale(params);
-  const { title, metaDescription } = getDictionary(locale).experience;
+  const { title, description } = getDictionary(locale).experience;
 
-  return pageMetadata(locale, '/experience', {
-    title,
-    description: metaDescription,
-  });
+  return pageMetadata(locale, '/experience', { title, description });
 }
 
 export default async function ExperiencePage({
@@ -21,7 +18,10 @@ export default async function ExperiencePage({
 }: PageProps<'/[lang]/experience'>) {
   const locale = await resolveLocale(params);
   const dictionary = getDictionary(locale).experience;
-  const experience = await getExperience(locale);
+  const [projects, profile] = await Promise.all([
+    getProjects(locale),
+    getProfile(locale),
+  ]);
 
   return (
     <>
@@ -29,14 +29,24 @@ export default async function ExperiencePage({
         title={dictionary.title}
         description={dictionary.description}
       />
-      <div className="flex flex-col gap-12">
-        {experience.map((item) => (
-          <ExperienceItem
-            key={item.slug}
-            item={item}
-            presentLabel={dictionary.present}
-          />
-        ))}
+      <div className="flex flex-col gap-8">
+        <ul className="grid gap-4 sm:grid-cols-2">
+          {projects
+            .filter((project) => project.kind === 'OPEN_SOURCE')
+            .map((project) => (
+              <li key={project.slug}>
+                <ProjectCard project={project} labels={dictionary} />
+              </li>
+            ))}
+        </ul>
+        <a
+          href={profile.githubUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="self-start underline decoration-line underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
+        >
+          {dictionary.allProjects}
+        </a>
       </div>
     </>
   );

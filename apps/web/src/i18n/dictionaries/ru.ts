@@ -1,38 +1,48 @@
 export const ru = {
   nav: {
     label: 'Основная навигация',
+    about: 'Обо мне',
+    work: 'Работа',
     experience: 'Опыт',
-    projects: 'Проекты',
-    skills: 'Стек',
+    skills: 'Навыки',
     contact: 'Контакты',
+  },
+  social: {
+    label: 'Ссылки на профили',
   },
   language: {
     label: 'Язык сайта',
   },
-  hero: {
-    contact: 'Связаться',
+  about: {
+    greeting: 'Привет, меня зовут',
     viewResume: 'Посмотреть резюме',
     downloadResume: 'Скачать',
     downloadResumeLabel: 'Скачать резюме',
+    skillsLabel: 'Навыки и инструменты',
+  },
+  work: {
+    title: 'Работа',
+    description:
+      'Коммерческие проекты под NDA: без кода и скриншотов, зато с задачами и результатами.',
+    metaDescription:
+      'Коммерческие проекты: обязанности, достижения и стек. Фриланс.',
+    present: 'настоящее время',
+    responsibilities: 'Задачи и зона ответственности',
+    achievements: 'Результаты и достижения',
+    stack: 'Стек на проекте',
+    freelance: 'Фриланс',
   },
   experience: {
     title: 'Опыт',
     description:
-      'Коммерческие проекты под NDA: без кода и скриншотов, зато с задачами и результатами.',
-    metaDescription: 'Коммерческие проекты: задачи, достижения и стек.',
-    present: 'настоящее время',
-  },
-  projects: {
-    title: 'Проекты',
-    description: 'Открытые проекты с кодом на GitHub и работы на фрилансе.',
-    openSource: 'Открытые проекты',
-    freelance: 'Фриланс',
+      'Открытые проекты на GitHub: навыки, которые можно проверить по коду.',
+    allProjects: 'Все репозитории на GitHub',
     code: 'Код',
     site: 'Сайт',
   },
   skills: {
-    title: 'Стек',
-    description: 'Технологии, с которыми я работаю, по областям.',
+    title: 'Навыки',
+    description: 'Технологии и инструменты, с которыми я работаю, по областям.',
   },
   contact: {
     title: 'Контакты',

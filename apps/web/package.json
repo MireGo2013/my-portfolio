@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/clear-content-cache.mjs && next build",
     "start": "next start",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
@@ -20,6 +20,7 @@
     "react-dom": "19.3.0",
     "react-hook-form": "^7.91.0",
     "server-only": "^0.0.1",
+    "simple-icons": "16.36.0",
     "zod": "catalog:"
   },
   "devDependencies": {

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
 import { SiteHeader } from '@/components/site-header';
+import { SideRails, SiteFooter } from '@/components/social-links';
 import { LOCALES } from '@/i18n/config';
 import { getDictionary, pageMetadata, resolveLocale } from '@/i18n/server';
 import { getProfile } from '@/lib/content';
@@ -50,6 +51,7 @@ export default async function RootLayout({
   params,
 }: LayoutProps<'/[lang]'>) {
   const locale = await resolveLocale(params);
+  const dictionary = getDictionary(locale);
   const profile = await getProfile(locale);
 
   return (
@@ -61,11 +63,13 @@ export default async function RootLayout({
         <SiteHeader
           name={profile.fullName}
           locale={locale}
-          dictionary={getDictionary(locale)}
+          dictionary={dictionary}
         />
-        <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-16">
+        <SideRails contacts={profile} dictionary={dictionary.social} />
+        <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
           {children}
         </main>
+        <SiteFooter contacts={profile} dictionary={dictionary.social} />
       </body>
     </html>
   );

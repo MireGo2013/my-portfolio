@@ -15,15 +15,16 @@ export function SiteHeader({
 }) {
   const { nav, language } = dictionary;
   const items = [
+    { href: `/${locale}`, label: nav.about },
+    { href: `/${locale}/work`, label: nav.work },
     { href: `/${locale}/experience`, label: nav.experience },
-    { href: `/${locale}/projects`, label: nav.projects },
     { href: `/${locale}/skills`, label: nav.skills },
     { href: `/${locale}/contact`, label: nav.contact },
   ];
 
   return (
-    <header className="border-b border-line">
-      <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-x-8 gap-y-3 px-6 py-5">
+    <header className="z-20 border-b border-line bg-paper/90 backdrop-blur-sm md:sticky md:top-0">
+      <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-x-8 gap-y-3 px-6 py-5">
         <Link
           href={`/${locale}`}
           className="font-semibold transition-colors hover:text-accent"
