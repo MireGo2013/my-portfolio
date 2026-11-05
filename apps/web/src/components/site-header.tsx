@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Locale } from '@/i18n/config';
 import type { Dictionary } from '@/i18n/dictionaries/ru';
+import { SITE_SECTIONS } from '@/lib/site-sections';
 import { LanguageSwitcher } from './language-switcher';
 import { Monogram } from './monogram';
 import { NavLink } from './nav-link';
@@ -15,13 +16,10 @@ export function SiteHeader({
   dictionary: Pick<Dictionary, 'nav' | 'language'>;
 }) {
   const { nav, language } = dictionary;
-  const items = [
-    { href: `/${locale}`, label: nav.about },
-    { href: `/${locale}/projects`, label: nav.projects },
-    { href: `/${locale}/skills`, label: nav.skills },
-    { href: `/${locale}/experience`, label: nav.experience },
-    { href: `/${locale}/contact`, label: nav.contact },
-  ];
+  const items = SITE_SECTIONS.map((section) => ({
+    href: `/${locale}${section.path}`,
+    label: nav[section.label],
+  }));
 
   return (
     <header className="z-20 border-b border-line bg-paper/90 backdrop-blur-sm md:sticky md:top-0">

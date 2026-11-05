@@ -94,6 +94,28 @@ test('страница 404 не объявляет главную канонич
   await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
 });
 
+test.describe('страница 404 без JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+
+  test('приходит с готовым текстом и меню', async ({ page }) => {
+    const response = await page.goto('/ru/nope');
+
+    expect(response?.status()).toBe(404);
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Страница не найдена' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('navigation', { name: 'Основная навигация' }),
+    ).toBeVisible();
+  });
+});
+
+test('вложенный адрес в существующем разделе тоже 404', async ({ page }) => {
+  const response = await page.goto('/en/skills/extra');
+
+  expect(response?.status()).toBe(404);
+});
+
 test('неизвестная страница показывает 404 на языке адреса', async ({
   page,
 }) => {
