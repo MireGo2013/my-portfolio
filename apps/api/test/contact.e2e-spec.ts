@@ -101,6 +101,34 @@ describe(`POST ${URL}`, () => {
     expect(await savedMessages()).toHaveLength(CONTACT_RATE_LIMIT);
   });
 
+  describe('клиент за прокси', () => {
+    const postFrom = (ip: string) => post(valid).set('X-Real-IP', ip);
+    const exhaustLimit = async (ip: string) => {
+      for (let i = 0; i < CONTACT_RATE_LIMIT; i += 1) {
+        await postFrom(ip).expect(204);
+      }
+    };
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it('с TRUST_X_REAL_IP лимит считается для каждого клиента отдельно', async () => {
+      vi.stubEnv('TRUST_X_REAL_IP', 'true');
+
+      await exhaustLimit('203.0.113.1');
+
+      await postFrom('203.0.113.1').expect(429);
+      await postFrom('203.0.113.2').expect(204);
+    });
+
+    it('без TRUST_X_REAL_IP подделка заголовка не обходит лимит', async () => {
+      await exhaustLimit('203.0.113.1');
+
+      await postFrom('203.0.113.2').expect(429);
+    });
+  });
+
   it('CORS разрешает запросы только с адреса сайта', async () => {
     const preflight = (origin: string) =>
       request(app.getHttpServer())

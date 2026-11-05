@@ -6,15 +6,15 @@ import {
   ApiTags,
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
-import { ThrottlerGuard } from '@nestjs/throttler';
 import { contactMessageSchema } from '@portfolio/shared';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { CreateContactMessageDto, ValidationErrorDto } from './contact.dto.js';
+import { ClientIpThrottlerGuard } from './client-ip-throttler.guard.js';
 import { ContactService } from './contact.service.js';
 
 @ApiTags('Контакты')
 @Controller('contact')
-@UseGuards(ThrottlerGuard)
+@UseGuards(ClientIpThrottlerGuard)
 export class ContactController {
   constructor(private readonly contact: ContactService) {}
 

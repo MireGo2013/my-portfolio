@@ -22,23 +22,6 @@ FROM deps AS api-build
 RUN pnpm --filter @portfolio/api build
 RUN pnpm --filter @portfolio/api --prod deploy /prod/api
 
-# Миграции и seed: нужны CLI Prisma и tsx из devDependencies
-FROM api-build AS migrate
-WORKDIR /repo/apps/api
-# Запускаем бинарники напрямую: pnpm перед запуском сверяет node_modules с
-# lockfile и пытается доустановить зависимости, а в контейнере это не нужно
-ENV PATH=/repo/apps/api/node_modules/.bin:$PATH
-CMD ["sh", "-c", "prisma migrate deploy && prisma db seed"]
-
-# API в проде: только собранный код и production-зависимости
-FROM node:24-slim AS api
-ENV NODE_ENV=production
-WORKDIR /app
-COPY --from=api-build /prod/api .
-USER node
-EXPOSE 3001
-CMD ["node", "dist/main.js"]
-
 # Сайт. Сборке Next.js нужен работающий API, а при docker build его нет,
 # поэтому сборка идёт при старте контейнера. Образ только для локального запуска:
 # в проде сайт собирает Vercel.
@@ -49,3 +32,16 @@ ENV PATH=/repo/apps/web/node_modules/.bin:$PATH
 USER node
 EXPOSE 3000
 CMD ["sh", "-c", "next build && next start"]
+
+# API в проде: только собранный код и production-зависимости.
+# Этап последний: без явного target (так собирает Railway) получится именно он.
+# Этот же образ применяет миграции и seed: node --run db:release
+FROM node:24-slim AS api
+ENV NODE_ENV=production
+# openssl нужен движку миграций Prisma
+RUN apt-get update && apt-get install -y --no-install-recommends openssl   && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY --from=api-build /prod/api .
+USER node
+EXPOSE 3001
+CMD ["node", "dist/main.js"]

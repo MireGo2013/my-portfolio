@@ -28,7 +28,8 @@ services:
   migrate:
     build:
       context: .
-      target: migrate
+      target: api
+    command: ['node', '--run', 'db:release']
     environment:
       DATABASE_URL: *database-url
     depends_on:

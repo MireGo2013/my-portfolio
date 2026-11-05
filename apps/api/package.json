@@ -15,6 +15,7 @@
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:seed": "prisma generate && prisma db seed",
+    "db:release": "prisma migrate deploy && node dist/database/seed.js",
     "openapi:export": "node dist/export-openapi.js"
   },
   "dependencies": {
@@ -27,7 +28,9 @@
     "@portfolio/shared": "workspace:*",
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
+    "dotenv": "^18.0.9",
     "pg": "^8.23.1",
+    "prisma": "7.10.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "zod": "catalog:"
@@ -40,14 +43,14 @@
     "@types/node": "^24.0.0",
     "@types/pg": "^8.23.1",
     "@types/supertest": "^7.0.0",
-    "dotenv": "^18.0.9",
-    "prisma": "7.10.1",
     "supertest": "^7.0.0",
     "tsx": "^4.23.15",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "files": [
-    "dist"
+    "dist",
+    "prisma",
+    "prisma7.config.ts"
   ]
 }
