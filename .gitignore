@@ -1,0 +1,30 @@
+# Личные данные: резюме с датой рождения и гражданством. НИКОГДА не коммитить.
+private/
+
+# Секреты
+.env
+.env.*
+!.env.example
+
+# Зависимости
+node_modules/
+
+# Артефакты сборки
+dist/
+.next/
+*.tsbuildinfo
+next-env.d.ts
+
+# Тесты
+coverage/
+playwright-report/
+test-results/
+
+# Логи
+*.log
+
+# IDE и ОС
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

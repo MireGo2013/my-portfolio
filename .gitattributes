@@ -1,0 +1,7 @@
+# В репозитории всегда LF, даже если коммит сделан с Windows
+* text=auto eol=lf
+*.docx binary
+*.pdf binary
+*.png binary
+*.jpg binary
+*.webp binary
