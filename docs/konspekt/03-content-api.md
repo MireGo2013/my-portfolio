@@ -9,8 +9,8 @@
 | Файл | Зачем нужен |
 | --- | --- |
 | `prisma/schema.prisma` | Таблицы `Profile`, `Experience`, `Project`, `SkillCategory`, `Skill` |
-| `prisma/seed-data.ts` | Весь публичный текст сайта. Главный файл для правки контента |
-| `prisma/seed.ts` | Записывает эти данные в базу одной транзакцией |
+| `src/database/seed-data.ts` (до шага 10: `prisma/`) | Весь публичный текст сайта. Главный файл для правки контента |
+| `src/database/seed.ts` (до шага 10: `prisma/`) | Записывает эти данные в базу одной транзакцией |
 | `src/profile`, `experience`, `projects`, `skills` | По модулю на ресурс: контроллер, сервис, DTO |
 | `src/app.setup.ts` | Подключили Swagger |
 | `test/content.e2e-spec.ts` | HTTP-запросы к настоящей базе и проверка OpenAPI-документа |

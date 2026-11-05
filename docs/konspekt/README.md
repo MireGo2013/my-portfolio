@@ -11,3 +11,4 @@
 7. [Качество кода: ESLint, Prettier, Husky, lint-staged](./07-quality-tools.md)
 8. [Docker: весь проект одной командой](./08-docker.md)
 9. [CI: проверка каждого изменения в GitHub Actions](./09-ci.md)
+10. [Деплой: Railway, Vercel и README](./10-deploy.md)

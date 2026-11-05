@@ -203,3 +203,5 @@ down и снова up:               данные в томе сохранили
 - [Docker Compose: Control startup order](https://docs.docker.com/compose/how-tos/startup-order/)
 - [pnpm: Working with Docker](https://pnpm.io/docker)
 - [pnpm: deploy](https://pnpm.io/cli/deploy)
+
+> Обновление с шага 10: отдельного образа `migrate` больше нет. Сервис `migrate` запускает прод-образ API командой `node --run db:release`, образ API вырос до 790 МБ. Подробности в [конспекте 10](./10-deploy.md).
