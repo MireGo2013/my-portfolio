@@ -1,4 +1,5 @@
 import type { INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   DocumentBuilder,
   SwaggerModule,
@@ -19,6 +20,13 @@ export function createOpenApiDocument(app: INestApplication): OpenAPIObject {
 /** Общая настройка приложения: её вызывают и main.ts, и e2e-тесты. */
 export function configureApp(app: INestApplication): void {
   app.setGlobalPrefix(API_PREFIX);
+  // Из браузера к API обращается только форма контактов
+  app.enableCors({
+    origin: app
+      .get(ConfigService)
+      .get<string>('CORS_ORIGIN', 'http://localhost:3000'),
+    methods: ['POST'],
+  });
   // UI: /api/docs, JSON: /api/docs-json
   SwaggerModule.setup('api/docs', app, createOpenApiDocument(app));
 }

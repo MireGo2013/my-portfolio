@@ -84,7 +84,7 @@ describe('API контента', () => {
     const { body } = await get('/api/docs-json').expect(200);
 
     expect(Object.keys(body.paths).sort()).toEqual(
-      ['experience', 'health', 'profile', 'projects', 'skills'].map(
+      ['contact', 'experience', 'health', 'profile', 'projects', 'skills'].map(
         (path) => `${API_PREFIX}/${path}`,
       ),
     );

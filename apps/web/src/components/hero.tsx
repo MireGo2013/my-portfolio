@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { Profile } from '@/lib/api/content-api';
 
 const secondaryLinkClass =
@@ -19,12 +20,12 @@ export function Hero({ profile }: { profile: Profile }) {
       </p>
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-4 pt-2">
-        <a
-          href={`mailto:${profile.email}`}
+        <Link
+          href="/contact"
           className="rounded-sm bg-accent px-5 py-3 font-medium text-on-accent transition-opacity hover:opacity-90"
         >
           Связаться
-        </a>
+        </Link>
         <a href={profile.telegramUrl} className={secondaryLinkClass}>
           Telegram
         </a>

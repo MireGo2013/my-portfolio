@@ -7,3 +7,4 @@
 3. [API контента: схема, seed и Swagger](./03-content-api.md)
 4. [Next.js: статическая страница и типы из OpenAPI](./04-next-ssg-openapi.md)
 5. [Разделы сайта и навигация](./05-site-sections.md)
+6. [Форма контактов: Zod, throttler, honeypot, Telegram и Playwright](./06-contact-form.md)

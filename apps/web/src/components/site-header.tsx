@@ -5,6 +5,7 @@ const NAV_ITEMS = [
   { href: '/experience', label: 'Опыт' },
   { href: '/projects', label: 'Проекты' },
   { href: '/skills', label: 'Стек' },
+  { href: '/contact', label: 'Контакты' },
 ];
 
 export function SiteHeader({ name }: { name: string }) {

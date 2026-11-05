@@ -89,6 +89,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Отправить сообщение через форму контактов */
+        post: operations["ContactController_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -167,6 +184,33 @@ export interface components {
              *     ]
              */
             skills: string[];
+        };
+        CreateContactMessageDto: {
+            /** @example Анна */
+            name: string;
+            /**
+             * Format: email
+             * @example anna@example.com
+             */
+            email: string;
+            /** @example Здравствуйте! Хотим обсудить вакансию. */
+            message: string;
+            /** @description Защита от ботов: должно оставаться пустым */
+            website?: string;
+        };
+        ValidationErrorDto: {
+            /** @example Ошибка валидации */
+            message: string;
+            /**
+             * @example {
+             *       "email": [
+             *         "Укажите корректный email"
+             *       ]
+             *     }
+             */
+            errors: {
+                [key: string]: string[];
+            };
         };
     };
     responses: never;
@@ -283,6 +327,43 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["SkillCategoryDto"][];
                 };
+            };
+        };
+    };
+    ContactController_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateContactMessageDto"];
+            };
+        };
+        responses: {
+            /** @description Сообщение принято */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidationErrorDto"];
+                };
+            };
+            /** @description Превышен лимит отправок */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

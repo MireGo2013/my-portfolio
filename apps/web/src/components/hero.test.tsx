@@ -32,7 +32,7 @@ describe('Hero', () => {
     const href = (name: string) =>
       screen.getByRole('link', { name }).getAttribute('href');
 
-    expect(href('Связаться')).toBe('mailto:test@example.com');
+    expect(href('Связаться')).toBe('/contact');
     expect(href('Telegram')).toBe('https://t.me/test');
     expect(href('GitHub')).toBe('https://github.com/test');
   });
