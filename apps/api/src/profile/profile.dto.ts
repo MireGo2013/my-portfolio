@@ -21,4 +21,7 @@ export class ProfileDto {
 
   @ApiProperty({ format: 'uri' })
   githubUrl!: string;
+
+  @ApiProperty({ format: 'uri' })
+  linkedinUrl!: string;
 }

@@ -130,6 +130,8 @@ export interface components {
             telegramUrl: string;
             /** Format: uri */
             githubUrl: string;
+            /** Format: uri */
+            linkedinUrl: string;
         };
         ExperienceDto: {
             /** @example scooter-admin-crm */
@@ -249,7 +251,10 @@ export interface operations {
     };
     ProfileController_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Язык контента, по умолчанию ru */
+                locale?: "ru" | "en";
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -275,7 +280,10 @@ export interface operations {
     };
     ExperienceController_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Язык контента, по умолчанию ru */
+                locale?: "ru" | "en";
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -294,7 +302,10 @@ export interface operations {
     };
     ProjectsController_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Язык контента, по умолчанию ru */
+                locale?: "ru" | "en";
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -313,7 +324,10 @@ export interface operations {
     };
     SkillsController_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Язык контента, по умолчанию ru */
+                locale?: "ru" | "en";
+            };
             header?: never;
             path?: never;
             cookie?: never;

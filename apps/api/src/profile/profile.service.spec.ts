@@ -1,4 +1,7 @@
-import { NotFoundException } from '@nestjs/common';
+import {
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { describe, expect, it } from 'vitest';
 import type { PrismaService } from '../prisma/prisma.service.js';
 import { ProfileService } from './profile.service.js';
@@ -11,14 +14,29 @@ function createService(profile: unknown): ProfileService {
 }
 
 describe('ProfileService', () => {
-  it('возвращает профиль из базы', async () => {
-    const profile = { fullName: 'Владислав Соболь' };
+  it('объединяет общие данные и перевод', async () => {
+    const service = createService({
+      email: 'a@example.com',
+      translations: [{ fullName: 'Vladislav Sobol', summary: 'About' }],
+    });
 
-    await expect(createService(profile).get()).resolves.toBe(profile);
+    await expect(service.get('en')).resolves.toEqual({
+      email: 'a@example.com',
+      fullName: 'Vladislav Sobol',
+      summary: 'About',
+    });
+  });
+
+  it('падает, если нет перевода на этот язык', async () => {
+    const service = createService({ email: 'a@example.com', translations: [] });
+
+    await expect(service.get('en')).rejects.toBeInstanceOf(
+      InternalServerErrorException,
+    );
   });
 
   it('отвечает 404, если база ещё не заполнена', async () => {
-    await expect(createService(null).get()).rejects.toBeInstanceOf(
+    await expect(createService(null).get('ru')).rejects.toBeInstanceOf(
       NotFoundException,
     );
   });

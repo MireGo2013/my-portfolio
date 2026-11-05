@@ -16,20 +16,31 @@ describe('ExperienceService', () => {
         slug: 'a',
         startDate: new Date('2021-12-01'),
         endDate: new Date('2026-07-01'),
+        translations: [{ project: 'Проект' }],
       },
     ]);
 
-    await expect(service.list()).resolves.toMatchObject([
-      { slug: 'a', startDate: '2021-12', endDate: '2026-07' },
+    await expect(service.list('ru')).resolves.toMatchObject([
+      {
+        slug: 'a',
+        project: 'Проект',
+        startDate: '2021-12',
+        endDate: '2026-07',
+      },
     ]);
   });
 
   it('оставляет null у незавершённой работы', async () => {
     const service = createService([
-      { slug: 'a', startDate: new Date('2026-01-01'), endDate: null },
+      {
+        slug: 'a',
+        startDate: new Date('2026-01-01'),
+        endDate: null,
+        translations: [{ project: 'Проект' }],
+      },
     ]);
 
-    const [item] = await service.list();
+    const [item] = await service.list('ru');
 
     expect(item?.endDate).toBeNull();
   });

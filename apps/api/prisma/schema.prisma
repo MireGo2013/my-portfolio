@@ -22,60 +22,110 @@ enum ProjectKind {
   FREELANCE
 }
 
+enum Locale {
+  ru
+  en
+}
+
+// Общие данные лежат в основной таблице, а тексты на каждом языке в таблице
+// переводов: даты, ссылки и стек не могут разойтись между версиями сайта.
+
 /// Единственная запись: на сайте один автор.
 model Profile {
-  id             Int    @id @default(1)
-  fullName       String @map("full_name")
+  id             Int                  @id @default(1)
   title          String
   specialization String
-  summary        String
   email          String
-  telegramUrl    String @map("telegram_url")
-  githubUrl      String @map("github_url")
+  telegramUrl    String               @map("telegram_url")
+  githubUrl      String               @map("github_url")
+  linkedinUrl    String               @map("linkedin_url")
+  translations   ProfileTranslation[]
 
   @@map("profile")
 }
 
+model ProfileTranslation {
+  profileId Int     @map("profile_id")
+  locale    Locale
+  fullName  String  @map("full_name")
+  summary   String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, locale])
+  @@map("profile_translations")
+}
+
 model Experience {
-  id         String    @id @default(uuid(7)) @db.Uuid
-  slug       String    @unique
-  company    String?
-  project    String
-  role       String
-  summary    String
-  startDate  DateTime  @map("start_date") @db.Date
-  endDate    DateTime? @map("end_date") @db.Date
-  highlights String[]
-  stack      String[]
-  position   Int
+  id           String                  @id @default(uuid(7)) @db.Uuid
+  slug         String                  @unique
+  role         String
+  startDate    DateTime                @map("start_date") @db.Date
+  endDate      DateTime?               @map("end_date") @db.Date
+  stack        String[]
+  position     Int
+  translations ExperienceTranslation[]
 
   @@map("experience")
 }
 
+model ExperienceTranslation {
+  experienceId String     @map("experience_id") @db.Uuid
+  locale       Locale
+  company      String?
+  project      String
+  summary      String
+  highlights   String[]
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  @@id([experienceId, locale])
+  @@map("experience_translations")
+}
+
 model Project {
-  id          String      @id @default(uuid(7)) @db.Uuid
-  slug        String      @unique
-  name        String
-  kind        ProjectKind
-  description String
-  stack       String[]
-  repoUrl     String?     @map("repo_url")
-  liveUrl     String?     @map("live_url")
-  position    Int
+  id           String               @id @default(uuid(7)) @db.Uuid
+  slug         String               @unique
+  kind         ProjectKind
+  stack        String[]
+  repoUrl      String?              @map("repo_url")
+  liveUrl      String?              @map("live_url")
+  position     Int
+  translations ProjectTranslation[]
 
   @@map("projects")
 }
 
+model ProjectTranslation {
+  projectId   String  @map("project_id") @db.Uuid
+  locale      Locale
+  name        String
+  description String
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, locale])
+  @@map("project_translations")
+}
+
 model SkillCategory {
-  id       String  @id @default(uuid(7)) @db.Uuid
-  slug     String  @unique
-  name     String
-  position Int
-  skills   Skill[]
+  id           String                     @id @default(uuid(7)) @db.Uuid
+  slug         String                     @unique
+  position     Int
+  skills       Skill[]
+  translations SkillCategoryTranslation[]
 
   @@map("skill_categories")
 }
 
+model SkillCategoryTranslation {
+  categoryId String        @map("category_id") @db.Uuid
+  locale     Locale
+  name       String
+  category   SkillCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([categoryId, locale])
+  @@map("skill_category_translations")
+}
+
+/// Названия технологий одинаковы на обоих языках, поэтому переводов у навыка нет.
 model Skill {
   id         String        @id @default(uuid(7)) @db.Uuid
   name       String

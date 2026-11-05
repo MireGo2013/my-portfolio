@@ -33,6 +33,7 @@ describe('API контента', () => {
     expect(body).toMatchObject({
       fullName: 'Владислав Соболь',
       email: 'sobol.work.v92@gmail.com',
+      linkedinUrl: 'https://www.linkedin.com/in/vlad-sobol-59458b214/',
     });
     expect(body).not.toHaveProperty('id');
   });
@@ -77,6 +78,48 @@ describe('API контента', () => {
       slug: 'languages',
       name: 'Языки',
       skills: ['TypeScript', 'JavaScript (ES2023)'],
+    });
+  });
+
+  describe('язык контента', () => {
+    it('GET /profile отдаёт тексты на нужном языке, по умолчанию русский', async () => {
+      const byDefault = await get(`${API_PREFIX}/profile`).expect(200);
+      const russian = await get(`${API_PREFIX}/profile?locale=ru`).expect(200);
+      const english = await get(`${API_PREFIX}/profile?locale=en`).expect(200);
+
+      expect(byDefault.body.fullName).toBe('Владислав Соболь');
+      expect(russian.body.fullName).toBe('Владислав Соболь');
+      expect(english.body.fullName).toBe('Vladislav Sobol');
+      expect(english.body).not.toHaveProperty('translations');
+    });
+
+    it('общие данные одинаковы на обоих языках, а тексты различаются', async () => {
+      const { body: ru } = await get(`${API_PREFIX}/experience`).expect(200);
+      const { body: en } = await get(
+        `${API_PREFIX}/experience?locale=en`,
+      ).expect(200);
+
+      expect(en[0]).toMatchObject({
+        slug: ru[0].slug,
+        startDate: ru[0].startDate,
+        stack: ru[0].stack,
+        company: 'VTB Bank',
+      });
+      expect(ru[0].company).toBe('ПАО «Банк ВТБ»');
+    });
+
+    it('у всего контента есть английский перевод', async () => {
+      const projects = await get(`${API_PREFIX}/projects?locale=en`).expect(
+        200,
+      );
+      const skills = await get(`${API_PREFIX}/skills?locale=en`).expect(200);
+
+      expect(projects.body).toHaveLength(10);
+      expect(skills.body[0].name).toBe('Languages');
+    });
+
+    it('неизвестный язык отклоняется с кодом 400', async () => {
+      await get(`${API_PREFIX}/profile?locale=de`).expect(400);
     });
   });
 

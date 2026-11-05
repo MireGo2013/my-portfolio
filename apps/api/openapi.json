@@ -29,7 +29,21 @@
     "/api/v1/profile": {
       "get": {
         "operationId": "ProfileController_get",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "description": "Язык контента, по умолчанию ru",
+            "schema": {
+              "enum": [
+                "ru",
+                "en"
+              ],
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -54,7 +68,21 @@
     "/api/v1/experience": {
       "get": {
         "operationId": "ExperienceController_list",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "description": "Язык контента, по умолчанию ru",
+            "schema": {
+              "enum": [
+                "ru",
+                "en"
+              ],
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -79,7 +107,21 @@
     "/api/v1/projects": {
       "get": {
         "operationId": "ProjectsController_list",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "description": "Язык контента, по умолчанию ru",
+            "schema": {
+              "enum": [
+                "ru",
+                "en"
+              ],
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -104,7 +146,21 @@
     "/api/v1/skills": {
       "get": {
         "operationId": "SkillsController_list",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "description": "Язык контента, по умолчанию ru",
+            "schema": {
+              "enum": [
+                "ru",
+                "en"
+              ],
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -225,6 +281,10 @@
           "githubUrl": {
             "type": "string",
             "format": "uri"
+          },
+          "linkedinUrl": {
+            "type": "string",
+            "format": "uri"
           }
         },
         "required": [
@@ -234,7 +294,8 @@
           "summary",
           "email",
           "telegramUrl",
-          "githubUrl"
+          "githubUrl",
+          "linkedinUrl"
         ]
       },
       "ExperienceDto": {

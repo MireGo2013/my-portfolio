@@ -13,3 +13,4 @@
 9. [CI: проверка каждого изменения в GitHub Actions](./09-ci.md)
 10. [Деплой: Railway, Vercel и README](./10-deploy.md)
 11. [Графитовая палитра на CSS-переменных](./11-graphite-theme.md)
+12. [Контент на двух языках: таблицы переводов и `?locale=`](./12-content-translations.md)

@@ -2,3 +2,4 @@
 export const API_PREFIX = '/api/v1';
 
 export * from './contact.js';
+export * from './locale.js';

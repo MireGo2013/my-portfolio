@@ -12,6 +12,7 @@ const profile: Profile = {
   email: 'test@example.com',
   telegramUrl: 'https://t.me/test',
   githubUrl: 'https://github.com/test',
+  linkedinUrl: 'https://www.linkedin.com/in/test',
 };
 
 afterEach(cleanup);
