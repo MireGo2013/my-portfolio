@@ -1,20 +1,9 @@
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { createContentApi, type Profile } from './content-api';
+import { createContentApi } from './content-api';
 
 const BASE_URL = 'http://api.test';
-const PROFILE_URL = `${BASE_URL}/api/v1/profile`;
-
-const profile: Profile = {
-  fullName: 'Тест Тестов',
-  title: 'Engineer',
-  specialization: 'TypeScript',
-  summary: 'Описание',
-  email: 'test@example.com',
-  telegramUrl: 'https://t.me/test',
-  githubUrl: 'https://github.com/test',
-};
 
 const server = setupServer();
 
@@ -22,29 +11,53 @@ beforeAll(() => server.listen({ onUnhandledFrame: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-describe('createContentApi', () => {
-  it('возвращает профиль из ответа API', async () => {
-    server.use(http.get(PROFILE_URL, () => HttpResponse.json(profile)));
+const endpoints = [
+  ['getProfile', '/api/v1/profile', { fullName: 'Тест Тестов' }],
+  ['getExperience', '/api/v1/experience', [{ slug: 'a' }]],
+  ['getProjects', '/api/v1/projects', [{ slug: 'b' }]],
+  ['getSkills', '/api/v1/skills', [{ slug: 'c' }]],
+] as const;
 
-    await expect(createContentApi(BASE_URL).getProfile()).resolves.toEqual(
-      profile,
-    );
+describe.each(endpoints)('createContentApi.%s', (method, path, body) => {
+  const url = `${BASE_URL}${path}`;
+  const call = () => createContentApi(BASE_URL)[method]();
+
+  it('возвращает данные из ответа API', async () => {
+    server.use(http.get(url, () => HttpResponse.json(body)));
+
+    await expect(call()).resolves.toEqual(body);
   });
 
-  // Важно бросить ошибку: иначе на сборке сайт опубликуется с пустым контентом
-  it.each([404, 500])('бросает ошибку при ответе %i', async (status) => {
-    server.use(
-      http.get(PROFILE_URL, () => new HttpResponse(null, { status })),
-    );
+  it('бросает ошибку с кодом ответа', async () => {
+    server.use(http.get(url, () => new HttpResponse(null, { status: 500 })));
 
-    await expect(createContentApi(BASE_URL).getProfile()).rejects.toThrow(
-      String(status),
-    );
+    await expect(call()).rejects.toThrow('500');
   });
 
   it('бросает ошибку, когда API недоступен', async () => {
-    server.use(http.get(PROFILE_URL, () => HttpResponse.error()));
+    server.use(http.get(url, () => HttpResponse.error()));
 
-    await expect(createContentApi(BASE_URL).getProfile()).rejects.toThrow();
+    await expect(call()).rejects.toThrow();
+  });
+});
+
+describe('createContentApi', () => {
+  it('пустой список это не ошибка', async () => {
+    server.use(
+      http.get(`${BASE_URL}/api/v1/projects`, () => HttpResponse.json([])),
+    );
+
+    await expect(createContentApi(BASE_URL).getProjects()).resolves.toEqual([]);
+  });
+
+  it('отвечает ошибкой на 404, если база не заполнена', async () => {
+    server.use(
+      http.get(
+        `${BASE_URL}/api/v1/profile`,
+        () => new HttpResponse(null, { status: 404 }),
+      ),
+    );
+
+    await expect(createContentApi(BASE_URL).getProfile()).rejects.toThrow('404');
   });
 });
