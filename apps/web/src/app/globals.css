@@ -113,7 +113,8 @@ body {
   transform: none;
 }
 
-/* Карточка немного отъезжает и разворачивается. Только там, где есть наведение */
+/* Карточка отъезжает и разворачивается внешним краем к посетителю: у левой
+   колонки вперёд выходит левый край, у правой правый. Только там, где есть наведение */
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .card-tilt {
     transition:
@@ -126,8 +127,7 @@ body {
   .card-tilt:focus-within {
     border-color: var(--accent);
     box-shadow: -10px 14px 28px rgb(0 0 0 / 0.35);
-    transform: perspective(900px) translateX(8px) translateY(-4px)
-      rotateY(-5deg);
+    transform: perspective(900px) translateX(8px) translateY(-4px) rotateY(5deg);
   }
 
   /* Правая колонка отъезжает в другую сторону, за край страницы */
@@ -135,7 +135,7 @@ body {
   li:nth-child(even) > .card-tilt:focus-within {
     box-shadow: 10px 14px 28px rgb(0 0 0 / 0.35);
     transform: perspective(900px) translateX(-8px) translateY(-4px)
-      rotateY(5deg);
+      rotateY(-5deg);
   }
 }
 
