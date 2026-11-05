@@ -1,6 +1,8 @@
 # Портфолио Владислава Соболя
 
-Личный сайт и одновременно открытый fullstack-проект: Next.js, NestJS, PostgreSQL, Docker, CI и тесты всех уровней в одном монорепозитории. Коммерческие проекты под NDA описаны на сайте как кейсы, без кода и скриншотов.
+**Сайт:** <https://my-portfolio-sigma-taupe.vercel.app>
+
+Личный сайт и одновременно fullstack-проект: Next.js, NestJS, PostgreSQL, Docker, CI и тесты всех уровней в одном монорепозитории. Коммерческие проекты под NDA описаны на сайте как кейсы, без кода и скриншотов.
 
 ## Запуск
 
@@ -68,12 +70,13 @@ GitHub Actions на каждый push в `main` и pull request запускае
 
 ### API и база: Railway
 
-1. Создать проект из GitHub-репозитория и добавить PostgreSQL. Корневой `Dockerfile` Railway находит сам и собирает его последний этап, то есть `api`.
+1. Создать проект, добавить PostgreSQL и сервис из GitHub-репозитория. В настройках сборки выбрать Dockerfile: Railway собирает его последний этап, то есть `api`.
 2. Переменные сервиса:
 
    | Переменная           | Значение                               |
    | -------------------- | -------------------------------------- |
    | `DATABASE_URL`       | `${{Postgres.DATABASE_URL}}`           |
+   | `PORT`               | `3001`                                 |
    | `CORS_ORIGIN`        | адрес сайта на Vercel, без `/` в конце |
    | `TRUST_X_REAL_IP`    | `true`                                 |
    | `TELEGRAM_BOT_TOKEN` | токен бота, необязательно              |
@@ -82,7 +85,8 @@ GitHub Actions на каждый push в `main` и pull request запускае
 3. Настройки сервиса:
    - Pre-deploy Command: `node --run db:release`
    - Healthcheck Path: `/api/v1/health`
-   - Public Networking: сгенерировать домен
+   - Public Networking: сгенерировать домен на порт `3001`
+   - Wait for CI: включить, чтобы деплой шёл только после зелёного CI
 
 ### Сайт: Vercel
 
