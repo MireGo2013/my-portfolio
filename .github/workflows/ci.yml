@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint, types, unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm typecheck
+      - run: pnpm test
+
+  e2e:
+    name: API and browser e2e
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://portfolio:portfolio@127.0.0.1:5432/portfolio
+      API_URL: http://127.0.0.1:3001
+      NEXT_PUBLIC_API_URL: http://127.0.0.1:3001
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: portfolio
+          POSTGRES_PASSWORD: portfolio
+          POSTGRES_DB: portfolio
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U portfolio -d portfolio"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:deps
+      - name: Apply migrations and seed
+        working-directory: apps/api
+        run: |
+          pnpm exec prisma migrate deploy
+          pnpm exec prisma db seed
+      - name: API e2e and contract check
+        run: pnpm --filter @portfolio/api test:e2e
+      - name: Start API
+        working-directory: apps/api
+        env:
+          CORS_ORIGIN: http://127.0.0.1:3000
+        run: |
+          nohup node dist/main.js > api.log 2>&1 &
+          curl --fail --silent --retry 30 --retry-delay 1 --retry-connrefused \
+            http://127.0.0.1:3001/api/v1/health
+      # Сборке сайта нужен работающий API
+      - name: Build and start web
+        run: |
+          pnpm --filter @portfolio/web build
+          nohup pnpm --filter @portfolio/web start --hostname 127.0.0.1 > web.log 2>&1 &
+          curl --fail --silent --retry 30 --retry-delay 1 --retry-connrefused \
+            --output /dev/null http://127.0.0.1:3000
+      - name: Install browser
+        run: pnpm --filter @portfolio/web exec playwright install --with-deps chromium
+      - name: Browser e2e on production build
+        run: pnpm --filter @portfolio/web test:e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            apps/web/playwright-report/
+            apps/api/api.log
+            web.log
+          retention-days: 7
+
+  docker:
+    name: Docker Compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Start the whole project
+        run: docker compose up --build --detach --wait --wait-timeout 300
+      - name: Check site and API
+        run: |
+          curl --fail --silent --output /dev/null http://localhost:3000/experience
+          curl --fail --silent --output /dev/null http://localhost:3001/api/v1/health
+      - name: Show logs
+        if: failure()
+        run: docker compose logs
