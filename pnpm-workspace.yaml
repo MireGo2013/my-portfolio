@@ -9,3 +9,5 @@ catalog:
 allowBuilds:
   '@prisma/engines': true
   prisma: true
+  esbuild: false
+  '@scarf/scarf': false

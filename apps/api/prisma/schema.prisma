@@ -16,3 +16,73 @@ model ContactMessage {
 
   @@map("contact_messages")
 }
+
+enum ProjectKind {
+  OPEN_SOURCE
+  FREELANCE
+}
+
+/// Единственная запись: на сайте один автор.
+model Profile {
+  id             Int    @id @default(1)
+  fullName       String @map("full_name")
+  title          String
+  specialization String
+  summary        String
+  email          String
+  telegramUrl    String @map("telegram_url")
+  githubUrl      String @map("github_url")
+
+  @@map("profile")
+}
+
+model Experience {
+  id         String    @id @default(uuid(7)) @db.Uuid
+  slug       String    @unique
+  company    String?
+  project    String
+  role       String
+  summary    String
+  startDate  DateTime  @map("start_date") @db.Date
+  endDate    DateTime? @map("end_date") @db.Date
+  highlights String[]
+  stack      String[]
+  position   Int
+
+  @@map("experience")
+}
+
+model Project {
+  id          String      @id @default(uuid(7)) @db.Uuid
+  slug        String      @unique
+  name        String
+  kind        ProjectKind
+  description String
+  stack       String[]
+  repoUrl     String?     @map("repo_url")
+  liveUrl     String?     @map("live_url")
+  position    Int
+
+  @@map("projects")
+}
+
+model SkillCategory {
+  id       String  @id @default(uuid(7)) @db.Uuid
+  slug     String  @unique
+  name     String
+  position Int
+  skills   Skill[]
+
+  @@map("skill_categories")
+}
+
+model Skill {
+  id         String        @id @default(uuid(7)) @db.Uuid
+  name       String
+  position   Int
+  categoryId String        @map("category_id") @db.Uuid
+  category   SkillCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, name])
+  @@map("skills")
+}

@@ -10,9 +10,10 @@
     "db:down": "docker compose down",
     "db:migrate": "pnpm --filter @portfolio/api db:migrate",
     "dev:api": "pnpm --filter @portfolio/shared build && pnpm --filter @portfolio/api start:dev",
-    "build": "pnpm -r run build",
     "typecheck": "pnpm build && pnpm -r run typecheck",
     "test": "pnpm build && pnpm -r run test",
-    "test:e2e": "pnpm build && pnpm --filter @portfolio/api test:e2e"
+    "test:e2e": "pnpm build && pnpm --filter @portfolio/api test:e2e",
+    "db:seed": "pnpm --filter @portfolio/api db:seed",
+    "build": "pnpm -r run build"
   }
 }
