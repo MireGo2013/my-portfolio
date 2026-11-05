@@ -1,5 +1,5 @@
-import { describe, expect, it, jest } from '@jest/globals';
 import { Logger, ServiceUnavailableException } from '@nestjs/common';
+import { describe, expect, it, vi } from 'vitest';
 import type { PrismaService } from '../prisma/prisma.service.js';
 import { HealthController } from './health.controller.js';
 
@@ -19,7 +19,7 @@ describe('HealthController', () => {
   });
 
   it('отвечает 503, когда запрос к базе упал', async () => {
-    jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+    vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
     const controller = createController(() =>
       Promise.reject(new Error('connection refused')),
     );

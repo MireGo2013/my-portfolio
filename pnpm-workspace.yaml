@@ -9,4 +9,3 @@ catalog:
 allowBuilds:
   '@prisma/engines': true
   prisma: true
-  '@parcel/watcher': false

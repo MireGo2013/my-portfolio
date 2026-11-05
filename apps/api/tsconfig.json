@@ -8,13 +8,15 @@
     "outDir": "./dist",
     "rootDir": ".",
     "types": [
-      "jest",
       "node"
     ]
   },
   "include": [
     "src",
     "test",
-    "prisma7.config.ts"
+    "prisma",
+    "prisma7.config.ts",
+    "vitest.config.ts",
+    "vitest.config.e2e.ts"
   ]
 }
