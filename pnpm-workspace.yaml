@@ -4,6 +4,7 @@ packages:
 
 catalog:
   typescript: ^6.0.3
+  vitest: ^5.1.0
 
 # pnpm по умолчанию не запускает install-скрипты зависимостей. Разрешаем явно.
 allowBuilds:
@@ -11,3 +12,5 @@ allowBuilds:
   prisma: true
   esbuild: false
   '@scarf/scarf': false
+  sharp: false
+  unrs-resolver: false

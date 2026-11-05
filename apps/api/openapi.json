@@ -1,0 +1,347 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "База данных недоступна"
+          }
+        },
+        "summary": "Проверка работы API и связи с базой",
+        "tags": [
+          "Служебное"
+        ]
+      }
+    },
+    "/api/v1/profile": {
+      "get": {
+        "operationId": "ProfileController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "База ещё не заполнена seed-скриптом"
+          }
+        },
+        "summary": "Кто я и как со мной связаться",
+        "tags": [
+          "Контент"
+        ]
+      }
+    },
+    "/api/v1/experience": {
+      "get": {
+        "operationId": "ExperienceController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExperienceDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Опыт работы в порядке показа на сайте",
+        "tags": [
+          "Контент"
+        ]
+      }
+    },
+    "/api/v1/projects": {
+      "get": {
+        "operationId": "ProjectsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Открытые и фриланс-проекты",
+        "tags": [
+          "Контент"
+        ]
+      }
+    },
+    "/api/v1/skills": {
+      "get": {
+        "operationId": "SkillsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SkillCategoryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Стек, сгруппированный по областям",
+        "tags": [
+          "Контент"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Portfolio API",
+    "description": "REST API сайта-портфолио Владислава Соболя",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "HealthDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "database": {
+            "type": "string",
+            "enum": [
+              "up"
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "database"
+        ]
+      },
+      "ProfileDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "Владислав Соболь"
+          },
+          "title": {
+            "type": "string",
+            "example": "Fullstack Engineer"
+          },
+          "specialization": {
+            "type": "string",
+            "example": "React / TypeScript / Node.js / NestJS"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "telegramUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "githubUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "fullName",
+          "title",
+          "specialization",
+          "summary",
+          "email",
+          "telegramUrl",
+          "githubUrl"
+        ]
+      },
+      "ExperienceDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "scooter-admin-crm"
+          },
+          "company": {
+            "type": "string",
+            "nullable": true,
+            "description": "null, если проект указан без компании",
+            "example": "Sparkit / BE Happy"
+          },
+          "project": {
+            "type": "string",
+            "example": "Scooter Admin CRM"
+          },
+          "role": {
+            "type": "string",
+            "example": "Lead Frontend Engineer"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "example": "2025-08",
+            "description": "Месяц начала, YYYY-MM"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true,
+            "example": "2025-11",
+            "description": "Месяц окончания, YYYY-MM. null, если работа продолжается"
+          },
+          "highlights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "stack": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "slug",
+          "company",
+          "project",
+          "role",
+          "summary",
+          "startDate",
+          "endDate",
+          "highlights",
+          "stack"
+        ]
+      },
+      "ProjectKind": {
+        "type": "string",
+        "enum": [
+          "OPEN_SOURCE",
+          "FREELANCE"
+        ]
+      },
+      "ProjectDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "paint-online"
+          },
+          "name": {
+            "type": "string",
+            "example": "Paint Online"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProjectKind"
+              }
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "stack": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "repoUrl": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri"
+          },
+          "liveUrl": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri"
+          }
+        },
+        "required": [
+          "slug",
+          "name",
+          "kind",
+          "description",
+          "stack",
+          "repoUrl",
+          "liveUrl"
+        ]
+      },
+      "SkillCategoryDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "backend"
+          },
+          "name": {
+            "type": "string",
+            "example": "Backend"
+          },
+          "skills": {
+            "example": [
+              "Node.js",
+              "NestJS"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "slug",
+          "name",
+          "skills"
+        ]
+      }
+    }
+  }
+}

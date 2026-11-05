@@ -9,11 +9,14 @@
     "db:up": "docker compose up -d --wait",
     "db:down": "docker compose down",
     "db:migrate": "pnpm --filter @portfolio/api db:migrate",
-    "dev:api": "pnpm --filter @portfolio/shared build && pnpm --filter @portfolio/api start:dev",
-    "typecheck": "pnpm build && pnpm -r run typecheck",
-    "test": "pnpm build && pnpm -r run test",
-    "test:e2e": "pnpm build && pnpm --filter @portfolio/api test:e2e",
     "db:seed": "pnpm --filter @portfolio/api db:seed",
-    "build": "pnpm -r run build"
+    "dev:api": "pnpm --filter @portfolio/shared build && pnpm --filter @portfolio/api start:dev",
+    "dev:web": "pnpm --filter @portfolio/web dev",
+    "gen:api": "pnpm --filter @portfolio/shared --filter @portfolio/api build && pnpm --filter @portfolio/api openapi:export && pnpm --filter @portfolio/web gen:api",
+    "build:deps": "pnpm --filter @portfolio/shared --filter @portfolio/api build",
+    "build": "pnpm -r run build",
+    "typecheck": "pnpm build:deps && pnpm -r run typecheck",
+    "test": "pnpm build:deps && pnpm -r run test",
+    "test:e2e": "pnpm build:deps && pnpm --filter @portfolio/api test:e2e"
   }
 }

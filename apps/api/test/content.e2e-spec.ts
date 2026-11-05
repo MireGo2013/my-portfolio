@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { API_PREFIX } from '@portfolio/shared';
@@ -94,6 +95,16 @@ describe('API контента', () => {
       'OPEN_SOURCE',
       'FREELANCE',
     ]);
+  });
+
+  it('openapi.json в репозитории совпадает с текущим кодом', async () => {
+    const { body } = await get('/api/docs-json').expect(200);
+    const committed: unknown = JSON.parse(
+      readFileSync('openapi.json', 'utf8'),
+    );
+
+    // Упал? Контракт изменился: выполни pnpm gen:api и закоммить результат
+    expect(body).toEqual(committed);
   });
 
   it('Swagger UI открывается', async () => {
