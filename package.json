@@ -20,8 +20,8 @@
     "test": "pnpm build:deps && pnpm -r run test",
     "test:e2e": "pnpm build:deps && pnpm --filter @portfolio/api test:e2e",
     "test:browser": "pnpm build:deps && pnpm --filter @portfolio/web test:e2e",
-    "lint": "pnpm build:deps && eslint . --max-warnings=0",
-    "lint:fix": "pnpm build:deps && eslint . --fix",
+    "lint": "pnpm build:deps && pnpm --filter @portfolio/web exec next typegen && eslint . --max-warnings=0",
+    "lint:fix": "pnpm build:deps && pnpm --filter @portfolio/web exec next typegen && eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"
