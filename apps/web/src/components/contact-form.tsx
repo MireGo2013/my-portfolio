@@ -61,11 +61,23 @@ export function ContactForm({
     register,
     handleSubmit,
     reset,
+    setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<ContactMessage>({
     resolver: zodResolver(contactMessageSchema),
     defaultValues: { name: '', email: '', message: '', website: '' },
   });
+
+  // Схема и так обрезает пробелы перед отправкой, а здесь их убираем и в самом
+  // поле, когда фокус уходит, чтобы посетитель видел то, что уйдёт на сервер
+  const trimField = (name: 'name' | 'email' | 'message') => {
+    const value = getValues(name);
+    const trimmed = value.trim();
+    if (trimmed !== value) {
+      setValue(name, trimmed);
+    }
+  };
 
   const errorText = (error: FieldError | undefined) => {
     if (!error) return undefined;
@@ -98,7 +110,7 @@ export function ContactForm({
         {(props) => (
           <input
             {...props}
-            {...register('name')}
+            {...register('name', { onBlur: () => trimField('name') })}
             autoComplete="name"
             className={inputClass}
           />
@@ -109,7 +121,7 @@ export function ContactForm({
         {(props) => (
           <input
             {...props}
-            {...register('email')}
+            {...register('email', { onBlur: () => trimField('email') })}
             type="email"
             autoComplete="email"
             className={inputClass}
@@ -123,7 +135,9 @@ export function ContactForm({
             id={id}
             aria-invalid={invalid}
             aria-describedby={describedBy}
-            {...register('message')}
+            {...register('message', {
+              onBlur: () => trimField('message'),
+            })}
             rows={6}
             className={inputClass}
           />

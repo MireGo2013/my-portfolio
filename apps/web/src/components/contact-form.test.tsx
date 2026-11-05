@@ -27,6 +27,33 @@ beforeEach(() => send.mockReset());
 afterEach(cleanup);
 
 describe('ContactForm', () => {
+  it('обрезает пробелы по краям в поле и при отправке', async () => {
+    const user = userEvent.setup();
+    send.mockResolvedValue('sent');
+    render(<ContactForm dictionary={ru.contact.form} />);
+
+    const name = screen.getByLabelText<HTMLInputElement>('Имя');
+    await user.type(name, '  Анна  ');
+    await user.tab();
+    expect(name.value).toBe('Анна');
+
+    await user.type(screen.getByLabelText('Email'), '  anna@example.com ');
+    await user.type(
+      screen.getByLabelText('Сообщение'),
+      '   Здравствуйте, это проверка.   ',
+    );
+    await user.click(screen.getByRole('button', { name: 'Отправить' }));
+
+    expect(send).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        name: 'Анна',
+        email: 'anna@example.com',
+        message: 'Здравствуйте, это проверка.',
+      }),
+    );
+  });
+
   it('показывает ошибки на языке словаря', async () => {
     render(<ContactForm dictionary={en.contact.form} />);
 
