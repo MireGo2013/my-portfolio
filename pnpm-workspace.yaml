@@ -3,4 +3,10 @@ packages:
   - packages/*
 
 catalog:
-  typescript: ^7.0.2
+  typescript: ^6.0.3
+
+# pnpm по умолчанию не запускает install-скрипты зависимостей. Разрешаем явно.
+allowBuilds:
+  '@prisma/engines': true
+  prisma: true
+  '@parcel/watcher': false

@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("contact_messages")
+}
