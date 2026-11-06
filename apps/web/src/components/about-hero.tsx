@@ -20,7 +20,11 @@ export function AboutHero({
   locale: Locale;
   dictionary: Dictionary['about'];
 }) {
-  const resume = resumeUrl(locale);
+  // Загруженное в админке резюме, а пока его нет — PDF из сборки.
+  // Атрибут download браузер игнорирует для чужого домена, а файл в Blob
+  // живёт на домене хранилища. Скачивание включает сам Blob: ?download=1
+  const resume = profile.cvUrl ?? resumeUrl(locale);
+  const resumeDownload = profile.cvUrl ? `${profile.cvUrl}?download=1` : resume;
 
   // Абзацы появляются по очереди: каждый стартует, когда закончился предыдущий
   const durations = profile.about.map(animatedTextDuration);
@@ -72,7 +76,7 @@ export function AboutHero({
             {dictionary.viewResume}
           </a>
           <a
-            href={resume}
+            href={resumeDownload}
             download
             aria-label={dictionary.downloadResumeLabel}
             className="rounded-sm border border-accent px-5 py-3 font-medium text-accent transition-colors hover:bg-accent hover:text-on-accent"

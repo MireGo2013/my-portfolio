@@ -15,6 +15,7 @@
     "@hookform/resolvers": "^7.0.2",
     "@portfolio/shared": "workspace:*",
     "@tanstack/react-query": "^5.106.1",
+    "@vercel/blob": "^2.8.2",
     "next": "16.4.5",
     "openapi-fetch": "^0.17.0",
     "react": "19.3.0",

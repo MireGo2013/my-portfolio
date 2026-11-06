@@ -129,3 +129,27 @@ export class ReorderDto {
   })
   ids!: string[];
 }
+
+// ---------- Резюме ----------
+
+export class AdminCvDto {
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    format: 'uri',
+    description: 'null — на сайте PDF из сборки',
+  })
+  ru!: string | null;
+
+  @ApiProperty({ type: String, nullable: true, format: 'uri' })
+  en!: string | null;
+}
+
+export class SetCvDto {
+  @ApiProperty({
+    format: 'uri',
+    example: 'https://abc.public.blob.vercel-storage.com/cv/cv-ru-x1y2.pdf',
+    description: 'Только адрес публичного хранилища Vercel Blob',
+  })
+  url!: string;
+}

@@ -1605,6 +1605,149 @@
           "Админка: контент"
         ]
       }
+    },
+    "/api/v1/admin/content/cv": {
+      "get": {
+        "operationId": "AdminCvController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminCvDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Адреса загруженных резюме на каждом языке",
+        "tags": [
+          "Админка: контент"
+        ]
+      }
+    },
+    "/api/v1/admin/content/cv/{locale}": {
+      "put": {
+        "operationId": "AdminCvController_set",
+        "parameters": [
+          {
+            "name": "locale",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "ru",
+                "en"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCvDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminCvResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Запомнить адрес загруженного резюме",
+        "tags": [
+          "Админка: контент"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminCvController_remove",
+        "parameters": [
+          {
+            "name": "locale",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "ru",
+                "en"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminCvResultDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Вернуть резюме из сборки сайта",
+        "tags": [
+          "Админка: контент"
+        ]
+      }
     }
   },
   "info": {
@@ -1691,6 +1834,12 @@
           "linkedinUrl": {
             "type": "string",
             "format": "uri"
+          },
+          "cvUrl": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "description": "Загруженное резюме на этом языке. null — сайт отдаёт PDF из сборки"
           }
         },
         "required": [
@@ -1703,7 +1852,8 @@
           "email",
           "telegramUrl",
           "githubUrl",
-          "linkedinUrl"
+          "linkedinUrl",
+          "cvUrl"
         ]
       },
       "ExperienceDto": {
@@ -2532,6 +2682,66 @@
           "slug",
           "translations",
           "skills"
+        ]
+      },
+      "AdminCvDto": {
+        "type": "object",
+        "properties": {
+          "ru": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "description": "null — на сайте PDF из сборки"
+          },
+          "en": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri"
+          }
+        },
+        "required": [
+          "ru",
+          "en"
+        ]
+      },
+      "SetCvDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://abc.public.blob.vercel-storage.com/cv/cv-ru-x1y2.pdf",
+            "description": "Только адрес публичного хранилища Vercel Blob"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "AdminCvResultDto": {
+        "type": "object",
+        "properties": {
+          "ru": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "description": "null — на сайте PDF из сборки"
+          },
+          "en": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "description": "Прежний адрес: сайт удалит старый файл из хранилища"
+          }
+        },
+        "required": [
+          "ru",
+          "en",
+          "previous"
         ]
       }
     }

@@ -19,25 +19,32 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
+  ApiProperty,
   ApiTags,
 } from '@nestjs/swagger';
 import {
+  cvUrlSchema,
   experienceInputSchema,
+  LOCALES,
   profileInputSchema,
   projectInputSchema,
   reorderSchema,
   skillCategoryInputSchema,
+  type CvUrlInput,
   type ExperienceData,
+  type Locale,
   type ProfileData,
   type ProjectData,
   type ReorderInput,
   type SkillCategoryData,
 } from '@portfolio/shared';
-import type { ZodType } from 'zod';
+import { z, type ZodType } from 'zod';
 import { AdminOnly } from '../auth/auth.decorators.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { ValidationErrorDto } from '../contact/contact.dto.js';
 import {
+  AdminCvDto,
   AdminExperienceDto,
   AdminExperienceInputDto,
   AdminProfileDto,
@@ -46,6 +53,7 @@ import {
   AdminSkillCategoryDto,
   AdminSkillCategoryInputDto,
   ReorderDto,
+  SetCvDto,
 } from './admin-content.dto.js';
 import { AdminContentService } from './admin-content.service.js';
 
@@ -258,5 +266,50 @@ export class AdminSkillsController {
   @ApiNotFoundResponse({ description: 'Запись не найдена' })
   remove(@id() recordId: string): Promise<void> {
     return this.content.deleteSkillCategory(recordId);
+  }
+}
+
+const localeParam = () =>
+  Param('locale', new ZodValidationPipe(z.enum(LOCALES), 'locale'));
+
+/** Сам файл живёт в Vercel Blob, сюда сайт сообщает его адрес. */
+class AdminCvResultDto extends AdminCvDto {
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description: 'Прежний адрес: сайт удалит старый файл из хранилища',
+  })
+  previous!: string | null;
+}
+
+@ApiTags('Админка: контент')
+@Controller('admin/content/cv')
+@AdminOnly()
+export class AdminCvController {
+  constructor(private readonly content: AdminContentService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Адреса загруженных резюме на каждом языке' })
+  @ApiOkResponse({ type: AdminCvDto })
+  get(): Promise<AdminCvDto> {
+    return this.content.getCv();
+  }
+
+  @Put(':locale')
+  @ApiOperation({ summary: 'Запомнить адрес загруженного резюме' })
+  @ApiParam({ name: 'locale', enum: LOCALES })
+  @ApiBody({ type: SetCvDto })
+  @ApiOkResponse({ type: AdminCvResultDto })
+  @ApiBadRequestResponse({ type: ValidationErrorDto })
+  set(@localeParam() locale: Locale, @body(cvUrlSchema) input: CvUrlInput) {
+    return this.content.setCv(locale, input.url);
+  }
+
+  @Delete(':locale')
+  @ApiOperation({ summary: 'Вернуть резюме из сборки сайта' })
+  @ApiParam({ name: 'locale', enum: LOCALES })
+  @ApiOkResponse({ type: AdminCvResultDto })
+  remove(@localeParam() locale: Locale) {
+    return this.content.setCv(locale, null);
   }
 }

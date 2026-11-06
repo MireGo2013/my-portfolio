@@ -5,6 +5,8 @@
  */
 export const CONTENT_TAGS = {
   profile: 'profile',
+  // Адрес резюме приходит на сайт вместе с профилем
+  cv: 'profile',
   experience: 'experience',
   projects: 'projects',
   skills: 'skills',

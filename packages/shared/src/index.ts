@@ -3,6 +3,7 @@ export const API_PREFIX = '/api/v1';
 
 export * from './auth.js';
 export * from './contact.js';
+export * from './cv.js';
 export * from './content.js';
 export * from './locale.js';
 export * from './messages.js';

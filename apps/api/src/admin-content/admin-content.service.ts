@@ -9,6 +9,7 @@ import type {
 import { mapPrismaError, notFound } from '../common/prisma-errors.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type {
+  AdminCvDto,
   AdminExperienceDto,
   AdminProfileDto,
   AdminProjectDto,
@@ -329,6 +330,40 @@ export class AdminContentService {
   async reorderSkills(ids: string[]): Promise<AdminSkillCategoryDto[]> {
     await this.reorder('skillCategory', ids);
     return this.listSkills();
+  }
+
+  // ---------- Резюме ----------
+
+  /** Адреса загруженных резюме. null — сайт отдаёт PDF из сборки. */
+  async getCv(): Promise<AdminCvDto> {
+    const rows = await this.prisma.profileTranslation.findMany({
+      where: { profileId: 1 },
+      select: { locale: true, cvUrl: true },
+    });
+    const urls = byLocale(rows);
+    return { ru: urls.ru.cvUrl, en: urls.en.cvUrl };
+  }
+
+  /**
+   * Ставит или снимает адрес резюме на одном языке. Сам файл загружает
+   * и удаляет сервер сайта: доступ к хранилищу Blob есть только у него.
+   * Возвращает и прежний адрес, чтобы сайт мог удалить старый файл.
+   */
+  async setCv(
+    locale: Locale,
+    url: string | null,
+  ): Promise<AdminCvDto & { previous: string | null }> {
+    const current = await this.prisma.profileTranslation.findUnique({
+      where: { profileId_locale: { profileId: 1, locale } },
+      select: { cvUrl: true },
+    });
+    if (!current) throw notFound('Профиль ещё не заполнен');
+
+    await this.prisma.profileTranslation.update({
+      where: { profileId_locale: { profileId: 1, locale } },
+      data: { cvUrl: url },
+    });
+    return { ...(await this.getCv()), previous: current.cvUrl };
   }
 
   // ---------- Общее ----------

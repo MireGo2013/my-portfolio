@@ -101,6 +101,8 @@ model ProfileTranslation {
   shortName String   @map("short_name")
   summary   String
   about     String[]
+  /// Загруженное в Vercel Blob резюме на этом языке. null — сайт отдаёт PDF из сборки
+  cvUrl     String?  @map("cv_url")
   profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   @@id([profileId, locale])

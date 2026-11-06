@@ -228,6 +228,57 @@ describe(ADMIN, () => {
     });
   });
 
+  describe('резюме', () => {
+    const BLOB = 'https://abc123.public.blob.vercel-storage.com/cv';
+
+    it('запоминает адрес файла, отдаёт его сайту и возвращает прежний', async () => {
+      try {
+        const first = await admin('put', '/cv/ru')
+          .send({ url: `${BLOB}/cv-ru-1.pdf` })
+          .expect(200);
+        expect(first.body).toEqual({
+          ru: `${BLOB}/cv-ru-1.pdf`,
+          en: null,
+          previous: null,
+        });
+
+        const site = await http()
+          .get(`${API_PREFIX}/profile?locale=ru`)
+          .expect(200);
+        expect(site.body.cvUrl).toBe(`${BLOB}/cv-ru-1.pdf`);
+
+        // Прежний адрес нужен сайту, чтобы удалить старый файл из хранилища
+        const second = await admin('put', '/cv/ru')
+          .send({ url: `${BLOB}/cv-ru-2.pdf` })
+          .expect(200);
+        expect(second.body.previous).toBe(`${BLOB}/cv-ru-1.pdf`);
+
+        const removed = await admin('delete', '/cv/ru').expect(200);
+        expect(removed.body).toMatchObject({
+          ru: null,
+          previous: `${BLOB}/cv-ru-2.pdf`,
+        });
+      } finally {
+        await admin('delete', '/cv/ru');
+      }
+    });
+
+    it.each([
+      'https://evil.example.com/cv.pdf',
+      'http://abc.public.blob.vercel-storage.com/cv.pdf',
+      'https://abc.public.blob.vercel-storage.com/cv.exe',
+      'javascript:alert(1)',
+    ])('не принимает адрес не из хранилища Blob: %s', async (url) => {
+      const { body } = await admin('put', '/cv/en').send({ url }).expect(400);
+
+      expect(body.errors.url).toEqual(['urlInvalid']);
+    });
+
+    it('отклоняет неизвестный язык', async () => {
+      await admin('delete', '/cv/de').expect(400);
+    });
+  });
+
   describe('стек', () => {
     it('группа с навыками: порядок навыков — порядок в списке', async () => {
       const input = {

@@ -134,6 +134,8 @@ describe('API контента', () => {
 
     expect(Object.keys(body.paths).sort()).toEqual(
       [
+        'admin/content/cv',
+        'admin/content/cv/{locale}',
         'admin/content/experience',
         'admin/content/experience/order',
         'admin/content/experience/{id}',

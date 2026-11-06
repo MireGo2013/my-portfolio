@@ -17,6 +17,7 @@ const profile: Profile = {
   telegramUrl: 'https://t.me/test',
   githubUrl: 'https://github.com/test',
   linkedinUrl: 'https://www.linkedin.com/in/test',
+  cvUrl: null,
 };
 
 afterEach(cleanup);
@@ -69,4 +70,26 @@ describe('AboutHero', () => {
       expect(download.hasAttribute('download')).toBe(true);
     },
   );
+
+  it('загруженное резюме открывается из хранилища, а скачивается через ?download=1', () => {
+    const cvUrl = 'https://abc.public.blob.vercel-storage.com/cv/cv-ru-x1.pdf';
+    render(
+      <AboutHero
+        profile={{ ...profile, cvUrl }}
+        locale="ru"
+        dictionary={ru.about}
+      />,
+    );
+
+    expect(
+      screen
+        .getByRole('link', { name: ru.about.viewResume })
+        .getAttribute('href'),
+    ).toBe(cvUrl);
+    expect(
+      screen
+        .getByRole('link', { name: ru.about.downloadResumeLabel })
+        .getAttribute('href'),
+    ).toBe(`${cvUrl}?download=1`);
+  });
 });

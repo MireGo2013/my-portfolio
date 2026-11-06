@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module.js';
 import { PrismaModule } from '../prisma/prisma.module.js';
 import {
+  AdminCvController,
   AdminExperienceController,
   AdminProfileController,
   AdminProjectsController,
@@ -16,6 +17,7 @@ import { AdminContentService } from './admin-content.service.js';
     AdminExperienceController,
     AdminProjectsController,
     AdminSkillsController,
+    AdminCvController,
   ],
   providers: [AdminContentService],
 })

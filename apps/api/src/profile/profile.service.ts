@@ -25,6 +25,7 @@ export class ProfileService {
             shortName: true,
             summary: true,
             about: true,
+            cvUrl: true,
           },
         },
       },

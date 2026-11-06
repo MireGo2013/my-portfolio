@@ -403,6 +403,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/content/cv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Адреса загруженных резюме на каждом языке */
+        get: operations["AdminCvController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/content/cv/{locale}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Запомнить адрес загруженного резюме */
+        put: operations["AdminCvController_set"];
+        post?: never;
+        /** Вернуть резюме из сборки сайта */
+        delete: operations["AdminCvController_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -437,6 +472,11 @@ export interface components {
             githubUrl: string;
             /** Format: uri */
             linkedinUrl: string;
+            /**
+             * Format: uri
+             * @description Загруженное резюме на этом языке. null — сайт отдаёт PDF из сборки
+             */
+            cvUrl: string | null;
         };
         ExperienceDto: {
             /** @example scooter-admin-crm */
@@ -708,6 +748,34 @@ export interface components {
             translations: components["schemas"]["SkillCategoryTranslationsDto"];
             /** @description Навыки в порядке показа */
             skills: string[];
+        };
+        AdminCvDto: {
+            /**
+             * Format: uri
+             * @description null — на сайте PDF из сборки
+             */
+            ru: string | null;
+            /** Format: uri */
+            en: string | null;
+        };
+        SetCvDto: {
+            /**
+             * Format: uri
+             * @description Только адрес публичного хранилища Vercel Blob
+             * @example https://abc.public.blob.vercel-storage.com/cv/cv-ru-x1y2.pdf
+             */
+            url: string;
+        };
+        AdminCvResultDto: {
+            /**
+             * Format: uri
+             * @description null — на сайте PDF из сборки
+             */
+            ru: string | null;
+            /** Format: uri */
+            en: string | null;
+            /** @description Прежний адрес: сайт удалит старый файл из хранилища */
+            previous: string | null;
         };
     };
     responses: never;
@@ -2091,6 +2159,121 @@ export interface operations {
             };
             /** @description Запись не найдена */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCvController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCvDto"];
+                };
+            };
+            /** @description Нет сессии или она истекла */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет прав или запрос с чужого сайта */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCvController_set: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                locale: "ru" | "en";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetCvDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCvResultDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidationErrorDto"];
+                };
+            };
+            /** @description Нет сессии или она истекла */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет прав или запрос с чужого сайта */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCvController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                locale: "ru" | "en";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCvResultDto"];
+                };
+            };
+            /** @description Нет сессии или она истекла */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет прав или запрос с чужого сайта */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

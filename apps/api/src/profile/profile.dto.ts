@@ -30,4 +30,13 @@ export class ProfileDto {
 
   @ApiProperty({ format: 'uri' })
   linkedinUrl!: string;
+
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    format: 'uri',
+    description:
+      'Загруженное резюме на этом языке. null — сайт отдаёт PDF из сборки',
+  })
+  cvUrl!: string | null;
 }
