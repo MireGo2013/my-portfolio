@@ -61,8 +61,10 @@ export function MessagesView() {
     }
   }, [filters]);
 
-  // После смены статуса последняя страница могла опустеть
-  const pageCount = list.data?.pageCount;
+  // После смены статуса последняя страница могла опустеть. Смотрим только
+  // на ответ для текущих фильтров: пока он грузится, list.data — это старая
+  // выборка (keepPreviousData), и её число страниц сюда не относится
+  const pageCount = list.isPlaceholderData ? undefined : list.data?.pageCount;
   useEffect(() => {
     if (pageCount !== undefined && filters.page > pageCount) {
       setFilters({ page: pageCount }, 'replace');
@@ -218,7 +220,7 @@ function StatusTabs({
   );
 }
 
-function SearchBox({
+export function SearchBox({
   value,
   onSearch,
 }: {
@@ -228,18 +230,26 @@ function SearchBox({
   const id = useId();
   const [text, setText] = useState(value);
   const [prevValue, setPrevValue] = useState(value);
+  // Что поле само отправило в адрес и ещё не получило обратно
+  const [sent, setSent] = useState<string | null>(null);
 
-  // Адрес мог смениться кнопкой «Назад»: поле следует за ним. Сравниваем
-  // прямо в рендере, а не в эффекте: так React не рисует кадр со старым текстом
+  // Адрес сменился. Если это вернулось наше же значение, поле не трогаем:
+  // пока адрес обновлялся, человек мог допечатать ещё буквы. Если значение
+  // чужое (кнопка «Назад», «Сбросить фильтры»), поле следует за адресом.
+  // Сравниваем прямо в рендере, а не в эффекте: так не будет кадра со старым текстом
   if (value !== prevValue) {
     setPrevValue(value);
-    setText(value);
+    if (value === sent) setSent(null);
+    else setText(value);
   }
 
   // Запрос уходит, когда пауза в наборе дольше 300 мс, а не на каждую букву
   useEffect(() => {
     if (text === value) return;
-    const timer = setTimeout(() => onSearch(text), 300);
+    const timer = setTimeout(() => {
+      setSent(text);
+      onSearch(text);
+    }, 300);
     return () => clearTimeout(timer);
   }, [text, value, onSearch]);
 

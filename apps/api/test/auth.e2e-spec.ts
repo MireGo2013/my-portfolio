@@ -16,7 +16,10 @@ import {
 import { AppModule } from '../src/app.module.js';
 import { configureApp } from '../src/app.setup.js';
 import { PROXY_HEADERS } from '../src/common/client-ip-throttler.guard.js';
-import { LOGIN_RATE_LIMIT } from '../src/auth/auth.constants.js';
+import {
+  LOGIN_RATE_LIMIT,
+  REFRESH_GRACE_MS,
+} from '../src/auth/auth.constants.js';
 import { hashPassword } from '../src/auth/passwords.js';
 import { hashToken } from '../src/auth/tokens.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
@@ -238,12 +241,43 @@ describe(AUTH, () => {
       expect(second.refresh).not.toBe(first.refresh);
       await me(second).expect(200);
 
+      // Окно для параллельных запросов прошло — старый токен мёртв
+      await prisma.adminSession.updateMany({
+        where: { userId },
+        data: { rotatedAt: new Date(Date.now() - REFRESH_GRACE_MS - 1000) },
+      });
       const reuse = await http()
         .post(`${AUTH}/refresh`)
         .set('Cookie', cookieHeader({ refresh: first.refresh }))
         .expect(401);
       // Мёртвые cookie стираются
       expect(readAuthCookies(reuse)).toEqual({ access: '', refresh: '' });
+      // А новый токен по-прежнему работает
+      await http()
+        .post(`${AUTH}/refresh`)
+        .set('Cookie', cookieHeader({ refresh: second.refresh }))
+        .expect(204);
+    });
+
+    it('параллельные обновления одним токеном не завершают сессию', async () => {
+      const first = await loginOk();
+      const refresh = () =>
+        http()
+          .post(`${AUTH}/refresh`)
+          .set('Cookie', cookieHeader({ refresh: first.refresh }));
+
+      // Так ведёт себя вкладка, вернувшаяся через полчаса: три запроса разом
+      const responses = await Promise.all([refresh(), refresh(), refresh()]);
+
+      expect(responses.map((res) => res.status)).toEqual([204, 204, 204]);
+      const cookies = responses.map(readAuthCookies);
+      // Новый токен обновления выдал ровно один ответ, никто не стёр cookie
+      expect(cookies.filter((c) => c.refresh).length).toBe(1);
+      for (const c of cookies) {
+        expect(c.access).toBeTruthy();
+        await me(c).expect(200);
+      }
+      expect(await sessions()).toHaveLength(1);
     });
   });
 

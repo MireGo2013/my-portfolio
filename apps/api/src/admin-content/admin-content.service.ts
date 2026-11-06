@@ -6,6 +6,7 @@ import type {
   ProjectData,
   SkillCategoryData,
 } from '@portfolio/shared';
+import { mapPrismaError, notFound } from '../common/prisma-errors.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type {
   AdminExperienceDto,
@@ -19,11 +20,9 @@ import {
   assertSameIds,
   byLocale,
   dateToMonth,
-  mapPrismaError,
   monthToDate,
-  notFound,
   toTranslationRows,
-} from './content-errors.js';
+} from './content-helpers.js';
 
 type Delegate = 'experience' | 'project' | 'skillCategory';
 

@@ -6,7 +6,7 @@ import {
   type ContentErrorCode,
   type Locale,
 } from '@portfolio/shared';
-import { useId, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import {
   Controller,
   get,
@@ -14,7 +14,7 @@ import {
   type FieldError,
   type RegisterOptions,
 } from 'react-hook-form';
-import { INPUT_CLASS } from '@/components/form-field';
+import { FormField, INPUT_CLASS } from '@/components/form-field';
 import { isOneOf } from '@/lib/guards';
 
 // Поля работают через useFormContext: форма передаёт себя через FormProvider,
@@ -50,47 +50,9 @@ function useFieldError(name: string): string | undefined {
   return errorText(error?.message ?? error?.root?.message);
 }
 
-function Field({
-  label,
-  hint,
-  error,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  error: string | undefined;
-  children: (ids: {
-    id: string;
-    'aria-invalid'?: boolean;
-    'aria-describedby'?: string;
-  }) => ReactNode;
-}) {
-  const id = useId();
-  const describedBy = [hint && `${id}-hint`, error && `${id}-error`]
-    .filter(Boolean)
-    .join(' ');
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium">
-        {label}
-      </label>
-      {children({
-        id,
-        'aria-invalid': error ? true : undefined,
-        'aria-describedby': describedBy || undefined,
-      })}
-      {hint && (
-        <p id={`${id}-hint`} className="text-xs text-muted">
-          {hint}
-        </p>
-      )}
-      {error && (
-        <p id={`${id}-error`} className="text-sm text-accent">
-          {error}
-        </p>
-      )}
-    </div>
-  );
+/** Общее поле сайта, только с подписью мельче: в админке полей много. */
+function Field(props: Omit<Parameters<typeof FormField>[0], 'labelClassName'>) {
+  return <FormField {...props} labelClassName="text-sm font-medium" />;
 }
 
 export function TextField({

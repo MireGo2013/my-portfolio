@@ -1,7 +1,7 @@
 import { ADMIN_COOKIES } from '@portfolio/shared';
 import { NextResponse, type NextRequest } from 'next/server';
 import { callApi, clientIpFrom, readAuthCookies } from './api-forward';
-import { ADMIN_API_BASE, ADMIN_LOGIN } from './paths';
+import { ADMIN_API_BASE, ADMIN_LOGIN, ADMIN_PATH_HEADER } from './paths';
 
 /** Админка не должна попасть в поиск, даже если на неё где-то сослались. */
 function noIndex(response: NextResponse): NextResponse {
@@ -24,6 +24,20 @@ function redirectToLogin(request: NextRequest, setCookies: string[] = []) {
 }
 
 /**
+ * Пропускает запрос дальше и сообщает layout, какая страница открыта:
+ * серверный компонент сам адрес не знает, а он нужен для ?next= после входа.
+ * Заголовок ставим всегда сами, поэтому присланный браузером не пройдёт.
+ */
+function passWithPath(request: NextRequest): NextResponse {
+  const headers = new Headers(request.headers);
+  headers.set(
+    ADMIN_PATH_HEADER,
+    request.nextUrl.pathname + request.nextUrl.search,
+  );
+  return NextResponse.next({ request: { headers } });
+}
+
+/**
  * Быстрая проверка для страниц /admin: есть ли cookie сессии. Это не защита,
  * а удобство: без cookie сразу ведём на вход, не рисуя страницу. Настоящая
  * проверка — запрос к API в layout админки.
@@ -38,7 +52,7 @@ export async function adminProxy(request: NextRequest): Promise<NextResponse> {
     return noIndex(NextResponse.next());
   }
   if (request.cookies.has(ADMIN_COOKIES.access)) {
-    return noIndex(NextResponse.next());
+    return noIndex(passWithPath(request));
   }
 
   const refresh = request.cookies.get(ADMIN_COOKIES.refresh)?.value;
@@ -63,9 +77,7 @@ export async function adminProxy(request: NextRequest): Promise<NextResponse> {
     if (fresh.refresh) {
       request.cookies.set(ADMIN_COOKIES.refresh, fresh.refresh);
     }
-    const response = NextResponse.next({
-      request: { headers: request.headers },
-    });
+    const response = passWithPath(request);
     // А эти уйдут в браузер
     for (const line of setCookies) response.headers.append('set-cookie', line);
     return noIndex(response);

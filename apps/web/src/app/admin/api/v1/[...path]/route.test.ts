@@ -35,10 +35,16 @@ afterAll(() => server.close());
 function call(
   handler: typeof GET,
   path: string[],
-  init: { method?: string; cookie?: string; body?: string } = {},
+  init: {
+    method?: string;
+    cookie?: string;
+    body?: string;
+    origin?: string;
+  } = {},
 ) {
   const headers = new Headers({
-    origin: 'http://site.test',
+    origin: init.origin ?? 'http://site.test',
+    host: 'site.test',
     'x-real-ip': '203.0.113.5',
   });
   if (init.cookie) headers.set('cookie', init.cookie);
@@ -79,7 +85,72 @@ describe('прокси админки', () => {
     expect(seen?.get('cookie')).toBe('admin_access=old');
     expect(seen?.get('x-proxy-secret')).toBe('secret');
     expect(seen?.get('x-client-ip')).toBe('203.0.113.5');
-    expect(seen?.get('origin')).toBe('http://site.test');
+    // Источник проверен здесь, в API он не нужен
+    expect(seen?.get('origin')).toBe(null);
+  });
+
+  it('изменяющий запрос с чужого сайта не доходит до API', async () => {
+    // Обработчика в MSW нет: запрос в API упал бы с ошибкой
+    const response = await call(POST, ['auth', 'logout'], {
+      method: 'POST',
+      origin: 'https://evil.example.com',
+      body: '{}',
+    });
+
+    expect(response.status).toBe(403);
+  });
+
+  it('пропускает адрес, на который пришёл браузер, даже если он не основной', async () => {
+    server.use(
+      http.post(
+        `${API}/api/v1/auth/logout`,
+        () => new HttpResponse(null, { status: 204 }),
+      ),
+    );
+    const headers = new Headers({
+      origin: 'https://preview-abc.vercel.app',
+      host: 'preview-abc.vercel.app',
+    });
+    const request = new NextRequest(
+      'https://preview-abc.vercel.app/admin/api/v1/auth/logout',
+      { method: 'POST', headers, body: '{}' },
+    );
+
+    const response = await POST(request, {
+      params: Promise.resolve({ path: ['auth', 'logout'] }),
+    });
+
+    expect(response.status).toBe(204);
+  });
+
+  it('после обновления повторяет запрос с прежним токеном обновления, если нового нет', async () => {
+    let retried: string | null = null;
+    server.use(
+      http.get(`${API}/api/v1/admin/things`, ({ request }) => {
+        const cookie = request.headers.get('cookie');
+        if (cookie?.includes('admin_access=fresh')) {
+          retried = cookie;
+          return HttpResponse.json({ ok: true });
+        }
+        return new HttpResponse(null, { status: 401 });
+      }),
+      // Соседний запрос уже заменил токен: API отдаёт только токен доступа
+      http.post(
+        `${API}/api/v1/auth/refresh`,
+        () =>
+          new HttpResponse(null, {
+            status: 204,
+            headers: { 'set-cookie': 'admin_access=fresh; Path=/' },
+          }),
+      ),
+    );
+
+    const response = await call(GET, ['admin', 'things'], {
+      cookie: 'admin_refresh=r1',
+    });
+
+    expect(response.status).toBe(200);
+    expect(retried).toBe('admin_access=fresh; admin_refresh=r1');
   });
 
   it.each([[['health']], [['admin', '..', 'health']], [['profile']]])(

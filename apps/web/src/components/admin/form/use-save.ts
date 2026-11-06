@@ -12,6 +12,15 @@ import { ApiError } from '@/lib/admin/admin-client';
 export type SaveStatus = 'saved' | 'failed' | 'invalid' | null;
 
 /**
+ * Поле формы для пути ошибки из API. API называет поля полным путём:
+ * translations.ru.summary. Ошибка пункта списка приходит как stack.2,
+ * а в форме весь список — одно поле stack, поэтому номер пункта отбрасываем.
+ */
+export function fieldOf(path: string): string {
+  return path.replace(/(\.\d+)+$/, '');
+}
+
+/**
  * Отправка формы контента. Проверка Zod уже прошла на клиенте, но сервер
  * проверяет всё заново и может ответить 409 «slug занят» — такую ошибку
  * показываем у поля, как обычную ошибку валидации.
@@ -48,8 +57,8 @@ export function useSave<TInput extends FieldValues, TOutput, TResult>(
         error instanceof ApiError &&
         (error.status === 400 || error.status === 409)
       ) {
-        for (const [field, codes] of Object.entries(error.fieldErrors)) {
-          form.setError(field as never, { message: codes?.[0] });
+        for (const [path, codes] of Object.entries(error.fieldErrors)) {
+          form.setError(fieldOf(path) as never, { message: codes?.[0] });
         }
         setStatus('invalid');
         return;

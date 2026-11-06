@@ -11,7 +11,6 @@ type ApiCall = {
   method: string;
   body?: BodyInit;
   contentType?: string | null;
-  origin?: string | null;
   clientIp?: string;
   cookies?: AdminCookies;
 };
@@ -48,8 +47,6 @@ function cookieHeader(cookies: AdminCookies): string {
 export function callApi(path: string, call: ApiCall): Promise<Response> {
   const headers = new Headers();
   if (call.contentType) headers.set('content-type', call.contentType);
-  // Origin браузера нужен API для защиты от CSRF
-  if (call.origin) headers.set('origin', call.origin);
   const cookie = call.cookies ? cookieHeader(call.cookies) : '';
   if (cookie) headers.set('cookie', cookie);
 

@@ -19,6 +19,31 @@ const notFound = () =>
   Response.json({ message: 'Не найдено' }, { status: 404 });
 
 /**
+ * Защита от CSRF вторым слоем после SameSite. Браузер ставит Origin у POST,
+ * PUT, PATCH и DELETE, и страница не может его подменить. Сравниваем с адресом,
+ * на который браузер пришёл: так работают и основной домен, и адреса
+ * предпросмотра Vercel. Без Origin смотрим Sec-Fetch-Site, тоже от браузера.
+ * Если нет обоих, это не браузер, и чужих cookie у него нет.
+ */
+function isCrossSite(request: NextRequest): boolean {
+  const origin = request.headers.get('origin');
+  if (origin !== null) {
+    // Не nextUrl.origin: Next.js строит его из своего адреса (localhost),
+    // а не из того, на который пришёл браузер. Host и X-Forwarded-Host
+    // страница злоумышленника выставить не может
+    const host =
+      request.headers.get('x-forwarded-host') ?? request.headers.get('host');
+    try {
+      return new URL(origin).host !== host;
+    } catch {
+      return true;
+    }
+  }
+  const site = request.headers.get('sec-fetch-site');
+  return site !== null && site !== 'same-origin';
+}
+
+/**
  * Контент изменился — страницы сайта, которые его показывают, устарели.
  * expire: 0 — следующий посетитель ждёт свежие данные, а не получает старые
  * с обновлением в фоне: автор хочет сразу увидеть свою правку.
@@ -53,13 +78,18 @@ async function handle(
     path.map(encodeURIComponent).join('/') + request.nextUrl.search;
 
   const hasBody = request.method !== 'GET' && request.method !== 'HEAD';
+  if (hasBody && isCrossSite(request)) {
+    return Response.json({ message: 'Запрос с чужого сайта' }, { status: 403 });
+  }
+
   // Тело читаем один раз: при обновлении токена запрос придётся повторить
   const body = hasBody ? await request.arrayBuffer() : undefined;
+  // Origin браузера в API не передаём: источник проверен здесь, по адресу,
+  // на который браузер реально пришёл. API же видит запрос сервера сайта
   const call = {
     method: request.method,
     body,
     contentType: request.headers.get('content-type'),
-    origin: request.headers.get('origin'),
     clientIp: clientIpFrom(request.headers),
   };
   const cookies: AdminCookies = {
@@ -75,15 +105,16 @@ async function handle(
   if (response.status === 401 && path[0] !== 'auth' && cookies.refresh) {
     const refreshed = await callApi('auth/refresh', {
       method: 'POST',
-      origin: call.origin,
       clientIp: call.clientIp,
       cookies: { refresh: cookies.refresh },
     });
     setCookies.push(...refreshed.headers.getSetCookie());
     if (refreshed.ok) {
+      // Если соседний запрос уже заменил токен обновления, API вернёт только
+      // новый токен доступа, а прежний токен обновления останется как был
       response = await callApi(apiPath, {
         ...call,
-        cookies: readAuthCookies(setCookies),
+        cookies: { ...cookies, ...readAuthCookies(setCookies) },
       });
     }
   }

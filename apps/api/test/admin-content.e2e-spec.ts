@@ -120,9 +120,11 @@ describe(ADMIN, () => {
         })
         .expect(400);
 
-      expect(body.errors).toMatchObject({
+      // Вложенные поля — полным путём, как их называет форма
+      expect(body.errors).toEqual({
         email: ['emailInvalid'],
         githubUrl: ['urlInvalid'],
+        'translations.ru.about': ['required'],
       });
     });
   });

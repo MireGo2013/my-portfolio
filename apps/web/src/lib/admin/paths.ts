@@ -2,6 +2,12 @@ export const ADMIN_HOME = '/admin';
 export const ADMIN_LOGIN = '/admin/login';
 export const ADMIN_API_BASE = '/admin/api/';
 
+/** Через этот заголовок proxy сообщает layout адрес открытой страницы. */
+export const ADMIN_PATH_HEADER = 'x-admin-path';
+
+/** Обновление токена для серверных компонентов, которые не умеют ставить cookie. */
+export const ADMIN_SESSION_REFRESH = '/admin/api/session/refresh';
+
 /** Разделы меню. В API коммерческие проекты лежат в /experience, а открытые в /projects. */
 export const ADMIN_SECTIONS = [
   { href: '/admin/messages', label: 'Сообщения' },

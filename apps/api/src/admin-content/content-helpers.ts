@@ -1,32 +1,5 @@
-import {
-  BadRequestException,
-  ConflictException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { LOCALES, type Locale } from '@portfolio/shared';
-import { Prisma } from '../generated/prisma/client.js';
-
-export const notFound = () => new NotFoundException('Запись не найдена');
-
-/**
- * Ошибки Prisma, которые означают ошибку запроса, а не сервера.
- * Ответ на занятый slug — в том же формате, что ошибки валидации:
- * форма подсветит поле.
- */
-export function mapPrismaError(error: unknown): never {
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    if (error.code === 'P2002') {
-      throw new ConflictException({
-        message: 'Такой slug уже занят',
-        errors: { slug: ['slugTaken'] },
-      });
-    }
-    if (error.code === 'P2025') {
-      throw notFound();
-    }
-  }
-  throw error;
-}
 
 /** Строки переводов из базы → объект { ru, en }. */
 export function byLocale<T extends { locale: Locale }>(

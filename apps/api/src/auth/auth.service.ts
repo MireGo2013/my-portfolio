@@ -3,7 +3,11 @@ import { JwtService } from '@nestjs/jwt';
 import type { LoginCredentials } from '@portfolio/shared';
 import type { AdminRole } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { ACCESS_TOKEN_TTL_MS, REFRESH_TOKEN_TTL_MS } from './auth.constants.js';
+import {
+  ACCESS_TOKEN_TTL_MS,
+  REFRESH_GRACE_MS,
+  REFRESH_TOKEN_TTL_MS,
+} from './auth.constants.js';
 import { verifyPassword } from './passwords.js';
 import { generateRefreshToken, hashToken } from './tokens.js';
 
@@ -18,6 +22,12 @@ type AccessTokenPayload = {
 export type AuthTokens = {
   accessToken: string;
   refreshToken: string;
+};
+
+/** Без refreshToken — обновился только токен доступа, cookie обновления не трогаем. */
+export type RefreshResult = {
+  accessToken: string;
+  refreshToken?: string;
 };
 
 /** Пользователь, который прошёл проверку сессии. */
@@ -73,35 +83,60 @@ export class AuthService {
    * Выдаёт новую пару токенов, а старый токен обновления перестаёт работать
    * (rotation). Повторно предъявленный старый токен получит 401.
    */
-  async refresh(refreshToken: string): Promise<AuthTokens> {
+  /**
+   * Выдаёт новую пару токенов, а старый токен обновления заменяется (rotation).
+   *
+   * Гонка: вкладка вернулась через полчаса, и три запроса одновременно пришли
+   * обновлять токен с одним и тем же T. Первый заменил T на T2. Остальные
+   * со старым T не должны завершать сессию: в течение REFRESH_GRACE_MS
+   * они получают новый токен доступа, а cookie обновления не трогают —
+   * её уже поставил первый ответ.
+   */
+  async refresh(refreshToken: string): Promise<RefreshResult> {
     const tokenHash = hashToken(refreshToken);
+    const now = Date.now();
     const session = await this.prisma.adminSession.findUnique({
       where: { tokenHash },
     });
-    const now = Date.now();
-    if (!session || session.expiresAt.getTime() <= now) {
-      throw invalidSession();
+
+    if (session && session.expiresAt.getTime() > now) {
+      const nextToken = generateRefreshToken();
+      // Условие на старый хеш делает замену атомарной: из двух одновременных
+      // запросов с одним токеном обновит сессию только первый
+      const { count } = await this.prisma.adminSession.updateMany({
+        where: { id: session.id, tokenHash },
+        data: {
+          tokenHash: hashToken(nextToken),
+          previousTokenHash: tokenHash,
+          rotatedAt: new Date(now),
+          expiresAt: new Date(now + REFRESH_TOKEN_TTL_MS),
+          lastUsedAt: new Date(now),
+        },
+      });
+      if (count === 1) {
+        return {
+          accessToken: await this.signAccessToken(session.userId, session.id),
+          refreshToken: nextToken,
+        };
+      }
+      // count === 0: соседний запрос заменил токен между find и update.
+      // Тогда этот токен уже «предыдущий» — проверим льготное окно ниже
     }
 
-    const nextToken = generateRefreshToken();
-    // Условие на старый хеш делает замену атомарной: из двух одновременных
-    // запросов с одним токеном обновит сессию только первый
-    const { count } = await this.prisma.adminSession.updateMany({
-      where: { id: session.id, tokenHash },
-      data: {
-        tokenHash: hashToken(nextToken),
-        expiresAt: new Date(now + REFRESH_TOKEN_TTL_MS),
-        lastUsedAt: new Date(now),
-      },
+    const rotated = await this.prisma.adminSession.findUnique({
+      where: { previousTokenHash: tokenHash },
     });
-    if (count === 0) {
-      throw invalidSession();
+    if (
+      rotated?.rotatedAt &&
+      now - rotated.rotatedAt.getTime() <= REFRESH_GRACE_MS &&
+      rotated.expiresAt.getTime() > now
+    ) {
+      return {
+        accessToken: await this.signAccessToken(rotated.userId, rotated.id),
+      };
     }
 
-    return {
-      accessToken: await this.signAccessToken(session.userId, session.id),
-      refreshToken: nextToken,
-    };
+    throw invalidSession();
   }
 
   /** Удаляет сессию. Подходит любой из токенов, отсутствие обоих не ошибка. */
@@ -114,8 +149,12 @@ export class AuthService {
       : undefined;
     const or = [
       ...(sessionId ? [{ id: sessionId }] : []),
+      // Браузер мог ещё не получить новый токен после ротации
       ...(tokens.refreshToken
-        ? [{ tokenHash: hashToken(tokens.refreshToken) }]
+        ? [
+            { tokenHash: hashToken(tokens.refreshToken) },
+            { previousTokenHash: hashToken(tokens.refreshToken) },
+          ]
         : []),
     ];
     if (or.length > 0) {

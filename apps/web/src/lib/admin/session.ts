@@ -1,11 +1,16 @@
 import 'server-only';
 import { ADMIN_COOKIES } from '@portfolio/shared';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { cache } from 'react';
 import type { components } from '../api/schema';
 import { callApi } from './api-forward';
-import { ADMIN_LOGIN } from './paths';
+import {
+  ADMIN_LOGIN,
+  ADMIN_PATH_HEADER,
+  ADMIN_SESSION_REFRESH,
+  safeNextPath,
+} from './paths';
 
 export type AdminUser = components['schemas']['AdminUserDto'];
 
@@ -29,9 +34,26 @@ export const getAdminUser = cache(async (): Promise<AdminUser | null> => {
   return (await response.json()) as AdminUser;
 });
 
-/** Для страниц админки: без сессии ведёт на вход. */
+/**
+ * Для страниц админки. Без живой сессии сначала пробуем обновить токен:
+ * он мог истечь чуть раньше cookie. Не вышло — на вход, и после входа
+ * обратно на эту же страницу.
+ */
 export async function requireAdmin(): Promise<AdminUser> {
+  // Данные запроса читаем первыми, до похода в API. Иначе Next.js в dev
+  // ругается на нестабильные значения при пререндере: страница становится
+  // динамической не сразу, а после чужого await
+  const [cookieStore, headerStore] = await Promise.all([cookies(), headers()]);
   const user = await getAdminUser();
-  if (!user) redirect(ADMIN_LOGIN);
-  return user;
+  if (user) return user;
+
+  const next = encodeURIComponent(
+    safeNextPath(headerStore.get(ADMIN_PATH_HEADER)),
+  );
+  const canRefresh = cookieStore.has(ADMIN_COOKIES.refresh);
+  redirect(
+    canRefresh
+      ? `${ADMIN_SESSION_REFRESH}?next=${next}`
+      : `${ADMIN_LOGIN}?next=${next}`,
+  );
 }

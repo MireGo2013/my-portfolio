@@ -1,7 +1,7 @@
 import { ADMIN_COOKIES } from '@portfolio/shared';
 import type { CookieOptions, Request, Response } from 'express';
 import { ACCESS_TOKEN_TTL_MS, REFRESH_TOKEN_TTL_MS } from './auth.constants.js';
-import type { AuthTokens } from './auth.service.js';
+import type { RefreshResult } from './auth.service.js';
 
 // httpOnly: скрипт страницы cookie не прочитает, даже если на неё внедрят чужой код.
 // secure: только по HTTPS. Браузеры делают исключение для http://localhost.
@@ -15,15 +15,18 @@ const baseOptions: CookieOptions = {
   path: '/',
 };
 
-export function setAuthCookies(res: Response, tokens: AuthTokens): void {
+export function setAuthCookies(res: Response, tokens: RefreshResult): void {
   res.cookie(ADMIN_COOKIES.access, tokens.accessToken, {
     ...baseOptions,
     maxAge: ACCESS_TOKEN_TTL_MS,
   });
-  res.cookie(ADMIN_COOKIES.refresh, tokens.refreshToken, {
-    ...baseOptions,
-    maxAge: REFRESH_TOKEN_TTL_MS,
-  });
+  // Нет нового токена обновления — значит, его уже поставил соседний ответ
+  if (tokens.refreshToken) {
+    res.cookie(ADMIN_COOKIES.refresh, tokens.refreshToken, {
+      ...baseOptions,
+      maxAge: REFRESH_TOKEN_TTL_MS,
+    });
+  }
 }
 
 export function clearAuthCookies(res: Response): void {

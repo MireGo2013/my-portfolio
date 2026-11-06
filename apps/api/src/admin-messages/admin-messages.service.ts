@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   MESSAGE_STATUSES,
   type MessagesQuery,
   type MessageStatus,
 } from '@portfolio/shared';
-import { Prisma, type ContactMessage } from '../generated/prisma/client.js';
+import { mapPrismaError, notFound } from '../common/prisma-errors.js';
+import type { ContactMessage, Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type {
   MessageCountsDto,
@@ -24,7 +25,7 @@ function toDto(row: ContactMessage): MessageDto {
   };
 }
 
-const notFound = () => new NotFoundException('Сообщение не найдено');
+const NOT_FOUND = 'Сообщение не найдено';
 
 @Injectable()
 export class AdminMessagesService {
@@ -88,27 +89,14 @@ export class AdminMessagesService {
 
   async get(id: string): Promise<MessageDto> {
     const row = await this.prisma.contactMessage.findUnique({ where: { id } });
-    if (!row) throw notFound();
+    if (!row) throw notFound(NOT_FOUND);
     return toDto(row);
   }
 
   async updateStatus(id: string, status: MessageStatus): Promise<MessageDto> {
-    try {
-      return toDto(
-        await this.prisma.contactMessage.update({
-          where: { id },
-          data: { status },
-        }),
-      );
-    } catch (error) {
-      // P2025: записи для update не нашлось
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-      ) {
-        throw notFound();
-      }
-      throw error;
-    }
+    const row = await this.prisma.contactMessage
+      .update({ where: { id }, data: { status } })
+      .catch((error: unknown) => mapPrismaError(error, NOT_FOUND));
+    return toDto(row);
   }
 }
