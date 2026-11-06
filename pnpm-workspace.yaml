@@ -11,6 +11,7 @@ catalog:
 allowBuilds:
   '@prisma/engines': true
   prisma: true
+  argon2: true
   esbuild: false
   '@scarf/scarf': false
   sharp: false

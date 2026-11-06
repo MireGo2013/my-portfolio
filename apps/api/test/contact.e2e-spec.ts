@@ -6,7 +6,7 @@ import type { App } from 'supertest/types.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppModule } from '../src/app.module.js';
 import { configureApp } from '../src/app.setup.js';
-import { CONTACT_RATE_LIMIT } from '../src/contact/contact.module.js';
+import { CONTACT_RATE_LIMIT } from '../src/contact/contact.controller.js';
 import { TelegramService } from '../src/contact/telegram.service.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 

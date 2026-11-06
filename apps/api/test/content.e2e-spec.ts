@@ -133,9 +133,18 @@ describe('API контента', () => {
     const { body } = await get('/api/docs-json').expect(200);
 
     expect(Object.keys(body.paths).sort()).toEqual(
-      ['contact', 'experience', 'health', 'profile', 'projects', 'skills'].map(
-        (path) => `${API_PREFIX}/${path}`,
-      ),
+      [
+        'auth/login',
+        'auth/logout',
+        'auth/me',
+        'auth/refresh',
+        'contact',
+        'experience',
+        'health',
+        'profile',
+        'projects',
+        'skills',
+      ].map((path) => `${API_PREFIX}/${path}`),
     );
     expect(
       body.components.schemas.ExperienceDto.properties.endDate,

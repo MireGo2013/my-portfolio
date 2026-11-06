@@ -5,7 +5,8 @@ import {
   SwaggerModule,
   type OpenAPIObject,
 } from '@nestjs/swagger';
-import { API_PREFIX } from '@portfolio/shared';
+import { ADMIN_COOKIES, API_PREFIX } from '@portfolio/shared';
+import cookieParser from 'cookie-parser';
 
 /** Описание API. Вызывать после app.setGlobalPrefix, иначе пути будут без префикса. */
 export function createOpenApiDocument(app: INestApplication): OpenAPIObject {
@@ -13,6 +14,7 @@ export function createOpenApiDocument(app: INestApplication): OpenAPIObject {
     .setTitle('Portfolio API')
     .setDescription('REST API сайта-портфолио Владислава Соболя')
     .setVersion('1.0')
+    .addCookieAuth(ADMIN_COOKIES.access)
     .build();
   return SwaggerModule.createDocument(app, config);
 }
@@ -20,7 +22,10 @@ export function createOpenApiDocument(app: INestApplication): OpenAPIObject {
 /** Общая настройка приложения: её вызывают и main.ts, и e2e-тесты. */
 export function configureApp(app: INestApplication): void {
   app.setGlobalPrefix(API_PREFIX);
-  // Из браузера к API обращается только форма контактов
+  // Разбирает заголовок Cookie в req.cookies: там лежат токены сессии админки
+  app.use(cookieParser());
+  // Из браузера к API напрямую обращается только форма контактов.
+  // Админка ходит через сервер сайта, с тем же адресом, и CORS ей не нужен
   app.enableCors({
     origin: app
       .get(ConfigService)

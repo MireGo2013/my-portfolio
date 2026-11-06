@@ -219,6 +219,114 @@
           "Контакты"
         ]
       }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "description": "Не больше 5 попыток за 15 минут с одного IP.",
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Вход выполнен"
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Неверная почта или пароль"
+          },
+          "429": {
+            "description": "Слишком много попыток"
+          }
+        },
+        "summary": "Войти: ставит cookie сессии",
+        "tags": [
+          "Вход в админку"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Cookie обновлены"
+          },
+          "401": {
+            "description": "Сессия недействительна"
+          }
+        },
+        "summary": "Обновить токены по cookie обновления",
+        "tags": [
+          "Вход в админку"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Сессия завершена"
+          }
+        },
+        "summary": "Выйти: удаляет сессию на сервере и cookie",
+        "tags": [
+          "Вход в админку"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Кто вошёл",
+        "tags": [
+          "Вход в админку"
+        ]
+      }
     }
   },
   "info": {
@@ -230,6 +338,13 @@
   "tags": [],
   "servers": [],
   "components": {
+    "securitySchemes": {
+      "cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "admin_access"
+      }
+    },
     "schemas": {
       "HealthDto": {
         "type": "object",
@@ -521,6 +636,58 @@
         "required": [
           "message",
           "errors"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254,
+            "example": "admin@example.com"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AdminRole": {
+        "type": "string",
+        "enum": [
+          "ADMIN"
+        ]
+      },
+      "AdminUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdminRole"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "role"
         ]
       }
     }

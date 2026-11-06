@@ -48,6 +48,10 @@ services:
       DATABASE_URL: *database-url
       PORT: 3001
       CORS_ORIGIN: http://localhost:3000
+      # Только для локального запуска. В проде секрет задаётся на хостинге
+      JWT_SECRET: local-docker-secret-not-for-production-use
+      ADMIN_EMAIL: admin@localhost.dev
+      ADMIN_PASSWORD: local-admin-password
     ports:
       - '127.0.0.1:3001:3001'
     depends_on:
