@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ADMIN_START, isAdminPath, safeNextPath } from './paths';
+import { ADMIN_START, isAdminPath, loginPath, safeNextPath } from './paths';
 
 describe('safeNextPath', () => {
   it.each([
@@ -31,5 +31,14 @@ describe('isAdminPath', () => {
     expect(isAdminPath('/admin/cv')).toBe(true);
     expect(isAdminPath('/administrator')).toBe(false);
     expect(isAdminPath('/ru/admin')).toBe(false);
+  });
+});
+
+describe('loginPath', () => {
+  it('кодирует адрес возврата', () => {
+    expect(loginPath('/admin/messages?status=NEW')).toBe(
+      '/admin/login?next=%2Fadmin%2Fmessages%3Fstatus%3DNEW',
+    );
+    expect(loginPath()).toBe('/admin/login');
   });
 });

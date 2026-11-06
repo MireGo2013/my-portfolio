@@ -6,7 +6,7 @@ import { cache } from 'react';
 import type { components } from '../api/schema';
 import { callApi } from './api-forward';
 import {
-  ADMIN_LOGIN,
+  loginPath,
   ADMIN_PATH_HEADER,
   ADMIN_SESSION_REFRESH,
   safeNextPath,
@@ -47,13 +47,10 @@ export async function requireAdmin(): Promise<AdminUser> {
   const user = await getAdminUser();
   if (user) return user;
 
-  const next = encodeURIComponent(
-    safeNextPath(headerStore.get(ADMIN_PATH_HEADER)),
-  );
-  const canRefresh = cookieStore.has(ADMIN_COOKIES.refresh);
+  const next = safeNextPath(headerStore.get(ADMIN_PATH_HEADER));
   redirect(
-    canRefresh
-      ? `${ADMIN_SESSION_REFRESH}?next=${next}`
-      : `${ADMIN_LOGIN}?next=${next}`,
+    cookieStore.has(ADMIN_COOKIES.refresh)
+      ? `${ADMIN_SESSION_REFRESH}?${new URLSearchParams({ next })}`
+      : loginPath(next),
   );
 }

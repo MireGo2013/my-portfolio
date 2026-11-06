@@ -243,7 +243,7 @@ describe('прокси админки', () => {
     ]);
   });
 
-  it('если обновить не вышло, отдаёт 401 и стирает cookie', async () => {
+  it('если обновить не вышло, отдаёт 401 и cookie не трогает', async () => {
     server.use(
       http.get(
         `${API}/api/v1/admin/things`,
@@ -251,11 +251,7 @@ describe('прокси админки', () => {
       ),
       http.post(
         `${API}/api/v1/auth/refresh`,
-        () =>
-          new HttpResponse(null, {
-            status: 401,
-            headers: { 'set-cookie': 'admin_refresh=; Max-Age=0' },
-          }),
+        () => new HttpResponse(null, { status: 401 }),
       ),
     );
 
@@ -264,9 +260,8 @@ describe('прокси админки', () => {
     });
 
     expect(response.status).toBe(401);
-    expect(response.headers.getSetCookie()).toEqual([
-      'admin_refresh=; Max-Age=0',
-    ]);
+    // Соседний запрос мог уже получить новый токен: стирать нельзя
+    expect(response.headers.getSetCookie()).toEqual([]);
   });
 
   describe('сброс кэша сайта', () => {

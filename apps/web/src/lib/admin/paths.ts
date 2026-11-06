@@ -58,3 +58,8 @@ export const CONTENT_PATHS = {
   projects: '/admin/experience',
   skills: '/admin/skills',
 } as const;
+
+/** Адрес входа с возвратом на страницу next. Один на всю админку. */
+export function loginPath(next?: string): string {
+  return next ? `${ADMIN_LOGIN}?${new URLSearchParams({ next })}` : ADMIN_LOGIN;
+}

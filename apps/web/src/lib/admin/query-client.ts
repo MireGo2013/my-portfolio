@@ -1,6 +1,6 @@
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import { ApiError } from './admin-client';
-import { ADMIN_LOGIN } from './paths';
+import { loginPath } from './paths';
 
 /**
  * 401 после того, как прокси уже попробовал обновить токен, значит,
@@ -12,8 +12,7 @@ function redirectOnLostSession(error: Error) {
     // Полная перезагрузка намеренно: вместе со страницей пропадает кэш
     // TanStack Query с данными сессии, которой больше нет. Роутера здесь
     // тоже нет: это обработчик кэша, а не компонент
-    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- нужен сброс состояния вкладки
-    window.location.assign(`${ADMIN_LOGIN}?next=${encodeURIComponent(next)}`);
+    window.location.assign(loginPath(next));
   }
 }
 

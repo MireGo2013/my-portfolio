@@ -4,8 +4,8 @@ import type { NextRequest } from 'next/server';
 import {
   callApi,
   clientIpFrom,
-  publicOrigin,
   refreshSession,
+  requestHost,
   type AdminCookies,
 } from '@/lib/admin/api-forward';
 import { CONTENT_TAGS, isContentSection } from '@/lib/content-tags';
@@ -38,7 +38,9 @@ function isCrossSite(request: NextRequest): boolean {
   const origin = request.headers.get('origin');
   if (origin !== null) {
     try {
-      return new URL(origin).origin !== new URL(publicOrigin(request)).origin;
+      // Только хост, без схемы: за прокси, который снимает TLS и не передаёт
+      // X-Forwarded-Proto, схема у нас и у браузера разная, а сайт тот же
+      return new URL(origin).host !== requestHost(request.headers);
     } catch {
       return true;
     }
@@ -107,8 +109,10 @@ async function handle(
   // Для самих эндпоинтов входа не повторяем: 401 там значит именно 401
   if (response.status === 401 && path[0] !== 'auth' && cookies.refresh) {
     const refreshed = await refreshSession(cookies.refresh, call.clientIp);
-    setCookies.push(...refreshed.setCookies);
+    // При отказе cookie не стираем: параллельный запрос мог уже получить
+    // новый токен, и пустой Set-Cookie удалил бы именно его
     if (refreshed.ok) {
+      setCookies.push(...refreshed.setCookies);
       response = await callApi(apiPath, {
         ...call,
         cookies: refreshed.cookies,

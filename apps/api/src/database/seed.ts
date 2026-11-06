@@ -17,8 +17,21 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString }),
 });
 
+const reset = process.argv.includes('--reset');
+// В прод-образе NODE_ENV=production. Там --reset стёр бы все правки из админки
+// без резервной копии, поэтому без явного разрешения он не работает
+if (
+  reset &&
+  process.env['NODE_ENV'] === 'production' &&
+  process.env['ALLOW_SEED_RESET'] !== 'true'
+) {
+  console.error(
+    'Seed --reset в production стёр бы контент из админки. Если это и нужно, задайте ALLOW_SEED_RESET=true',
+  );
+  process.exit(1);
+}
+
 try {
-  const reset = process.argv.includes('--reset');
   const result = await seedContent(prisma, { reset });
   console.log(
     result === 'skipped'

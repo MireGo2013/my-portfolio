@@ -1,7 +1,16 @@
 import { ADMIN_COOKIES } from '@portfolio/shared';
 import { NextResponse, type NextRequest } from 'next/server';
-import { clientIpFrom, publicOrigin, refreshSession } from './api-forward';
-import { ADMIN_API_BASE, ADMIN_LOGIN, ADMIN_PATH_HEADER } from './paths';
+import {
+  clearSessionCookies,
+  clientIpFrom,
+  refreshSession,
+} from './api-forward';
+import {
+  ADMIN_API_BASE,
+  ADMIN_LOGIN,
+  ADMIN_PATH_HEADER,
+  loginPath,
+} from './paths';
 
 /** Админка не должна попасть в поиск, даже если на неё где-то сослались. */
 function noIndex(response: NextResponse): NextResponse {
@@ -9,14 +18,14 @@ function noIndex(response: NextResponse): NextResponse {
   return response;
 }
 
+/**
+ * В proxy.ts Next.js требует абсолютный адрес перенаправления. Строим его от
+ * request.url, а Next.js, увидев тот же origin, сам отдаёт браузеру
+ * относительный Location: хост из заголовков запроса в ответ не попадает.
+ */
 function redirectToLogin(request: NextRequest) {
-  // От адреса, на который пришёл браузер: за прокси nextUrl указал бы на localhost
-  const url = new URL(ADMIN_LOGIN, publicOrigin(request));
-  url.searchParams.set(
-    'next',
-    request.nextUrl.pathname + request.nextUrl.search,
-  );
-  return noIndex(NextResponse.redirect(url));
+  const path = loginPath(request.nextUrl.pathname + request.nextUrl.search);
+  return noIndex(NextResponse.redirect(new URL(path, request.url)));
 }
 
 /**
@@ -62,7 +71,9 @@ export async function adminProxy(request: NextRequest): Promise<NextResponse> {
       clientIpFrom(request.headers),
     );
     if (!refreshed.ok) {
-      return redirectToLogin(request);
+      // Браузер прислал свою текущую cookie, и API её отверг: она мертва.
+      // Стираем, иначе каждый переход по админке тратил бы запрос на обновление
+      return clearSessionCookies(redirectToLogin(request));
     }
 
     // Новые cookie нужны уже этому запросу: их прочитает layout через cookies()

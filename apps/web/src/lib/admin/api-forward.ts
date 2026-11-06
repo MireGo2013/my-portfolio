@@ -1,4 +1,5 @@
 import { ADMIN_COOKIES, API_PREFIX } from '@portfolio/shared';
+import { NextResponse } from 'next/server';
 
 // Без 'server-only': модуль импортирует и proxy.ts, а там этот пакет не работает.
 // Секрет при этом в браузер не попадает: клиентские компоненты модуль не используют
@@ -24,35 +25,59 @@ function apiBaseUrl(): string {
 }
 
 /**
- * IP посетителя для лимита входа. Заголовку x-real-ip верим только там,
- * где его перезаписывает платформа: на Vercel (там есть переменная VERCEL)
- * или за своим прокси, если это явно включено TRUST_X_REAL_IP=true.
- * Иначе заголовок прислал сам посетитель, и с секретом мы передали бы в API
- * любой выдуманный адрес: новый IP на каждую попытку — и лимита нет.
+ * IP посетителя для лимита входа. Заголовку x-real-ip верим, только если
+ * это явно включено: TRUST_X_REAL_IP=true там, где его перезаписывает
+ * платформа (на Vercel — в окружениях Production и Preview). Иначе заголовок
+ * прислал сам посетитель, и с секретом мы передали бы в API любой
+ * выдуманный адрес: новый IP на каждую попытку — и лимита нет.
+ *
+ * Автоопределение по переменной VERCEL не годится: `vercel env pull`
+ * кладёт её в .env.local, и доверие включилось бы там, где его нет.
  * Без IP API считает лимит по адресу сервера сайта: общий, но честный.
  */
 export function clientIpFrom(headers: Headers): string | undefined {
-  const trusted =
-    Boolean(process.env.VERCEL) || process.env.TRUST_X_REAL_IP === 'true';
-  return trusted ? headers.get('x-real-ip') || undefined : undefined;
+  return process.env.TRUST_X_REAL_IP === 'true'
+    ? headers.get('x-real-ip') || undefined
+    : undefined;
 }
 
 /**
- * Адрес сайта, каким его видит браузер. Не nextUrl.origin: Next.js строит
- * его из своего адреса (localhost), а за прокси браузер пришёл на другой.
- * X-Forwarded-Host может прийти списком через цепочку прокси — берём первый.
+ * Хост, на который пришёл браузер, — только для сравнения с Origin.
+ * Не nextUrl.host: Next.js строит его из своего адреса (localhost).
+ * X-Forwarded-Host через цепочку прокси приходит списком — берём первый.
  */
-export function publicOrigin(request: {
-  headers: Headers;
-  nextUrl: URL;
-}): string {
+export function requestHost(headers: Headers): string | undefined {
   const first = (name: string) =>
-    request.headers.get(name)?.split(',')[0]?.trim() || undefined;
-  const host =
-    first('x-forwarded-host') ?? first('host') ?? request.nextUrl.host;
-  const proto =
-    first('x-forwarded-proto') ?? request.nextUrl.protocol.replace(':', '');
-  return `${proto}://${host}`;
+    headers.get(name)?.split(',')[0]?.trim() || undefined;
+  return first('x-forwarded-host') ?? first('host');
+}
+
+/**
+ * Перенаправление с относительным адресом. Браузер сам подставит хост,
+ * на который пришёл, поэтому заголовки запроса (Host, X-Forwarded-Host)
+ * не влияют на то, куда он уйдёт: подменить цель перехода нельзя.
+ */
+export function redirectTo(location: string): NextResponse {
+  return new NextResponse(null, { status: 307, headers: { location } });
+}
+
+/**
+ * Стирает cookie сессии. Только при переходе по странице: браузер прислал
+ * ту cookie, которая лежит у него прямо сейчас, и раз API её отверг,
+ * она мертва. В запросах данных так делать нельзя: параллельный запрос
+ * мог уже получить новый токен, и мы стёрли бы его.
+ */
+export function clearSessionCookies(response: NextResponse): NextResponse {
+  for (const name of Object.values(ADMIN_COOKIES)) {
+    response.cookies.set(name, '', {
+      path: '/',
+      maxAge: 0,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+    });
+  }
+  return response;
 }
 
 /**
@@ -68,16 +93,15 @@ export async function refreshSession(
   refreshToken: string,
   clientIp: string | undefined,
 ): Promise<
-  | { ok: true; cookies: AdminCookies; setCookies: string[] }
-  | { ok: false; setCookies: string[] }
+  { ok: true; cookies: AdminCookies; setCookies: string[] } | { ok: false }
 > {
   const response = await callApi('auth/refresh', {
     method: 'POST',
     clientIp,
     cookies: { refresh: refreshToken },
   });
+  if (!response.ok) return { ok: false };
   const setCookies = response.headers.getSetCookie();
-  if (!response.ok) return { ok: false, setCookies };
   return {
     ok: true,
     cookies: { refresh: refreshToken, ...readAuthCookies(setCookies) },

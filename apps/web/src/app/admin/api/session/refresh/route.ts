@@ -1,12 +1,13 @@
 import { ADMIN_COOKIES } from '@portfolio/shared';
-import { NextResponse, type NextRequest } from 'next/server';
+import type { NextRequest, NextResponse } from 'next/server';
 import {
   callApi,
+  clearSessionCookies,
   clientIpFrom,
-  publicOrigin,
+  redirectTo,
   refreshSession,
 } from '@/lib/admin/api-forward';
-import { ADMIN_LOGIN, safeNextPath } from '@/lib/admin/paths';
+import { loginPath, safeNextPath } from '@/lib/admin/paths';
 
 /**
  * Сюда layout админки отправляет, когда API отверг токен доступа: истёк
@@ -19,15 +20,9 @@ import { ADMIN_LOGIN, safeNextPath } from '@/lib/admin/paths';
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const next = safeNextPath(request.nextUrl.searchParams.get('next'));
-  // Адрес, на который пришёл браузер: за прокси nextUrl указал бы на localhost
-  const origin = publicOrigin(request);
-  const redirect = (path: string, setCookies: string[] = []) => {
-    const response = NextResponse.redirect(new URL(path, origin));
-    for (const line of setCookies) response.headers.append('set-cookie', line);
-    return response;
-  };
-  const toLogin = (setCookies?: string[]) =>
-    redirect(`${ADMIN_LOGIN}?next=${encodeURIComponent(next)}`, setCookies);
+  // Сюда приходят переходом по странице: браузер прислал свои текущие cookie,
+  // и раз они не сработали, они мертвы — стираем
+  const toLogin = () => clearSessionCookies(redirectTo(loginPath(next)));
 
   const refresh = request.cookies.get(ADMIN_COOKIES.refresh)?.value;
   if (!refresh) return toLogin();
@@ -37,7 +32,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       refresh,
       clientIpFrom(request.headers),
     );
-    if (!refreshed.ok) return toLogin(refreshed.setCookies);
+    if (!refreshed.ok) return toLogin();
 
     // Проверяем новый токен до перехода: иначе при отказе по другой причине
     // layout отправил бы сюда снова, и вышел бы бесконечный цикл
@@ -45,9 +40,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       method: 'GET',
       cookies: refreshed.cookies,
     });
-    if (!me.ok) return toLogin(refreshed.setCookies);
+    if (!me.ok) return toLogin();
 
-    return redirect(next, refreshed.setCookies);
+    const response = redirectTo(next);
+    for (const line of refreshed.setCookies) {
+      response.headers.append('set-cookie', line);
+    }
+    return response;
   } catch {
     return toLogin();
   }
