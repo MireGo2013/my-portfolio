@@ -83,6 +83,8 @@ async function handle(
   const cookies: AdminCookies = {
     access: request.cookies.get(ADMIN_COOKIES.access)?.value,
     refresh: request.cookies.get(ADMIN_COOKIES.refresh)?.value,
+    // Шаг входа с кодом второго фактора
+    mfa: request.cookies.get(ADMIN_COOKIES.mfa)?.value,
   };
 
   let response = await callApi(apiPath, { ...call, cookies });

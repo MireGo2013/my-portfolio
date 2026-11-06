@@ -7,6 +7,8 @@ import { AdminBootstrapService } from './admin-bootstrap.service.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { SameOriginGuard } from './same-origin.guard.js';
+import { TwoFactorController } from './two-factor.controller.js';
+import { TwoFactorService } from './two-factor.service.js';
 
 /** Короче этого секрет подписи можно подобрать перебором. */
 const JWT_SECRET_MIN_LENGTH = 32;
@@ -32,12 +34,13 @@ const JWT_SECRET_MIN_LENGTH = 32;
       },
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, TwoFactorController],
   providers: [
     AuthService,
     AdminAuthGuard,
     SameOriginGuard,
     AdminBootstrapService,
+    TwoFactorService,
   ],
   // Другие модули админки закрывают свои эндпоинты через @AdminOnly()
   exports: [AuthService, AdminAuthGuard, SameOriginGuard],

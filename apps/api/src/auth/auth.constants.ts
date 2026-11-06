@@ -21,3 +21,6 @@ export const ROLES_KEY = 'roles';
  * параллельные запросы одной вкладки и мало для того, кто украл токен.
  */
 export const REFRESH_GRACE_MS = 30_000;
+
+/** Сколько ждём код второго фактора после верного пароля. */
+export const MFA_TOKEN_TTL_MS = minutes(5);

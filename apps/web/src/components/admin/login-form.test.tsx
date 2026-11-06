@@ -2,14 +2,15 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { login } from '@/lib/admin/auth-api';
+import { login, loginTotp } from '@/lib/admin/auth-api';
 import { LoginForm } from './login-form';
 
 const replace = vi.fn();
 vi.mock('next/navigation', () => ({ useRouter: () => ({ replace }) }));
-vi.mock('@/lib/admin/auth-api', () => ({ login: vi.fn() }));
+vi.mock('@/lib/admin/auth-api', () => ({ login: vi.fn(), loginTotp: vi.fn() }));
 
 const loginMock = vi.mocked(login);
+const totpMock = vi.mocked(loginTotp);
 
 async function submit(email: string, password: string) {
   const user = userEvent.setup();
@@ -20,6 +21,7 @@ async function submit(email: string, password: string) {
 
 beforeEach(() => {
   loginMock.mockReset();
+  totpMock.mockReset();
   replace.mockReset();
   window.history.replaceState(null, '', '/admin/login');
 });
@@ -81,4 +83,39 @@ describe('LoginForm', () => {
       expect(replace).not.toHaveBeenCalled();
     },
   );
+
+  it('со вторым фактором после пароля спрашивает код', async () => {
+    loginMock.mockResolvedValue('mfa');
+    totpMock.mockResolvedValueOnce('invalid').mockResolvedValueOnce('ok');
+    const user = userEvent.setup();
+    render(<LoginForm />);
+
+    await submit('admin@example.com', 'secret');
+    expect(replace).not.toHaveBeenCalled();
+
+    const code = await screen.findByLabelText('Код');
+    await user.type(code, '000000');
+    await user.click(screen.getByRole('button', { name: 'Подтвердить' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(
+      /Неверный код/,
+    );
+
+    await user.type(code, '123456');
+    await user.click(screen.getByRole('button', { name: 'Подтвердить' }));
+    expect(totpMock).toHaveBeenLastCalledWith('123456');
+    expect(replace).toHaveBeenCalledWith('/admin/messages');
+  });
+
+  it('с шага кода можно вернуться к паролю', async () => {
+    loginMock.mockResolvedValue('mfa');
+    const user = userEvent.setup();
+    render(<LoginForm />);
+    await submit('admin@example.com', 'secret');
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Войти с другими данными' }),
+    );
+
+    expect(screen.getByLabelText('Пароль')).toBeTruthy();
+  });
 });

@@ -126,6 +126,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/login/totp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Второй шаг входа: код из приложения или резервный код */
+        post: operations["AuthController_loginTotp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/refresh": {
         parameters: {
             query?: never;
@@ -171,6 +188,74 @@ export interface paths {
         get: operations["AuthController_me"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/security/totp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Включён ли второй фактор */
+        get: operations["TwoFactorController_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/security/totp/setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Начать подключение: новый секрет для приложения */
+        post: operations["TwoFactorController_setup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/security/totp/enable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Подтвердить кодом и включить. Другие сессии завершаются */
+        post: operations["TwoFactorController_enable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/security/totp/disable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Выключить: нужен код из приложения или резервный */
+        post: operations["TwoFactorController_disable"];
         delete?: never;
         options?: never;
         head?: never;
@@ -569,6 +654,17 @@ export interface components {
             /** Format: password */
             password: string;
         };
+        MfaRequiredDto: {
+            /** @enum {boolean} */
+            mfaRequired: true;
+        };
+        TotpCodeDto: {
+            /**
+             * @description Шесть цифр из приложения или резервный код ABCD-EFGH-JK
+             * @example 123456
+             */
+            code: string;
+        };
         /** @enum {string} */
         AdminRole: "ADMIN";
         AdminUserDto: {
@@ -577,6 +673,21 @@ export interface components {
             /** Format: email */
             email: string;
             role: components["schemas"]["AdminRole"];
+        };
+        TwoFactorStatusDto: {
+            enabled: boolean;
+            /** @description Сколько резервных кодов ещё не использовано */
+            backupCodesLeft: number;
+        };
+        TwoFactorSetupDto: {
+            /** @description Секрет в base32 — для ручного ввода в приложение */
+            secret: string;
+            /** @description Ссылка otpauth:// для QR-кода */
+            otpauthUrl: string;
+        };
+        BackupCodesDto: {
+            /** @description Показываются один раз: в базе хранятся только хеши */
+            backupCodes: string[];
         };
         /** @enum {string} */
         MessageStatus: "NEW" | "READ" | "REPLIED" | "ARCHIVED" | "SPAM";
@@ -957,6 +1068,15 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Пароль верный, нужен код второго фактора: POST /auth/login/totp */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MfaRequiredDto"];
+                };
+            };
             /** @description Вход выполнен */
             204: {
                 headers: {
@@ -973,6 +1093,42 @@ export interface operations {
                 };
             };
             /** @description Неверная почта или пароль */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Слишком много попыток */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_loginTotp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TotpCodeDto"];
+            };
+        };
+        responses: {
+            /** @description Вход выполнен */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Неверный код или шаг истёк */
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -1046,6 +1202,175 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminUserDto"];
+                };
+            };
+            /** @description Нет сессии или она истекла */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет прав или запрос с чужого сайта */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TwoFactorController_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TwoFactorStatusDto"];
+                };
+            };
+            /** @description Нет сессии или она истекла */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет прав или запрос с чужого сайта */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TwoFactorController_setup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TwoFactorSetupDto"];
+                };
+            };
+            /** @description Нет сессии или она истекла */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет прав или запрос с чужого сайта */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Второй фактор уже включён */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TwoFactorController_enable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TotpCodeDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BackupCodesDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidationErrorDto"];
+                };
+            };
+            /** @description Нет сессии или она истекла */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет прав или запрос с чужого сайта */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Второй фактор уже включён */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TwoFactorController_disable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TotpCodeDto"];
+            };
+        };
+        responses: {
+            /** @description Выключен */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidationErrorDto"];
                 };
             };
             /** @description Нет сессии или она истекла */

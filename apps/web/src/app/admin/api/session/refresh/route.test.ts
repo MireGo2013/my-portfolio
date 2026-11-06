@@ -82,7 +82,8 @@ describe('обновление сессии для страниц', () => {
       '/admin/login?next=%2Fadmin%2Fskills',
     );
     const cleared = response.headers.getSetCookie();
-    expect(cleared).toHaveLength(2);
+    // Все cookie админки: доступ, обновление и шаг с кодом второго фактора
+    expect(cleared).toHaveLength(3);
     for (const line of cleared) expect(line).toMatch(/Max-Age=0/);
   });
 

@@ -37,13 +37,21 @@ enum AdminRole {
 
 /// Пользователь админки. Пароль хранится только в виде хеша.
 model AdminUser {
-  id           String         @id @default(uuid(7)) @db.Uuid
-  email        String         @unique
-  passwordHash String         @map("password_hash")
-  role         AdminRole      @default(ADMIN)
-  createdAt    DateTime       @default(now()) @map("created_at")
-  updatedAt    DateTime       @updatedAt @map("updated_at")
-  sessions     AdminSession[]
+  id                String            @id @default(uuid(7)) @db.Uuid
+  email             String            @unique
+  passwordHash      String            @map("password_hash")
+  role              AdminRole         @default(ADMIN)
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+  sessions          AdminSession[]
+  /// Второй фактор. Секреты зашифрованы AES-256-GCM, см. SecretBox
+  totpSecret        String?           @map("totp_secret")
+  /// Секрет, который ещё не подтвердили кодом из приложения
+  totpPendingSecret String?           @map("totp_pending_secret")
+  totpEnabledAt     DateTime?         @map("totp_enabled_at")
+  /// Номер последнего принятого 30-секундного шага: тот же код второй раз не пройдёт
+  totpLastStep      Int?              @map("totp_last_step")
+  backupCodes       AdminBackupCode[]
 
   @@map("admin_users")
 }
@@ -65,6 +73,19 @@ model AdminSession {
 
   @@index([userId])
   @@map("admin_sessions")
+}
+
+/// Одноразовые резервные коды на случай потери телефона. В базе — только хеш
+model AdminBackupCode {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  codeHash  String    @unique @map("code_hash")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("admin_backup_codes")
 }
 
 enum ProjectKind {

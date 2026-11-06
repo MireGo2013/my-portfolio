@@ -1,6 +1,10 @@
 import { ADMIN_COOKIES } from '@portfolio/shared';
 import type { CookieOptions, Request, Response } from 'express';
-import { ACCESS_TOKEN_TTL_MS, REFRESH_TOKEN_TTL_MS } from './auth.constants.js';
+import {
+  ACCESS_TOKEN_TTL_MS,
+  MFA_TOKEN_TTL_MS,
+  REFRESH_TOKEN_TTL_MS,
+} from './auth.constants.js';
 import type { RefreshResult } from './auth.service.js';
 
 // httpOnly: скрипт страницы cookie не прочитает, даже если на неё внедрят чужой код.
@@ -42,4 +46,16 @@ export function readCookie(
   const cookies = req.cookies as Record<string, unknown> | undefined;
   const value = cookies?.[name];
   return typeof value === 'string' && value !== '' ? value : undefined;
+}
+
+/** Короткая cookie шага с кодом: пароль уже проверен, сессии ещё нет. */
+export function setMfaCookie(res: Response, token: string): void {
+  res.cookie(ADMIN_COOKIES.mfa, token, {
+    ...baseOptions,
+    maxAge: MFA_TOKEN_TTL_MS,
+  });
+}
+
+export function clearMfaCookie(res: Response): void {
+  res.clearCookie(ADMIN_COOKIES.mfa, baseOptions);
 }

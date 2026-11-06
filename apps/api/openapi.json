@@ -236,6 +236,16 @@
           }
         },
         "responses": {
+          "200": {
+            "description": "Пароль верный, нужен код второго фактора: POST /auth/login/totp",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MfaRequiredDto"
+                }
+              }
+            }
+          },
           "204": {
             "description": "Вход выполнен"
           },
@@ -257,6 +267,37 @@
           }
         },
         "summary": "Войти: ставит cookie сессии",
+        "tags": [
+          "Вход в админку"
+        ]
+      }
+    },
+    "/api/v1/auth/login/totp": {
+      "post": {
+        "operationId": "AuthController_loginTotp",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TotpCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Вход выполнен"
+          },
+          "401": {
+            "description": "Неверный код или шаг истёк"
+          },
+          "429": {
+            "description": "Слишком много попыток"
+          }
+        },
+        "summary": "Второй шаг входа: код из приложения или резервный код",
         "tags": [
           "Вход в админку"
         ]
@@ -325,6 +366,177 @@
         "summary": "Кто вошёл",
         "tags": [
           "Вход в админку"
+        ]
+      }
+    },
+    "/api/v1/admin/security/totp": {
+      "get": {
+        "operationId": "TwoFactorController_status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwoFactorStatusDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Включён ли второй фактор",
+        "tags": [
+          "Админка: безопасность"
+        ]
+      }
+    },
+    "/api/v1/admin/security/totp/setup": {
+      "post": {
+        "operationId": "TwoFactorController_setup",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwoFactorSetupDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "409": {
+            "description": "Второй фактор уже включён"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Начать подключение: новый секрет для приложения",
+        "tags": [
+          "Админка: безопасность"
+        ]
+      }
+    },
+    "/api/v1/admin/security/totp/enable": {
+      "post": {
+        "operationId": "TwoFactorController_enable",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TotpCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupCodesDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "409": {
+            "description": "Второй фактор уже включён"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Подтвердить кодом и включить. Другие сессии завершаются",
+        "tags": [
+          "Админка: безопасность"
+        ]
+      }
+    },
+    "/api/v1/admin/security/totp/disable": {
+      "post": {
+        "operationId": "TwoFactorController_disable",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TotpCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Выключен"
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Выключить: нужен код из приложения или резервный",
+        "tags": [
+          "Админка: безопасность"
         ]
       }
     },
@@ -2087,6 +2299,33 @@
           "password"
         ]
       },
+      "MfaRequiredDto": {
+        "type": "object",
+        "properties": {
+          "mfaRequired": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        },
+        "required": [
+          "mfaRequired"
+        ]
+      },
+      "TotpCodeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "123456",
+            "description": "Шесть цифр из приложения или резервный код ABCD-EFGH-JK"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
       "AdminRole": {
         "type": "string",
         "enum": [
@@ -2116,6 +2355,54 @@
           "id",
           "email",
           "role"
+        ]
+      },
+      "TwoFactorStatusDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "backupCodesLeft": {
+            "type": "number",
+            "description": "Сколько резервных кодов ещё не использовано"
+          }
+        },
+        "required": [
+          "enabled",
+          "backupCodesLeft"
+        ]
+      },
+      "TwoFactorSetupDto": {
+        "type": "object",
+        "properties": {
+          "secret": {
+            "type": "string",
+            "description": "Секрет в base32 — для ручного ввода в приложение"
+          },
+          "otpauthUrl": {
+            "type": "string",
+            "description": "Ссылка otpauth:// для QR-кода"
+          }
+        },
+        "required": [
+          "secret",
+          "otpauthUrl"
+        ]
+      },
+      "BackupCodesDto": {
+        "type": "object",
+        "properties": {
+          "backupCodes": {
+            "description": "Показываются один раз: в базе хранятся только хеши",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "backupCodes"
         ]
       },
       "MessageStatus": {

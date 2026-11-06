@@ -5,11 +5,13 @@ import type { AdminRole } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import {
   ACCESS_TOKEN_TTL_MS,
+  MFA_TOKEN_TTL_MS,
   REFRESH_GRACE_MS,
   REFRESH_TOKEN_TTL_MS,
 } from './auth.constants.js';
 import { verifyPassword } from './passwords.js';
 import { generateRefreshToken, hashToken } from './tokens.js';
+import { TwoFactorService } from './two-factor.service.js';
 
 /** Что лежит в токене доступа. */
 type AccessTokenPayload = {
@@ -23,6 +25,12 @@ export type AuthTokens = {
   accessToken: string;
   refreshToken: string;
 };
+
+export type LoginResult =
+  { kind: 'session'; tokens: AuthTokens } | { kind: 'mfa'; mfaToken: string };
+
+/** Токен шага с кодом: пароль уже проверен, сессии ещё нет. */
+type MfaTokenPayload = { sub: string; purpose: 'mfa' };
 
 /** Без refreshToken — обновился только токен доступа, cookie обновления не трогаем. */
 export type RefreshResult = {
@@ -48,25 +56,60 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
+    private readonly twoFactor: TwoFactorService,
   ) {}
 
-  async login({ email, password }: LoginCredentials): Promise<AuthTokens> {
+  /**
+   * Пароль верный. Без второго фактора — сразу сессия. Со вторым фактором —
+   * только короткий токен шага с кодом: сессии ещё нет, и с одним паролем
+   * в админку не попасть.
+   */
+  async login({ email, password }: LoginCredentials): Promise<LoginResult> {
     const user = await this.prisma.adminUser.findUnique({ where: { email } });
     // Одинаковый ответ и для чужой почты, и для неверного пароля
     if (!(await verifyPassword(user?.passwordHash, password)) || !user) {
       throw invalidCredentials();
     }
 
+    if (user.totpEnabledAt) {
+      const payload: MfaTokenPayload = { sub: user.id, purpose: 'mfa' };
+      return {
+        kind: 'mfa',
+        mfaToken: await this.jwt.signAsync(payload, {
+          expiresIn: MFA_TOKEN_TTL_MS / 1000,
+        }),
+      };
+    }
+    return { kind: 'session', tokens: await this.createSession(user.id) };
+  }
+
+  /** Второй шаг входа: токен шага с кодом плюс код из приложения или резервный. */
+  async completeMfa(mfaToken: string, code: string): Promise<AuthTokens> {
+    const payload = await this.jwt
+      .verifyAsync<Partial<MfaTokenPayload>>(mfaToken)
+      .catch(() => undefined);
+    // purpose отличает этот токен от токена доступа: подсунуть один вместо
+    // другого нельзя, у токена доступа нет purpose, а у этого — sid
+    if (payload?.purpose !== 'mfa' || typeof payload.sub !== 'string') {
+      throw new UnauthorizedException('Начните вход заново');
+    }
+    if (!(await this.twoFactor.verify(payload.sub, code))) {
+      throw new UnauthorizedException('Неверный код');
+    }
+    return this.createSession(payload.sub);
+  }
+
+  private async createSession(userId: string): Promise<AuthTokens> {
     const now = Date.now();
     const refreshToken = generateRefreshToken();
     const [, session] = await this.prisma.$transaction([
       // Заодно убираем истёкшие сессии, чтобы таблица не росла
       this.prisma.adminSession.deleteMany({
-        where: { userId: user.id, expiresAt: { lte: new Date(now) } },
+        where: { userId, expiresAt: { lte: new Date(now) } },
       }),
       this.prisma.adminSession.create({
         data: {
-          userId: user.id,
+          userId,
           tokenHash: hashToken(refreshToken),
           expiresAt: new Date(now + REFRESH_TOKEN_TTL_MS),
         },
@@ -74,7 +117,7 @@ export class AuthService {
     ]);
 
     return {
-      accessToken: await this.signAccessToken(user.id, session.id),
+      accessToken: await this.signAccessToken(userId, session.id),
       refreshToken,
     };
   }

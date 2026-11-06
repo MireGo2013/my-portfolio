@@ -5,6 +5,7 @@ const WEB_URL = 'http://127.0.0.1:3000';
 // Тестовый секрет: с ним API верит IP посетителя, который передаёт сайт.
 // Если серверы уже запущены (reuseExistingServer), у них должен быть тот же
 const PROXY_SECRET = process.env.PROXY_SECRET ?? 'playwright-proxy-secret';
+const CONTENT_MUTATING = /admin-(content|cv)\.spec\.ts$/;
 
 // Нужны база с миграциями и seed и собранный API: pnpm db:up, pnpm db:seed, pnpm build:deps
 export default defineConfig({
@@ -15,7 +16,25 @@ export default defineConfig({
     baseURL: process.env.E2E_BASE_URL ?? WEB_URL,
     trace: 'on-first-retry',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+      testIgnore: CONTENT_MUTATING,
+    },
+    // Эти тесты меняют общий публичный контент (проекты, стек, резюме).
+    // Параллельно с тестами сайта они видели бы чужие правки и сами мешали бы
+    // им, поэтому идут отдельным проектом после всех остальных
+    {
+      name: 'content-mutating',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: CONTENT_MUTATING,
+      dependencies: ['chromium'],
+      // И друг с другом по очереди: два почти одновременных сброса меток
+      // одной страницы (projects и profile) могут оставить её устаревшей
+      workers: 1,
+    },
+  ],
   webServer: [
     {
       command: 'node dist/main.js',

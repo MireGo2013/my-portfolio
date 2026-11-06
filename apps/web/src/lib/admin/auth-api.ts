@@ -1,18 +1,40 @@
 import type { LoginCredentials } from '@portfolio/shared';
 import { adminClient } from './admin-client';
 
-export type LoginResult = 'ok' | 'invalid' | 'rate-limited' | 'failed';
+export type LoginResult = 'ok' | 'mfa' | 'invalid' | 'rate-limited' | 'failed';
 
-/** Вызывается из браузера, поэтому при любом сбое возвращает результат, а не бросает. */
+function resultOf(response: Response): Exclude<LoginResult, 'mfa'> {
+  if (response.ok) return 'ok';
+  if (response.status === 401) return 'invalid';
+  if (response.status === 429) return 'rate-limited';
+  return 'failed';
+}
+
+/**
+ * Вызывается из браузера, поэтому при любом сбое возвращает результат,
+ * а не бросает. 'mfa' — пароль верный, нужен код второго фактора.
+ */
 export async function login(body: LoginCredentials): Promise<LoginResult> {
   try {
-    const { response } = await adminClient().POST('/api/v1/auth/login', {
+    const { data, response } = await adminClient().POST('/api/v1/auth/login', {
       body,
     });
-    if (response.ok) return 'ok';
-    if (response.status === 401) return 'invalid';
-    if (response.status === 429) return 'rate-limited';
+    if (response.status === 200 && data?.mfaRequired) return 'mfa';
+    return resultOf(response);
+  } catch {
     return 'failed';
+  }
+}
+
+/** Второй шаг входа: код из приложения или резервный код. */
+export async function loginTotp(
+  code: string,
+): Promise<Exclude<LoginResult, 'mfa'>> {
+  try {
+    const { response } = await adminClient().POST('/api/v1/auth/login/totp', {
+      body: { code },
+    });
+    return resultOf(response);
   } catch {
     return 'failed';
   }

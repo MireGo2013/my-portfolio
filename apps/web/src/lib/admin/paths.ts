@@ -17,6 +17,7 @@ export const ADMIN_SECTIONS = [
   { href: '/admin/experience', label: 'Опыт' },
   { href: '/admin/skills', label: 'Стек' },
   { href: '/admin/cv', label: 'Резюме' },
+  { href: '/admin/security', label: 'Безопасность' },
 ] as const;
 
 export const ADMIN_START = ADMIN_SECTIONS[0].href;
