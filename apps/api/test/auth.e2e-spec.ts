@@ -250,8 +250,8 @@ describe(AUTH, () => {
         .post(`${AUTH}/refresh`)
         .set('Cookie', cookieHeader({ refresh: first.refresh }))
         .expect(401);
-      // Мёртвые cookie стираются
-      expect(readAuthCookies(reuse)).toEqual({ access: '', refresh: '' });
+      // Cookie не стираются: у браузера может уже лежать новый токен
+      expect(readAuthCookies(reuse)).toEqual({});
       // А новый токен по-прежнему работает
       await http()
         .post(`${AUTH}/refresh`)

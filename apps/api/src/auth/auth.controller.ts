@@ -71,14 +71,11 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<void> {
-    try {
-      const refreshToken = readCookie(req, ADMIN_COOKIES.refresh) ?? '';
-      setAuthCookies(res, await this.auth.refresh(refreshToken));
-    } catch (error) {
-      // Мёртвые cookie браузеру больше не нужны
-      clearAuthCookies(res);
-      throw error;
-    }
+    // При ошибке cookie не стираем. Запрос мог прийти со старым токеном,
+    // а у браузера уже лежит новый от соседнего ответа: Set-Cookie с пустым
+    // значением удалил бы как раз его. Мёртвые cookie безвредны, вход их перезапишет
+    const refreshToken = readCookie(req, ADMIN_COOKIES.refresh) ?? '';
+    setAuthCookies(res, await this.auth.refresh(refreshToken));
   }
 
   @Post('logout')

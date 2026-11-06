@@ -13,6 +13,7 @@ import {
   updateMessageStatus,
   type Message,
 } from '@/lib/admin/messages-api';
+import { ADMIN_MESSAGES } from '@/lib/admin/paths';
 import { LIST_URL_KEY } from '@/lib/admin/use-message-filters';
 
 /** Длинная цитата раздула бы адрес mailto:, а почтовые программы его режут. */
@@ -28,8 +29,6 @@ function replyHref({ email, message }: Message): string {
   // URLSearchParams кодирует пробел как «+», а почтовые программы ждут %20
   return `mailto:${email}?${params.toString().replaceAll('+', '%20')}`;
 }
-
-const LIST_HREF = '/admin/messages';
 
 function readListSearch(): string {
   try {
@@ -52,7 +51,7 @@ function useBackHref(): string {
     readListSearch,
     () => '',
   );
-  return LIST_HREF + search;
+  return ADMIN_MESSAGES + search;
 }
 
 export function MessageCard() {

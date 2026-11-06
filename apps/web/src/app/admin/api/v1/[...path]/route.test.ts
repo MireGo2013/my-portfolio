@@ -24,6 +24,8 @@ beforeAll(() => server.listen({ onUnhandledFrame: 'error' }));
 beforeEach(() => {
   vi.stubEnv('API_URL', API);
   vi.stubEnv('PROXY_SECRET', 'secret');
+  // Как на Vercel: x-real-ip выставляет платформа
+  vi.stubEnv('TRUST_X_REAL_IP', 'true');
 });
 afterEach(() => {
   revalidate.mockReset();
@@ -87,6 +89,49 @@ describe('прокси админки', () => {
     expect(seen?.get('x-client-ip')).toBe('203.0.113.5');
     // Источник проверен здесь, в API он не нужен
     expect(seen?.get('origin')).toBe(null);
+  });
+
+  it('без доверия к x-real-ip адрес посетителя в API не передаёт', async () => {
+    vi.stubEnv('TRUST_X_REAL_IP', '');
+    let seen: Headers | undefined;
+    server.use(
+      http.get(`${API}/api/v1/admin/things`, ({ request }) => {
+        seen = request.headers;
+        return HttpResponse.json({});
+      }),
+    );
+
+    await call(GET, ['admin', 'things']);
+
+    // Иначе любой прислал бы новый IP на каждую попытку входа
+    expect(seen?.get('x-client-ip')).toBe(null);
+    expect(seen?.get('x-proxy-secret')).toBe(null);
+  });
+
+  it('Sec-Fetch-Site от браузера главнее сравнения адресов', async () => {
+    server.use(
+      http.post(
+        `${API}/api/v1/auth/logout`,
+        () => new HttpResponse(null, { status: 204 }),
+      ),
+    );
+    const send = (site: string) =>
+      POST(
+        new NextRequest('http://site.test/admin/api/v1/auth/logout', {
+          method: 'POST',
+          // Прокси переписал Host, и Origin с ним не совпадает
+          headers: {
+            origin: 'https://public.example.com',
+            host: 'web:3000',
+            'sec-fetch-site': site,
+          },
+          body: '{}',
+        }),
+        { params: Promise.resolve({ path: ['auth', 'logout'] }) },
+      );
+
+    expect((await send('same-origin')).status).toBe(204);
+    expect((await send('cross-site')).status).toBe(403);
   });
 
   it('изменяющий запрос с чужого сайта не доходит до API', async () => {

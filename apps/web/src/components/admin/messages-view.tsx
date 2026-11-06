@@ -2,13 +2,20 @@
 
 import {
   MESSAGE_PAGE_SIZES,
+  MESSAGES_QUERY_LIMITS,
   MESSAGE_STATUSES,
   type MessageSortField,
   type MessageStatus,
 } from '@portfolio/shared';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useEffect, useId, useState, type ReactNode } from 'react';
+import {
+  useEffect,
+  useEffectEvent,
+  useId,
+  useState,
+  type ReactNode,
+} from 'react';
 import {
   filtersToApiQuery,
   hasInvalidPeriod,
@@ -243,15 +250,21 @@ export function SearchBox({
     else setText(value);
   }
 
+  // onSearch родитель создаёт заново на каждом рендере. Будь он в зависимостях,
+  // любой рендер родителя (пришёл ответ, обновился счётчик) сбрасывал бы таймер.
+  // useEffectEvent даёт функцию, которая всегда видит свежий onSearch,
+  // но сама не меняется и в зависимости не нужна
+  const search = useEffectEvent((q: string) => {
+    setSent(q);
+    onSearch(q);
+  });
+
   // Запрос уходит, когда пауза в наборе дольше 300 мс, а не на каждую букву
   useEffect(() => {
     if (text === value) return;
-    const timer = setTimeout(() => {
-      setSent(text);
-      onSearch(text);
-    }, 300);
+    const timer = setTimeout(() => search(text), 300);
     return () => clearTimeout(timer);
-  }, [text, value, onSearch]);
+  }, [text, value]);
 
   return (
     <div className="flex min-w-60 flex-1 flex-col gap-1.5">
@@ -262,6 +275,8 @@ export function SearchBox({
         id={id}
         type="search"
         value={text}
+        // Длиннее адрес не примет: схема фильтров сбросила бы запрос в пустой
+        maxLength={MESSAGES_QUERY_LIMITS.searchMax}
         onChange={(event) => setText(event.target.value)}
         placeholder="Имя, почта или текст"
         className={CONTROL_CLASS}

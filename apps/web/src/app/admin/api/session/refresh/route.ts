@@ -3,7 +3,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 import {
   callApi,
   clientIpFrom,
-  readAuthCookies,
+  publicOrigin,
+  refreshSession,
 } from '@/lib/admin/api-forward';
 import { ADMIN_LOGIN, safeNextPath } from '@/lib/admin/paths';
 
@@ -18,39 +19,35 @@ import { ADMIN_LOGIN, safeNextPath } from '@/lib/admin/paths';
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const next = safeNextPath(request.nextUrl.searchParams.get('next'));
-  const toLogin = (setCookies: string[] = []) => {
-    const url = new URL(ADMIN_LOGIN, request.nextUrl.origin);
-    url.searchParams.set('next', next);
-    const response = NextResponse.redirect(url);
+  // Адрес, на который пришёл браузер: за прокси nextUrl указал бы на localhost
+  const origin = publicOrigin(request);
+  const redirect = (path: string, setCookies: string[] = []) => {
+    const response = NextResponse.redirect(new URL(path, origin));
     for (const line of setCookies) response.headers.append('set-cookie', line);
     return response;
   };
+  const toLogin = (setCookies?: string[]) =>
+    redirect(`${ADMIN_LOGIN}?next=${encodeURIComponent(next)}`, setCookies);
 
   const refresh = request.cookies.get(ADMIN_COOKIES.refresh)?.value;
   if (!refresh) return toLogin();
 
   try {
-    const refreshed = await callApi('auth/refresh', {
-      method: 'POST',
-      clientIp: clientIpFrom(request.headers),
-      cookies: { refresh },
-    });
-    const setCookies = refreshed.headers.getSetCookie();
-    if (!refreshed.ok) return toLogin(setCookies);
+    const refreshed = await refreshSession(
+      refresh,
+      clientIpFrom(request.headers),
+    );
+    if (!refreshed.ok) return toLogin(refreshed.setCookies);
 
     // Проверяем новый токен до перехода: иначе при отказе по другой причине
     // layout отправил бы сюда снова, и вышел бы бесконечный цикл
     const me = await callApi('auth/me', {
       method: 'GET',
-      cookies: { refresh, ...readAuthCookies(setCookies) },
+      cookies: refreshed.cookies,
     });
-    if (!me.ok) return toLogin(setCookies);
+    if (!me.ok) return toLogin(refreshed.setCookies);
 
-    const response = NextResponse.redirect(
-      new URL(next, request.nextUrl.origin),
-    );
-    for (const line of setCookies) response.headers.append('set-cookie', line);
-    return response;
+    return redirect(next, refreshed.setCookies);
   } catch {
     return toLogin();
   }

@@ -80,6 +80,10 @@ jobs:
             http://127.0.0.1:3001/api/v1/health
       # Сборке сайта нужен работающий API
       - name: Build and start web
+        # Только сайту: x-real-ip тестам задаёт браузер, как в проде Vercel.
+        # API доверять ему не должен, это проверяют его собственные тесты
+        env:
+          TRUST_X_REAL_IP: 'true'
         run: |
           pnpm --filter @portfolio/web build
           nohup pnpm --filter @portfolio/web start --hostname 127.0.0.1 > web.log 2>&1 &

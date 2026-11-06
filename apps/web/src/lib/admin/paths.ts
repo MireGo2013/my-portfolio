@@ -1,5 +1,6 @@
 export const ADMIN_HOME = '/admin';
 export const ADMIN_LOGIN = '/admin/login';
+export const ADMIN_MESSAGES = '/admin/messages';
 export const ADMIN_API_BASE = '/admin/api/';
 
 /** Через этот заголовок proxy сообщает layout адрес открытой страницы. */
@@ -10,7 +11,7 @@ export const ADMIN_SESSION_REFRESH = '/admin/api/session/refresh';
 
 /** Разделы меню. В API коммерческие проекты лежат в /experience, а открытые в /projects. */
 export const ADMIN_SECTIONS = [
-  { href: '/admin/messages', label: 'Сообщения' },
+  { href: ADMIN_MESSAGES, label: 'Сообщения' },
   { href: '/admin/profile', label: 'Профиль' },
   { href: '/admin/projects', label: 'Проекты' },
   { href: '/admin/experience', label: 'Опыт' },

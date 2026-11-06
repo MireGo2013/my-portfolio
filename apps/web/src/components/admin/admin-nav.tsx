@@ -4,9 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { fetchMessageCounts, messageKeys } from '@/lib/admin/messages-api';
-import { ADMIN_SECTIONS } from '@/lib/admin/paths';
-
-const MESSAGES_HREF = '/admin/messages';
+import { ADMIN_MESSAGES, ADMIN_SECTIONS } from '@/lib/admin/paths';
 
 export function AdminNav() {
   const pathname = usePathname();
@@ -23,7 +21,7 @@ export function AdminNav() {
       <ul className="flex flex-wrap gap-1 md:flex-col">
         {ADMIN_SECTIONS.map(({ href, label }) => {
           const current = pathname === href || pathname.startsWith(`${href}/`);
-          const badge = href === MESSAGES_HREF && newCount > 0;
+          const badge = href === ADMIN_MESSAGES && newCount > 0;
           return (
             <li key={href}>
               <Link

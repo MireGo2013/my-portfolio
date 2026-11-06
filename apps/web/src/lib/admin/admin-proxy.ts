@@ -1,6 +1,6 @@
 import { ADMIN_COOKIES } from '@portfolio/shared';
 import { NextResponse, type NextRequest } from 'next/server';
-import { callApi, clientIpFrom, readAuthCookies } from './api-forward';
+import { clientIpFrom, publicOrigin, refreshSession } from './api-forward';
 import { ADMIN_API_BASE, ADMIN_LOGIN, ADMIN_PATH_HEADER } from './paths';
 
 /** Админка не должна попасть в поиск, даже если на неё где-то сослались. */
@@ -9,18 +9,14 @@ function noIndex(response: NextResponse): NextResponse {
   return response;
 }
 
-function redirectToLogin(request: NextRequest, setCookies: string[] = []) {
-  const url = request.nextUrl.clone();
-  url.pathname = ADMIN_LOGIN;
-  url.search = '';
+function redirectToLogin(request: NextRequest) {
+  // От адреса, на который пришёл браузер: за прокси nextUrl указал бы на localhost
+  const url = new URL(ADMIN_LOGIN, publicOrigin(request));
   url.searchParams.set(
     'next',
     request.nextUrl.pathname + request.nextUrl.search,
   );
-  const response = NextResponse.redirect(url);
-  // Если API стёр мёртвые cookie, стираем их и в браузере
-  for (const line of setCookies) response.headers.append('set-cookie', line);
-  return noIndex(response);
+  return noIndex(NextResponse.redirect(url));
 }
 
 /**
@@ -61,25 +57,23 @@ export async function adminProxy(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const refreshed = await callApi('auth/refresh', {
-      method: 'POST',
-      clientIp: clientIpFrom(request.headers),
-      cookies: { refresh },
-    });
-    const setCookies = refreshed.headers.getSetCookie();
+    const refreshed = await refreshSession(
+      refresh,
+      clientIpFrom(request.headers),
+    );
     if (!refreshed.ok) {
-      return redirectToLogin(request, setCookies);
+      return redirectToLogin(request);
     }
 
     // Новые cookie нужны уже этому запросу: их прочитает layout через cookies()
-    const fresh = readAuthCookies(setCookies);
-    if (fresh.access) request.cookies.set(ADMIN_COOKIES.access, fresh.access);
-    if (fresh.refresh) {
-      request.cookies.set(ADMIN_COOKIES.refresh, fresh.refresh);
-    }
+    const { access, refresh: nextRefresh } = refreshed.cookies;
+    if (access) request.cookies.set(ADMIN_COOKIES.access, access);
+    if (nextRefresh) request.cookies.set(ADMIN_COOKIES.refresh, nextRefresh);
     const response = passWithPath(request);
     // А эти уйдут в браузер
-    for (const line of setCookies) response.headers.append('set-cookie', line);
+    for (const line of refreshed.setCookies) {
+      response.headers.append('set-cookie', line);
+    }
     return noIndex(response);
   } catch {
     return redirectToLogin(request);

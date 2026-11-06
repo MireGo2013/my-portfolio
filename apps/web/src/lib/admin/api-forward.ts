@@ -24,12 +24,65 @@ function apiBaseUrl(): string {
 }
 
 /**
- * IP посетителя. На Vercel заголовок x-real-ip выставляет сама платформа,
- * и посетитель не может его подменить. Локально его нет, и API считает
- * лимит по адресу сервера сайта.
+ * IP посетителя для лимита входа. Заголовку x-real-ip верим только там,
+ * где его перезаписывает платформа: на Vercel (там есть переменная VERCEL)
+ * или за своим прокси, если это явно включено TRUST_X_REAL_IP=true.
+ * Иначе заголовок прислал сам посетитель, и с секретом мы передали бы в API
+ * любой выдуманный адрес: новый IP на каждую попытку — и лимита нет.
+ * Без IP API считает лимит по адресу сервера сайта: общий, но честный.
  */
 export function clientIpFrom(headers: Headers): string | undefined {
-  return headers.get('x-real-ip') || undefined;
+  const trusted =
+    Boolean(process.env.VERCEL) || process.env.TRUST_X_REAL_IP === 'true';
+  return trusted ? headers.get('x-real-ip') || undefined : undefined;
+}
+
+/**
+ * Адрес сайта, каким его видит браузер. Не nextUrl.origin: Next.js строит
+ * его из своего адреса (localhost), а за прокси браузер пришёл на другой.
+ * X-Forwarded-Host может прийти списком через цепочку прокси — берём первый.
+ */
+export function publicOrigin(request: {
+  headers: Headers;
+  nextUrl: URL;
+}): string {
+  const first = (name: string) =>
+    request.headers.get(name)?.split(',')[0]?.trim() || undefined;
+  const host =
+    first('x-forwarded-host') ?? first('host') ?? request.nextUrl.host;
+  const proto =
+    first('x-forwarded-proto') ?? request.nextUrl.protocol.replace(':', '');
+  return `${proto}://${host}`;
+}
+
+/**
+ * Обновление сессии по токену обновления. Одно место для proxy.ts,
+ * прокси-маршрута и маршрута обновления: отличается только то, что они
+ * делают с результатом.
+ *
+ * cookies — токены, с которыми теперь ходить в API: новый токен доступа
+ * и новый токен обновления, а если его нет (соседний запрос уже заменил),
+ * прежний. setCookies — строки Set-Cookie для браузера.
+ */
+export async function refreshSession(
+  refreshToken: string,
+  clientIp: string | undefined,
+): Promise<
+  | { ok: true; cookies: AdminCookies; setCookies: string[] }
+  | { ok: false; setCookies: string[] }
+> {
+  const response = await callApi('auth/refresh', {
+    method: 'POST',
+    clientIp,
+    cookies: { refresh: refreshToken },
+  });
+  const setCookies = response.headers.getSetCookie();
+  if (!response.ok) return { ok: false, setCookies };
+  return {
+    ok: true,
+    cookies: { refresh: refreshToken, ...readAuthCookies(setCookies) },
+    setCookies,
+  };
 }
 
 /** Из нескольких cookie браузера в API уходят только cookie админки. */

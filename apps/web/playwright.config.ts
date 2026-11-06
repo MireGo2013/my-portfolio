@@ -35,7 +35,13 @@ export default defineConfig({
       url: WEB_URL,
       reuseExistingServer: true,
       timeout: 120_000,
-      env: { API_URL, NEXT_PUBLIC_API_URL: API_URL, PROXY_SECRET },
+      // x-real-ip тестам задаёт браузер. В проде его выставляет Vercel
+      env: {
+        API_URL,
+        NEXT_PUBLIC_API_URL: API_URL,
+        PROXY_SECRET,
+        TRUST_X_REAL_IP: 'true',
+      },
     },
   ],
 });

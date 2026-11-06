@@ -4,7 +4,8 @@ import type { NextRequest } from 'next/server';
 import {
   callApi,
   clientIpFrom,
-  readAuthCookies,
+  publicOrigin,
+  refreshSession,
   type AdminCookies,
 } from '@/lib/admin/api-forward';
 import { CONTENT_TAGS, isContentSection } from '@/lib/content-tags';
@@ -19,28 +20,30 @@ const notFound = () =>
   Response.json({ message: 'Не найдено' }, { status: 404 });
 
 /**
- * Защита от CSRF вторым слоем после SameSite. Браузер ставит Origin у POST,
- * PUT, PATCH и DELETE, и страница не может его подменить. Сравниваем с адресом,
- * на который браузер пришёл: так работают и основной домен, и адреса
- * предпросмотра Vercel. Без Origin смотрим Sec-Fetch-Site, тоже от браузера.
- * Если нет обоих, это не браузер, и чужих cookie у него нет.
+ * Защита от CSRF вторым слоем после SameSite. Оба заголовка ставит сам
+ * браузер, и страница не может их подменить.
+ *
+ * 1. Sec-Fetch-Site — браузер прямо говорит, с того же ли сайта запрос.
+ *    Прокси его не трогают, поэтому неважно, как переписан Host.
+ * 2. Старый браузер без Sec-Fetch-Site: сравниваем Origin с адресом,
+ *    на который пришёл браузер. Так работают и основной домен,
+ *    и адреса предпросмотра Vercel.
+ * 3. Нет обоих — это не браузер, и чужих cookie у него нет.
  */
 function isCrossSite(request: NextRequest): boolean {
+  const site = request.headers.get('sec-fetch-site');
+  if (site !== null) {
+    return site !== 'same-origin';
+  }
   const origin = request.headers.get('origin');
   if (origin !== null) {
-    // Не nextUrl.origin: Next.js строит его из своего адреса (localhost),
-    // а не из того, на который пришёл браузер. Host и X-Forwarded-Host
-    // страница злоумышленника выставить не может
-    const host =
-      request.headers.get('x-forwarded-host') ?? request.headers.get('host');
     try {
-      return new URL(origin).host !== host;
+      return new URL(origin).origin !== new URL(publicOrigin(request)).origin;
     } catch {
       return true;
     }
   }
-  const site = request.headers.get('sec-fetch-site');
-  return site !== null && site !== 'same-origin';
+  return false;
 }
 
 /**
@@ -103,18 +106,12 @@ async function handle(
   // Токен доступа истёк: обновляем и повторяем запрос, клиент этого не замечает.
   // Для самих эндпоинтов входа не повторяем: 401 там значит именно 401
   if (response.status === 401 && path[0] !== 'auth' && cookies.refresh) {
-    const refreshed = await callApi('auth/refresh', {
-      method: 'POST',
-      clientIp: call.clientIp,
-      cookies: { refresh: cookies.refresh },
-    });
-    setCookies.push(...refreshed.headers.getSetCookie());
+    const refreshed = await refreshSession(cookies.refresh, call.clientIp);
+    setCookies.push(...refreshed.setCookies);
     if (refreshed.ok) {
-      // Если соседний запрос уже заменил токен обновления, API вернёт только
-      // новый токен доступа, а прежний токен обновления останется как был
       response = await callApi(apiPath, {
         ...call,
-        cookies: { ...cookies, ...readAuthCookies(setCookies) },
+        cookies: refreshed.cookies,
       });
     }
   }
