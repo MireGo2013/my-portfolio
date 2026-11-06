@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { SectionPlaceholder } from '@/components/admin/section-placeholder';
+import { SkillsListPage } from '@/components/admin/section-pages';
 
 export const metadata: Metadata = { title: 'Стек' };
 
 export default function Page() {
-  return <SectionPlaceholder title="Стек" step={5} />;
+  return <SkillsListPage />;
 }

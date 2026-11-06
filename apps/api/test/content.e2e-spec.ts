@@ -134,6 +134,16 @@ describe('API контента', () => {
 
     expect(Object.keys(body.paths).sort()).toEqual(
       [
+        'admin/content/experience',
+        'admin/content/experience/order',
+        'admin/content/experience/{id}',
+        'admin/content/profile',
+        'admin/content/projects',
+        'admin/content/projects/order',
+        'admin/content/projects/{id}',
+        'admin/content/skills',
+        'admin/content/skills/order',
+        'admin/content/skills/{id}',
         'admin/messages',
         'admin/messages/counts',
         'admin/messages/{id}',

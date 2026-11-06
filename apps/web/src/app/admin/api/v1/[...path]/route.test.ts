@@ -11,7 +11,11 @@ import {
   it,
   vi,
 } from 'vitest';
-import { POST, GET } from './route';
+import { revalidateTag } from 'next/cache';
+import { DELETE, GET, POST, PUT } from './route';
+
+vi.mock('next/cache', () => ({ revalidateTag: vi.fn() }));
+const revalidate = vi.mocked(revalidateTag);
 
 const API = 'http://api.test';
 const server = setupServer();
@@ -22,6 +26,7 @@ beforeEach(() => {
   vi.stubEnv('PROXY_SECRET', 'secret');
 });
 afterEach(() => {
+  revalidate.mockReset();
   server.resetHandlers();
   vi.unstubAllEnvs();
 });
@@ -146,5 +151,57 @@ describe('прокси админки', () => {
     expect(response.headers.getSetCookie()).toEqual([
       'admin_refresh=; Max-Age=0',
     ]);
+  });
+
+  describe('сброс кэша сайта', () => {
+    const CONTENT = `${API}/api/v1/admin/content`;
+
+    it('после сохранения контента сбрасывает метку раздела сразу', async () => {
+      server.use(
+        http.put(`${CONTENT}/profile`, () => HttpResponse.json({})),
+        http.delete(
+          `${CONTENT}/skills/x`,
+          () => new HttpResponse(null, { status: 204 }),
+        ),
+      );
+
+      await call(PUT, ['admin', 'content', 'profile'], {
+        method: 'PUT',
+        body: '{}',
+      });
+      await call(DELETE, ['admin', 'content', 'skills', 'x'], {
+        method: 'DELETE',
+      });
+
+      expect(revalidate.mock.calls).toEqual([
+        ['profile', { expire: 0 }],
+        ['skills', { expire: 0 }],
+      ]);
+    });
+
+    it('не сбрасывает при чтении, ошибке и вне раздела контента', async () => {
+      server.use(
+        http.get(`${CONTENT}/profile`, () => HttpResponse.json({})),
+        http.put(
+          `${CONTENT}/projects/x`,
+          () => new HttpResponse(null, { status: 400 }),
+        ),
+        http.patch(`${API}/api/v1/admin/messages/x`, () =>
+          HttpResponse.json({}),
+        ),
+      );
+
+      await call(GET, ['admin', 'content', 'profile']);
+      await call(PUT, ['admin', 'content', 'projects', 'x'], {
+        method: 'PUT',
+        body: '{}',
+      });
+      await call(PUT, ['admin', 'messages', 'x'], {
+        method: 'PATCH',
+        body: '{}',
+      });
+
+      expect(revalidate).not.toHaveBeenCalled();
+    });
   });
 });

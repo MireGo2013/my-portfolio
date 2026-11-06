@@ -603,6 +603,1008 @@
           "Админка: сообщения"
         ]
       }
+    },
+    "/api/v1/admin/content/profile": {
+      "get": {
+        "operationId": "AdminProfileController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminProfileDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "404": {
+            "description": "Запись не найдена"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Профиль на всех языках",
+        "tags": [
+          "Админка: контент"
+        ]
+      },
+      "put": {
+        "operationId": "AdminProfileController_update",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminProfileDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Сохранить профиль",
+        "tags": [
+          "Админка: контент"
+        ]
+      }
+    },
+    "/api/v1/admin/content/experience": {
+      "get": {
+        "operationId": "AdminExperienceController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminExperienceDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Коммерческие проекты в порядке показа",
+        "tags": [
+          "Админка: контент"
+        ]
+      },
+      "post": {
+        "operationId": "AdminExperienceController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminExperienceInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminExperienceDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "409": {
+            "description": "slug занят",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Добавить проект в конец списка",
+        "tags": [
+          "Админка: контент"
+        ]
+      }
+    },
+    "/api/v1/admin/content/experience/order": {
+      "put": {
+        "operationId": "AdminExperienceController_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminExperienceDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Новый порядок записей раздела",
+        "tags": [
+          "Админка: контент"
+        ]
+      }
+    },
+    "/api/v1/admin/content/experience/{id}": {
+      "get": {
+        "operationId": "AdminExperienceController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminExperienceDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "404": {
+            "description": "Запись не найдена"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "tags": [
+          "Админка: контент"
+        ]
+      },
+      "put": {
+        "operationId": "AdminExperienceController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminExperienceInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminExperienceDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "404": {
+            "description": "Запись не найдена"
+          },
+          "409": {
+            "description": "slug занят",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Сохранить проект",
+        "tags": [
+          "Админка: контент"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminExperienceController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Удалено"
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "404": {
+            "description": "Запись не найдена"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "tags": [
+          "Админка: контент"
+        ]
+      }
+    },
+    "/api/v1/admin/content/projects": {
+      "get": {
+        "operationId": "AdminProjectsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminProjectDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Открытые проекты и фриланс в порядке показа",
+        "tags": [
+          "Админка: контент"
+        ]
+      },
+      "post": {
+        "operationId": "AdminProjectsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminProjectInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminProjectDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "409": {
+            "description": "slug занят",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Добавить проект в конец списка",
+        "tags": [
+          "Админка: контент"
+        ]
+      }
+    },
+    "/api/v1/admin/content/projects/order": {
+      "put": {
+        "operationId": "AdminProjectsController_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminProjectDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Новый порядок записей раздела",
+        "tags": [
+          "Админка: контент"
+        ]
+      }
+    },
+    "/api/v1/admin/content/projects/{id}": {
+      "get": {
+        "operationId": "AdminProjectsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminProjectDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "404": {
+            "description": "Запись не найдена"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "tags": [
+          "Админка: контент"
+        ]
+      },
+      "put": {
+        "operationId": "AdminProjectsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminProjectInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminProjectDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "404": {
+            "description": "Запись не найдена"
+          },
+          "409": {
+            "description": "slug занят",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Сохранить проект",
+        "tags": [
+          "Админка: контент"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminProjectsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Удалено"
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "404": {
+            "description": "Запись не найдена"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "tags": [
+          "Админка: контент"
+        ]
+      }
+    },
+    "/api/v1/admin/content/skills": {
+      "get": {
+        "operationId": "AdminSkillsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminSkillCategoryDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Группы навыков в порядке показа",
+        "tags": [
+          "Админка: контент"
+        ]
+      },
+      "post": {
+        "operationId": "AdminSkillsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminSkillCategoryInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSkillCategoryDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "409": {
+            "description": "slug занят",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Добавить группу в конец списка",
+        "tags": [
+          "Админка: контент"
+        ]
+      }
+    },
+    "/api/v1/admin/content/skills/order": {
+      "put": {
+        "operationId": "AdminSkillsController_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminSkillCategoryDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Новый порядок записей раздела",
+        "tags": [
+          "Админка: контент"
+        ]
+      }
+    },
+    "/api/v1/admin/content/skills/{id}": {
+      "get": {
+        "operationId": "AdminSkillsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSkillCategoryDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "404": {
+            "description": "Запись не найдена"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "tags": [
+          "Админка: контент"
+        ]
+      },
+      "put": {
+        "operationId": "AdminSkillsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminSkillCategoryInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSkillCategoryDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "404": {
+            "description": "Запись не найдена"
+          },
+          "409": {
+            "description": "slug занят",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Сохранить группу и её навыки",
+        "tags": [
+          "Админка: контент"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminSkillsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Удалено"
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "404": {
+            "description": "Запись не найдена"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "tags": [
+          "Админка: контент"
+        ]
+      }
     }
   },
   "info": {
@@ -1099,6 +2101,437 @@
         },
         "required": [
           "status"
+        ]
+      },
+      "ProfileTextDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "shortName": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "about": {
+            "description": "Абзацы истории на главной",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "fullName",
+          "shortName",
+          "summary",
+          "about"
+        ]
+      },
+      "ProfileTranslationsDto": {
+        "type": "object",
+        "properties": {
+          "ru": {
+            "$ref": "#/components/schemas/ProfileTextDto"
+          },
+          "en": {
+            "$ref": "#/components/schemas/ProfileTextDto"
+          }
+        },
+        "required": [
+          "ru",
+          "en"
+        ]
+      },
+      "AdminProfileDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "specialization": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "telegramUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "githubUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "linkedinUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "translations": {
+            "$ref": "#/components/schemas/ProfileTranslationsDto"
+          }
+        },
+        "required": [
+          "title",
+          "specialization",
+          "email",
+          "telegramUrl",
+          "githubUrl",
+          "linkedinUrl",
+          "translations"
+        ]
+      },
+      "ExperienceTextDto": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "nullable": true
+          },
+          "project": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "responsibilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "achievements": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "company",
+          "project",
+          "summary",
+          "responsibilities",
+          "achievements"
+        ]
+      },
+      "ExperienceTranslationsDto": {
+        "type": "object",
+        "properties": {
+          "ru": {
+            "$ref": "#/components/schemas/ExperienceTextDto"
+          },
+          "en": {
+            "$ref": "#/components/schemas/ExperienceTextDto"
+          }
+        },
+        "required": [
+          "ru",
+          "en"
+        ]
+      },
+      "AdminExperienceDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "scooter-admin-crm"
+          },
+          "role": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "example": "2025-08",
+            "description": "YYYY-MM"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true,
+            "example": "2025-11",
+            "description": "YYYY-MM, null — работа продолжается"
+          },
+          "stack": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "translations": {
+            "$ref": "#/components/schemas/ExperienceTranslationsDto"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "slug",
+          "role",
+          "startDate",
+          "endDate",
+          "stack",
+          "translations",
+          "id"
+        ]
+      },
+      "AdminExperienceInputDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "scooter-admin-crm"
+          },
+          "role": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "example": "2025-08",
+            "description": "YYYY-MM"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true,
+            "example": "2025-11",
+            "description": "YYYY-MM, null — работа продолжается"
+          },
+          "stack": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "translations": {
+            "$ref": "#/components/schemas/ExperienceTranslationsDto"
+          }
+        },
+        "required": [
+          "slug",
+          "role",
+          "startDate",
+          "endDate",
+          "stack",
+          "translations"
+        ]
+      },
+      "ReorderDto": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "description": "Все id раздела в новом порядке",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "ids"
+        ]
+      },
+      "ProjectTextDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "description"
+        ]
+      },
+      "ProjectTranslationsDto": {
+        "type": "object",
+        "properties": {
+          "ru": {
+            "$ref": "#/components/schemas/ProjectTextDto"
+          },
+          "en": {
+            "$ref": "#/components/schemas/ProjectTextDto"
+          }
+        },
+        "required": [
+          "ru",
+          "en"
+        ]
+      },
+      "AdminProjectDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "paint-online"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProjectKind"
+              }
+            ]
+          },
+          "stack": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "repoUrl": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri"
+          },
+          "liveUrl": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri"
+          },
+          "translations": {
+            "$ref": "#/components/schemas/ProjectTranslationsDto"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "slug",
+          "kind",
+          "stack",
+          "repoUrl",
+          "liveUrl",
+          "translations",
+          "id"
+        ]
+      },
+      "AdminProjectInputDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "paint-online"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProjectKind"
+              }
+            ]
+          },
+          "stack": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "repoUrl": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri"
+          },
+          "liveUrl": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri"
+          },
+          "translations": {
+            "$ref": "#/components/schemas/ProjectTranslationsDto"
+          }
+        },
+        "required": [
+          "slug",
+          "kind",
+          "stack",
+          "repoUrl",
+          "liveUrl",
+          "translations"
+        ]
+      },
+      "SkillCategoryTextDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "SkillCategoryTranslationsDto": {
+        "type": "object",
+        "properties": {
+          "ru": {
+            "$ref": "#/components/schemas/SkillCategoryTextDto"
+          },
+          "en": {
+            "$ref": "#/components/schemas/SkillCategoryTextDto"
+          }
+        },
+        "required": [
+          "ru",
+          "en"
+        ]
+      },
+      "AdminSkillCategoryDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "frontend"
+          },
+          "translations": {
+            "$ref": "#/components/schemas/SkillCategoryTranslationsDto"
+          },
+          "skills": {
+            "description": "Навыки в порядке показа",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "slug",
+          "translations",
+          "skills",
+          "id"
+        ]
+      },
+      "AdminSkillCategoryInputDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "frontend"
+          },
+          "translations": {
+            "$ref": "#/components/schemas/SkillCategoryTranslationsDto"
+          },
+          "skills": {
+            "description": "Навыки в порядке показа",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "slug",
+          "translations",
+          "skills"
         ]
       }
     }

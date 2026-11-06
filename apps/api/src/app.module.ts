@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { minutes, ThrottlerModule } from '@nestjs/throttler';
+import { AdminContentModule } from './admin-content/admin-content.module.js';
 import { AdminMessagesModule } from './admin-messages/admin-messages.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { ContactModule } from './contact/contact.module.js';
@@ -24,6 +25,7 @@ import { SkillsModule } from './skills/skills.module.js';
     ContactModule,
     AuthModule,
     AdminMessagesModule,
+    AdminContentModule,
   ],
 })
 export class AppModule {}

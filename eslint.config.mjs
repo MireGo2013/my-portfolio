@@ -28,6 +28,16 @@ export default defineConfig([
     },
   },
 
+  {
+    rules: {
+      // const { id, ...rest } = record — обычный способ убрать поле из объекта
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { ignoreRestSiblings: true },
+      ],
+    },
+  },
+
   // Обычный JS вне tsconfig: правила на основе типов тут работать не могут
   {
     files: ['**/*.mjs'],

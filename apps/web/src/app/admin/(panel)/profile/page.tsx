@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { SectionPlaceholder } from '@/components/admin/section-placeholder';
+import { ProfileEditor } from '@/components/admin/profile-form';
 
 export const metadata: Metadata = { title: 'Профиль' };
 
 export default function Page() {
-  return <SectionPlaceholder title="Профиль" step={5} />;
+  return <ProfileEditor />;
 }

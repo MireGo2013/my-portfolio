@@ -40,3 +40,14 @@ export function safeNextPath(next: string | null | undefined): string {
   }
   return ADMIN_START;
 }
+
+/**
+ * Где в админке редактируется раздел API. Названия в меню идут от сайта:
+ * коммерческие проекты (API /experience) — «Проекты», GitHub и фриланс
+ * (API /projects) — «Опыт».
+ */
+export const CONTENT_PATHS = {
+  experience: '/admin/projects',
+  projects: '/admin/experience',
+  skills: '/admin/skills',
+} as const;

@@ -8,6 +8,7 @@ import {
   type Project,
   type SkillCategory,
 } from './api/content-api';
+import { CONTENT_TAGS } from './content-tags';
 
 function contentApi() {
   const apiUrl = process.env.API_URL;
@@ -18,13 +19,13 @@ function contentApi() {
 }
 
 // Результаты попадают в статический HTML страниц. Профиль кэша content описан
-// в next.config.ts, а теги нужны для точечного обновления из админки в v2.
+// в next.config.ts, а метки сбрасывает прокси админки после сохранения.
 // Аргумент locale входит в ключ кэша, поэтому у каждого языка своя запись.
 
 export async function getProfile(locale: Locale): Promise<Profile> {
   'use cache';
   cacheLife('content');
-  cacheTag('profile');
+  cacheTag(CONTENT_TAGS.profile);
 
   return contentApi().getProfile(locale);
 }
@@ -32,7 +33,7 @@ export async function getProfile(locale: Locale): Promise<Profile> {
 export async function getExperience(locale: Locale): Promise<Experience[]> {
   'use cache';
   cacheLife('content');
-  cacheTag('experience');
+  cacheTag(CONTENT_TAGS.experience);
 
   return contentApi().getExperience(locale);
 }
@@ -40,7 +41,7 @@ export async function getExperience(locale: Locale): Promise<Experience[]> {
 export async function getProjects(locale: Locale): Promise<Project[]> {
   'use cache';
   cacheLife('content');
-  cacheTag('projects');
+  cacheTag(CONTENT_TAGS.projects);
 
   return contentApi().getProjects(locale);
 }
@@ -48,7 +49,7 @@ export async function getProjects(locale: Locale): Promise<Project[]> {
 export async function getSkills(locale: Locale): Promise<SkillCategory[]> {
   'use cache';
   cacheLife('content');
-  cacheTag('skills');
+  cacheTag(CONTENT_TAGS.skills);
 
   return contentApi().getSkills(locale);
 }
