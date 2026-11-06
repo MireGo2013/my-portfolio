@@ -9,7 +9,12 @@ export const cvKey = () => [...contentKeys.all, 'cv'] as const;
 
 /** Коды ошибок загрузки из маршрута /admin/api/cv/[locale]. */
 export type CvUploadError =
-  'missing' | 'tooLarge' | 'notPdf' | 'storageNotConfigured' | 'failed';
+  | 'missing'
+  | 'tooLarge'
+  | 'notPdf'
+  | 'storageNotConfigured'
+  | 'storageAccessDenied'
+  | 'failed';
 
 export class CvUploadFailed extends ApiError {
   constructor(
@@ -31,6 +36,7 @@ const KNOWN: CvUploadError[] = [
   'tooLarge',
   'notPdf',
   'storageNotConfigured',
+  'storageAccessDenied',
 ];
 
 async function cvRequest(locale: Locale, init: RequestInit): Promise<AdminCv> {

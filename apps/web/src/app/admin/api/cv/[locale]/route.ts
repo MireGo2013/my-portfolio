@@ -134,7 +134,16 @@ export function POST(request: NextRequest, { params }: RouteParams) {
     try {
       url = await uploadCv(locale, file.file);
     } catch (reason) {
-      if (reason instanceof StorageUnavailable) return storageOff();
+      if (reason instanceof StorageUnavailable) {
+        // Ключи есть, а хранилище отказало: чаще всего на Vercel выключена
+        // OIDC Federation, и токен не приходит с запросом. Причину — в лог
+        console.error('Vercel Blob отказал в доступе:', reason.message);
+        return error(
+          503,
+          'storageAccessDenied',
+          'Хранилище Vercel Blob отказало в доступе',
+        );
+      }
       throw reason;
     }
 

@@ -1,4 +1,4 @@
-import { del, put } from '@vercel/blob';
+import { BlobError, del, put } from '@vercel/blob';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { revalidateTag } from 'next/cache';
@@ -17,7 +17,19 @@ import { DELETE, POST } from './route';
 
 vi.mock('server-only', () => ({}));
 vi.mock('next/cache', () => ({ revalidateTag: vi.fn() }));
-vi.mock('@vercel/blob', () => ({ put: vi.fn(), del: vi.fn() }));
+vi.mock('@vercel/blob', () => {
+  // Классы ошибок SDK: маршрут различает их через instanceof
+  class BlobError extends Error {}
+  class BlobAccessError extends BlobError {}
+  class BlobStoreNotFoundError extends BlobError {}
+  return {
+    put: vi.fn(),
+    del: vi.fn(),
+    BlobError,
+    BlobAccessError,
+    BlobStoreNotFoundError,
+  };
+});
 
 const API = 'http://api.test/api/v1';
 const BLOB = 'https://abc.public.blob.vercel-storage.com/cv';
@@ -167,6 +179,20 @@ describe('загрузка резюме', () => {
     expect(response.status).toBe(503);
     expect(((await response.json()) as { code: string }).code).toBe(
       'storageNotConfigured',
+    );
+  });
+
+  it('если хранилище отказало в доступе, так и говорит', async () => {
+    apiAccepts();
+    // Так SDK отвечает без токена: на Vercel выключена OIDC Federation
+    putMock.mockRejectedValue(new BlobError('No blob credentials found'));
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const response = await upload();
+
+    expect(response.status).toBe(503);
+    expect(((await response.json()) as { code: string }).code).toBe(
+      'storageAccessDenied',
     );
   });
 

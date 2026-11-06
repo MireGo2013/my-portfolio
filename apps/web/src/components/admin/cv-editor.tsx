@@ -25,6 +25,8 @@ const ERRORS: Record<CvUploadError, string> = {
   notPdf: 'Нужен файл PDF',
   storageNotConfigured:
     'Хранилище Vercel Blob не подключено. Пока на сайте резюме из сборки',
+  storageAccessDenied:
+    'Хранилище Vercel Blob подключено, но отказало в доступе. Проверьте, что в проекте включена OIDC Federation, или задайте BLOB_READ_WRITE_TOKEN',
   failed: 'Не удалось загрузить. Попробуйте ещё раз',
 };
 
