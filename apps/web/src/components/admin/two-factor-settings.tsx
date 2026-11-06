@@ -164,15 +164,29 @@ function Setup({ onEnabled }: { onEnabled: (codes: string[]) => void }) {
 /** QR рисуем в браузере: секрет не уходит ни в какой сторонний сервис. */
 function QrCode({ value }: { value: string }) {
   const [src, setSrc] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
   useEffect(() => {
     let cancelled = false;
-    void toDataURL(value, { margin: 1, width: 200 }).then((url) => {
-      if (!cancelled) setSrc(url);
-    });
+    toDataURL(value, { margin: 1, width: 200 }).then(
+      (url) => {
+        if (!cancelled) setSrc(url);
+      },
+      () => {
+        if (!cancelled) setFailed(true);
+      },
+    );
     return () => {
       cancelled = true;
     };
   }, [value]);
+
+  if (failed) {
+    return (
+      <p role="alert" className="text-sm text-accent">
+        Не удалось нарисовать QR-код. Введите ключ ниже вручную
+      </p>
+    );
+  }
 
   return src ? (
     // eslint-disable-next-line @next/next/no-img-element -- data:-адрес, оптимизировать нечего

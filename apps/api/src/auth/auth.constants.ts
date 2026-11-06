@@ -24,3 +24,6 @@ export const REFRESH_GRACE_MS = 30_000;
 
 /** Сколько ждём код второго фактора после верного пароля. */
 export const MFA_TOKEN_TTL_MS = minutes(5);
+
+/** Попыток ввести код на один шаг входа: дальше только снова с пароля. */
+export const MFA_MAX_ATTEMPTS = 5;

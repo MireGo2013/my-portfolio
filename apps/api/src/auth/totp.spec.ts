@@ -45,6 +45,14 @@ describe('verifyTotp', () => {
     expect(verifyTotp(secret, '287082', at(95))).toBe(null); // шаг 3 — поздно
   });
 
+  it('с пустым или коротким ключом не принимает ничего', () => {
+    const empty = hotp(Buffer.alloc(0), 1);
+    expect(verifyTotp('', empty, at(59))).toBe(null);
+    expect(
+      verifyTotp('GEZDGNBV', hotp(base32Decode('GEZDGNBV'), 1), at(59)),
+    ).toBe(null);
+  });
+
   it('отклоняет не шесть цифр', () => {
     expect(verifyTotp(secret, '28708', at(59))).toBe(null);
     expect(verifyTotp(secret, '28708a', at(59))).toBe(null);

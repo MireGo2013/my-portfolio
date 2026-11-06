@@ -175,6 +175,52 @@ describe('второй фактор', () => {
     await loginTotp(mfa, codeFor(secret, 1)).expect(429);
   });
 
+  it('шаг с кодом одноразовый: после входа та же cookie не работает', async () => {
+    const mfa = cookiesFrom(await login().expect(200))[ADMIN_COOKIES.mfa] ?? '';
+    await loginTotp(mfa, backupCodes[2] ?? '').expect(204);
+
+    const reuse = await loginTotp(mfa, backupCodes[3] ?? '').expect(401);
+    expect(reuse.body.code).toBe('mfaExpired');
+  });
+
+  it('попытки считаются на шаг, а не на IP: смена адреса не помогает', async () => {
+    const mfa = cookiesFrom(await login().expect(200))[ADMIN_COOKIES.mfa] ?? '';
+    for (let i = 0; i < 5; i += 1) {
+      clientIp = `203.0.113.${i + 1}`;
+      const wrong = await loginTotp(mfa, '000000').expect(401);
+      expect(wrong.body.code).toBe('codeInvalid');
+    }
+
+    clientIp = '203.0.113.99';
+    const exhausted = await loginTotp(mfa, backupCodes[3] ?? '').expect(401);
+    expect(exhausted.body.code).toBe('mfaExpired');
+  });
+
+  it('если секрет не расшифровывается, резервный код всё равно впускает', async () => {
+    // Так выглядит база после смены JWT_SECRET
+    const prisma = app.get(PrismaService);
+    const user = await prisma.adminUser.findUniqueOrThrow({
+      where: { email: EMAIL },
+    });
+    await prisma.adminUser.update({
+      where: { email: EMAIL },
+      data: { totpSecret: 'v1:AAAA:BBBB:CCCC' },
+    });
+
+    try {
+      const mfa =
+        cookiesFrom(await login().expect(200))[ADMIN_COOKIES.mfa] ?? '';
+      // Код из приложения проверить нечем — но это 401, а не 500
+      await loginTotp(mfa, codeFor(secret, 1)).expect(401);
+      await loginTotp(mfa, backupCodes[4] ?? '').expect(204);
+    } finally {
+      await prisma.adminUser.update({
+        where: { email: EMAIL },
+        data: { totpSecret: user.totpSecret },
+      });
+    }
+  });
+
   it('выключение требует кода', async () => {
     await http()
       .post(`${TOTP}/disable`)

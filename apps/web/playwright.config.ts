@@ -29,6 +29,8 @@ export default defineConfig({
       name: 'content-mutating',
       use: { ...devices['Desktop Chrome'] },
       testMatch: CONTENT_MUTATING,
+      // Голый `playwright test` запустит его после сайта. Скрипт test:e2e
+      // запускает его отдельно (--no-deps), чтобы падение сайта не прятало его
       dependencies: ['chromium'],
       // И друг с другом по очереди: два почти одновременных сброса меток
       // одной страницы (projects и profile) могут оставить её устаревшей

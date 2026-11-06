@@ -1,12 +1,14 @@
-import { createHash, randomBytes } from 'node:crypto';
+import { randomBytes } from 'node:crypto';
 import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { SecretBox } from './secret-box.js';
+import { hashToken } from './tokens.js';
 import {
   base32Encode,
   generateTotpSecret,
@@ -32,7 +34,7 @@ function normalizeBackupCode(code: string): string {
  * хватает SHA-256, как у токена обновления.
  */
 function hashBackupCode(code: string): string {
-  return createHash('sha256').update(normalizeBackupCode(code)).digest('hex');
+  return hashToken(normalizeBackupCode(code));
 }
 
 const invalidCode = () =>
@@ -44,6 +46,7 @@ const invalidCode = () =>
 @Injectable()
 export class TwoFactorService {
   private readonly box: SecretBox;
+  private readonly logger = new Logger(TwoFactorService.name);
 
   constructor(
     private readonly prisma: PrismaService,
@@ -52,17 +55,19 @@ export class TwoFactorService {
     this.box = new SecretBox(config.getOrThrow<string>('JWT_SECRET'));
   }
 
+  /** Одним запросом: включён ли фактор и сколько резервных кодов осталось. */
   async status(userId: string) {
     const user = await this.prisma.adminUser.findUniqueOrThrow({
       where: { id: userId },
-      select: { totpEnabledAt: true },
+      select: {
+        totpEnabledAt: true,
+        _count: { select: { backupCodes: { where: { usedAt: null } } } },
+      },
     });
-    const backupCodesLeft = await this.prisma.adminBackupCode.count({
-      where: { userId, usedAt: null },
-    });
+    const enabled = user.totpEnabledAt !== null;
     return {
-      enabled: user.totpEnabledAt !== null,
-      backupCodesLeft: user.totpEnabledAt ? backupCodesLeft : 0,
+      enabled,
+      backupCodesLeft: enabled ? user._count.backupCodes : 0,
     };
   }
 
@@ -110,27 +115,38 @@ export class TwoFactorService {
       { length: BACKUP_CODE_COUNT },
       generateBackupCode,
     );
-    await this.prisma.$transaction([
-      this.prisma.adminUser.update({
-        where: { id: userId },
+    const pendingSecret = user.totpPendingSecret;
+    await this.prisma.$transaction(async (tx) => {
+      // Условие «ещё не включён и секрет тот же» внутри UPDATE: из двух
+      // одновременных включений пройдёт одно. Иначе второе стёрло бы
+      // резервные коды первого, которые тот уже показал как «единственные»
+      const { count } = await tx.adminUser.updateMany({
+        where: {
+          id: userId,
+          totpEnabledAt: null,
+          totpPendingSecret: pendingSecret,
+        },
         data: {
-          totpSecret: user.totpPendingSecret,
+          totpSecret: pendingSecret,
           totpPendingSecret: null,
           totpEnabledAt: new Date(),
           totpLastStep: step,
         },
-      }),
-      this.prisma.adminBackupCode.deleteMany({ where: { userId } }),
-      this.prisma.adminBackupCode.createMany({
+      });
+      if (count === 0) {
+        throw new ConflictException('Второй фактор уже включён');
+      }
+      await tx.adminBackupCode.deleteMany({ where: { userId } });
+      await tx.adminBackupCode.createMany({
         data: backupCodes.map((backup) => ({
           userId,
           codeHash: hashBackupCode(backup),
         })),
-      }),
-      this.prisma.adminSession.deleteMany({
+      });
+      await tx.adminSession.deleteMany({
         where: { userId, id: { not: sessionId } },
-      }),
-    ]);
+      });
+    });
     return { backupCodes };
   }
 
@@ -151,14 +167,6 @@ export class TwoFactorService {
     ]);
   }
 
-  async isEnabled(userId: string): Promise<boolean> {
-    const user = await this.prisma.adminUser.findUnique({
-      where: { id: userId },
-      select: { totpEnabledAt: true },
-    });
-    return Boolean(user?.totpEnabledAt);
-  }
-
   /**
    * Код из приложения или резервный. Оба одноразовые: шаг TOTP сдвигается
    * атомарно (тот же код второй раз не пройдёт, даже если два запроса
@@ -171,7 +179,10 @@ export class TwoFactorService {
     });
     if (!user?.totpSecret) return false;
 
-    const step = verifyTotp(this.box.decrypt(user.totpSecret), code.trim());
+    // Без секрета коды из приложения не проверяем вовсе. Пустой ключ
+    // недопустим: HMAC с ним посчитает любой, и код подошёл бы у каждого
+    const secret = this.decryptOrNull(user.totpSecret);
+    const step = secret === null ? null : verifyTotp(secret, code.trim());
     if (step !== null) {
       const { count } = await this.prisma.adminUser.updateMany({
         where: {
@@ -188,5 +199,22 @@ export class TwoFactorService {
       data: { usedAt: new Date() },
     });
     return count === 1;
+  }
+
+  /**
+   * Секрет не расшифровался — скорее всего, сменили JWT_SECRET. Это не повод
+   * для 500: резервные коды хранятся хешами, не зависят от ключа и нужны
+   * как раз для такого случая. Войти по ним и заново подключить фактор.
+   */
+  private decryptOrNull(box: string): string | null {
+    try {
+      return this.box.decrypt(box);
+    } catch (error) {
+      this.logger.error(
+        'Секрет второго фактора не расшифровался: сменился JWT_SECRET? Войдите резервным кодом и подключите фактор заново',
+        error,
+      );
+      return null;
+    }
   }
 }

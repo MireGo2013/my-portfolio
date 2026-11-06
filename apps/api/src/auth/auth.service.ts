@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { LoginCredentials } from '@portfolio/shared';
@@ -5,6 +6,7 @@ import type { AdminRole } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import {
   ACCESS_TOKEN_TTL_MS,
+  MFA_MAX_ATTEMPTS,
   MFA_TOKEN_TTL_MS,
   REFRESH_GRACE_MS,
   REFRESH_TOKEN_TTL_MS,
@@ -30,7 +32,7 @@ export type LoginResult =
   { kind: 'session'; tokens: AuthTokens } | { kind: 'mfa'; mfaToken: string };
 
 /** Токен шага с кодом: пароль уже проверен, сессии ещё нет. */
-type MfaTokenPayload = { sub: string; purpose: 'mfa' };
+type MfaTokenPayload = { sub: string; purpose: 'mfa'; cid: string };
 
 /** Без refreshToken — обновился только токен доступа, cookie обновления не трогаем. */
 export type RefreshResult = {
@@ -48,6 +50,12 @@ export type AuthUser = {
 
 const invalidCredentials = () =>
   new UnauthorizedException('Неверная почта или пароль');
+/** Шаг с кодом истёк, использован или исчерпал попытки: только начать заново. */
+const mfaExpired = () =>
+  new UnauthorizedException({
+    message: 'Начните вход заново',
+    code: 'mfaExpired',
+  });
 const invalidSession = () =>
   new UnauthorizedException('Сессия недействительна');
 
@@ -72,7 +80,18 @@ export class AuthService {
     }
 
     if (user.totpEnabledAt) {
-      const payload: MfaTokenPayload = { sub: user.id, purpose: 'mfa' };
+      // Новый шаг с кодом отменяет прежний: в базе лежит только его id,
+      // и у шага свой счётчик попыток, независимо от IP
+      const challengeId = randomUUID();
+      await this.prisma.adminUser.update({
+        where: { id: user.id },
+        data: { mfaChallengeId: challengeId, mfaAttempts: 0 },
+      });
+      const payload: MfaTokenPayload = {
+        sub: user.id,
+        purpose: 'mfa',
+        cid: challengeId,
+      };
       return {
         kind: 'mfa',
         mfaToken: await this.jwt.signAsync(payload, {
@@ -90,13 +109,41 @@ export class AuthService {
       .catch(() => undefined);
     // purpose отличает этот токен от токена доступа: подсунуть один вместо
     // другого нельзя, у токена доступа нет purpose, а у этого — sid
-    if (payload?.purpose !== 'mfa' || typeof payload.sub !== 'string') {
-      throw new UnauthorizedException('Начните вход заново');
+    if (
+      payload?.purpose !== 'mfa' ||
+      typeof payload.sub !== 'string' ||
+      typeof payload.cid !== 'string'
+    ) {
+      throw mfaExpired();
     }
-    if (!(await this.twoFactor.verify(payload.sub, code))) {
-      throw new UnauthorizedException('Неверный код');
+    const { sub: userId, cid } = payload;
+
+    // Попытка засчитывается до проверки кода и атомарно: смена IP не даёт
+    // новых попыток, а параллельные запросы не проскочат мимо счётчика
+    const { count } = await this.prisma.adminUser.updateMany({
+      where: {
+        id: userId,
+        mfaChallengeId: cid,
+        mfaAttempts: { lt: MFA_MAX_ATTEMPTS },
+      },
+      data: { mfaAttempts: { increment: 1 } },
+    });
+    if (count === 0) throw mfaExpired();
+
+    if (!(await this.twoFactor.verify(userId, code))) {
+      throw new UnauthorizedException({
+        message: 'Неверный код',
+        code: 'codeInvalid',
+      });
     }
-    return this.createSession(payload.sub);
+
+    // Шаг одноразовый: перехваченная cookie admin_mfa после входа бесполезна
+    const used = await this.prisma.adminUser.updateMany({
+      where: { id: userId, mfaChallengeId: cid },
+      data: { mfaChallengeId: null, mfaAttempts: 0 },
+    });
+    if (used.count === 0) throw mfaExpired();
+    return this.createSession(userId);
   }
 
   private async createSession(userId: string): Promise<AuthTokens> {

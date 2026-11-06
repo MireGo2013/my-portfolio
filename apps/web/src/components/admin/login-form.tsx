@@ -54,6 +54,8 @@ const fieldError = (error: FieldError | undefined) => {
 export function LoginForm() {
   const router = useRouter();
   const [step, setStep] = useState<'password' | 'code'>('password');
+  // Шаг с кодом истёк или исчерпал попытки: объясняем, почему снова пароль
+  const [expired, setExpired] = useState(false);
 
   const enter = () => {
     // Адрес читаем в момент входа, а не через useSearchParams:
@@ -63,18 +65,37 @@ export function LoginForm() {
   };
 
   return step === 'password' ? (
-    <PasswordStep onEnter={enter} onCodeRequired={() => setStep('code')} />
+    <PasswordStep
+      onEnter={enter}
+      onCodeRequired={() => {
+        setExpired(false);
+        setStep('code');
+      }}
+      notice={
+        expired
+          ? 'Время на ввод кода вышло или попытки закончились. Войдите снова'
+          : undefined
+      }
+    />
   ) : (
-    <CodeStep onEnter={enter} onRestart={() => setStep('password')} />
+    <CodeStep
+      onEnter={enter}
+      onRestart={(reason) => {
+        setExpired(reason === 'expired');
+        setStep('password');
+      }}
+    />
   );
 }
 
 function PasswordStep({
   onEnter,
   onCodeRequired,
+  notice,
 }: {
   onEnter: () => void;
   onCodeRequired: () => void;
+  notice?: string;
 }) {
   const [failure, setFailure] = useState<Failure | null>(null);
   const [leaving, setLeaving] = useState(false);
@@ -113,6 +134,11 @@ function PasswordStep({
       noValidate
       className="flex flex-col gap-5"
     >
+      {notice && (
+        <p role="status" className="text-sm text-muted">
+          {notice}
+        </p>
+      )}
       <FormField label="Почта" error={fieldError(errors.email)}>
         {(props) => (
           <input
@@ -155,7 +181,7 @@ function CodeStep({
   onRestart,
 }: {
   onEnter: () => void;
-  onRestart: () => void;
+  onRestart: (reason?: 'expired') => void;
 }) {
   const [code, setCode] = useState('');
   const [failure, setFailure] = useState<Failure | null>(null);
@@ -167,6 +193,10 @@ function CodeStep({
     const result = await loginTotp(code.trim());
     if (result === 'ok') {
       onEnter();
+      return;
+    }
+    if (result === 'expired') {
+      onRestart('expired');
       return;
     }
     setBusy(false);
@@ -212,7 +242,7 @@ function CodeStep({
       </button>
       <button
         type="button"
-        onClick={onRestart}
+        onClick={() => onRestart()}
         className="self-start text-sm text-muted underline decoration-line underline-offset-4 hover:text-accent"
       >
         Войти с другими данными

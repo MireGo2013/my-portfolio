@@ -118,4 +118,20 @@ describe('LoginForm', () => {
 
     expect(screen.getByLabelText('Пароль')).toBeTruthy();
   });
+
+  it('если шаг с кодом истёк, возвращает к паролю и объясняет почему', async () => {
+    loginMock.mockResolvedValue('mfa');
+    totpMock.mockResolvedValue('expired');
+    const user = userEvent.setup();
+    render(<LoginForm />);
+    await submit('admin@example.com', 'secret');
+
+    await user.type(await screen.findByLabelText('Код'), '123456');
+    await user.click(screen.getByRole('button', { name: 'Подтвердить' }));
+
+    expect((await screen.findByRole('status')).textContent).toMatch(
+      /Время на ввод кода вышло/,
+    );
+    expect(screen.getByLabelText('Пароль')).toBeTruthy();
+  });
 });

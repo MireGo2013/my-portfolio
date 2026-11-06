@@ -51,6 +51,9 @@ model AdminUser {
   totpEnabledAt     DateTime?         @map("totp_enabled_at")
   /// Номер последнего принятого 30-секундного шага: тот же код второй раз не пройдёт
   totpLastStep      Int?              @map("totp_last_step")
+  /// Текущий шаг входа с кодом: одноразовый, не больше MFA_MAX_ATTEMPTS попыток
+  mfaChallengeId    String?           @map("mfa_challenge_id") @db.Uuid
+  mfaAttempts       Int               @default(0) @map("mfa_attempts")
   backupCodes       AdminBackupCode[]
 
   @@map("admin_users")

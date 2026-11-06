@@ -27,13 +27,28 @@ export async function login(body: LoginCredentials): Promise<LoginResult> {
 }
 
 /** Второй шаг входа: код из приложения или резервный код. */
-export async function loginTotp(
-  code: string,
-): Promise<Exclude<LoginResult, 'mfa'>> {
+export type CodeResult = Exclude<LoginResult, 'mfa'> | 'expired';
+
+/**
+ * Второй шаг входа. 'invalid' — неверный код, можно ввести другой.
+ * 'expired' — шаг истёк, использован или исчерпал попытки: новые коды
+ * бесполезны, нужно снова ввести пароль.
+ */
+export async function loginTotp(code: string): Promise<CodeResult> {
   try {
-    const { response } = await adminClient().POST('/api/v1/auth/login/totp', {
-      body: { code },
-    });
+    const { response, error } = await adminClient().POST(
+      '/api/v1/auth/login/totp',
+      { body: { code } },
+    );
+    // 400 — код не того вида (меньше шести символов): для человека это тот же неверный код
+    if (response.status === 400) return 'invalid';
+    // Тело ошибки в контракте не описано, поэтому читаем его осторожно
+    const body: unknown = error;
+    const reason =
+      typeof body === 'object' && body !== null && 'code' in body
+        ? body.code
+        : undefined;
+    if (response.status === 401 && reason === 'mfaExpired') return 'expired';
     return resultOf(response);
   } catch {
     return 'failed';

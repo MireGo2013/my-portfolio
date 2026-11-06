@@ -1387,6 +1387,13 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Слишком много попыток */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     AdminMessagesController_list: {

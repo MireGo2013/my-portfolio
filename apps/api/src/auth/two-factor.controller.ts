@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -7,9 +15,12 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
 import { totpCodeSchema, type TotpCode } from '@portfolio/shared';
+import { ClientIpThrottlerGuard } from '../common/client-ip-throttler.guard.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
+import { LOGIN_RATE_LIMIT, LOGIN_RATE_WINDOW_MS } from './auth.constants.js';
 import { ValidationErrorDto } from '../contact/contact.dto.js';
 import { AdminOnly, CurrentUser } from './auth.decorators.js';
 import {
@@ -50,6 +61,12 @@ export class TwoFactorController {
   }
 
   @Post('enable')
+  // Код проверяется и здесь, поэтому перебор ограничен так же, как при входе:
+  // украденной сессии мало, чтобы подобрать код и снять защиту
+  @UseGuards(ClientIpThrottlerGuard)
+  @Throttle({
+    default: { ttl: LOGIN_RATE_WINDOW_MS, limit: LOGIN_RATE_LIMIT },
+  })
   @HttpCode(200)
   @ApiOperation({
     summary: 'Подтвердить кодом и включить. Другие сессии завершаются',
@@ -66,11 +83,18 @@ export class TwoFactorController {
   }
 
   @Post('disable')
+  // Код проверяется и здесь, поэтому перебор ограничен так же, как при входе:
+  // украденной сессии мало, чтобы подобрать код и снять защиту
+  @UseGuards(ClientIpThrottlerGuard)
+  @Throttle({
+    default: { ttl: LOGIN_RATE_WINDOW_MS, limit: LOGIN_RATE_LIMIT },
+  })
   @HttpCode(204)
   @ApiOperation({ summary: 'Выключить: нужен код из приложения или резервный' })
   @ApiBody({ type: TotpCodeDto })
   @ApiNoContentResponse({ description: 'Выключен' })
   @ApiBadRequestResponse({ type: ValidationErrorDto })
+  @ApiTooManyRequestsResponse({ description: 'Слишком много попыток' })
   disable(
     @CurrentUser() user: AuthUser,
     @code() body: TotpCode,

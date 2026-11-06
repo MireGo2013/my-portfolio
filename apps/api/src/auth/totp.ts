@@ -80,6 +80,9 @@ export function verifyTotp(
 ): number | null {
   if (!/^\d{6}$/.test(code)) return null;
   const secret = base32Decode(secretBase32);
+  // Пустой или короткий ключ — не секрет: коды по нему посчитает любой.
+  // RFC 4226 требует не меньше 128 бит
+  if (secret.length < 16) return null;
   const current = totpStep(nowMs);
   for (let shift = -WINDOW; shift <= WINDOW; shift += 1) {
     const step = current + shift;
