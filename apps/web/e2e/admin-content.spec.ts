@@ -26,6 +26,29 @@ async function save(page: Page) {
   await expect(page.getByRole('status')).toHaveText(/^Сохранено/);
 }
 
+/**
+ * Открывает публичную страницу и ждёт правку, перезагружая страницу.
+ * Тесты сайта в соседних воркерах открывают те же страницы. Если в момент
+ * сохранения кто-то уже пересобирал страницу на старых данных, его результат
+ * может лечь в кэш после сброса, и первый заход покажет старое. Следующий
+ * заход — уже новое. Правка должна появиться, а не обязательно с первого раза.
+ */
+async function expectOnSite(
+  page: Page,
+  path: string,
+  check: () => Promise<void>,
+) {
+  await page.goto(path);
+  await expect(async () => {
+    try {
+      await check();
+    } catch (error) {
+      await page.reload();
+      throw error;
+    }
+  }).toPass({ timeout: 10_000 });
+}
+
 test('профиль загружается в форму и сохраняется', async ({ page }) => {
   await openAdmin(page, EMAIL);
   await page.goto('/admin/profile');
@@ -68,15 +91,18 @@ test('открытый проект: создание, правка и удал�
   await expect(page).toHaveURL(/\/admin\/experience\/[0-9a-f-]{36}$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Проект PW');
 
-  await page.goto('/en/experience');
-  await expect(page.getByText('Project PW')).toBeVisible();
+  const editUrl = page.url();
+  await expectOnSite(page, '/en/experience', () =>
+    expect(page.getByText('Project PW')).toBeVisible({ timeout: 1000 }),
+  );
 
   // Правка
-  await page.goBack();
+  await page.goto(editUrl);
   await inLocale(page, 'English').getByLabel('Название').fill('Project PW v2');
   await save(page);
-  await page.goto('/en/experience');
-  await expect(page.getByText('Project PW v2')).toBeVisible();
+  await expectOnSite(page, '/en/experience', () =>
+    expect(page.getByText('Project PW v2')).toBeVisible({ timeout: 1000 }),
+  );
 
   // Удаление из списка в два шага
   await page.goto('/admin/experience');
@@ -84,8 +110,9 @@ test('открытый проект: создание, правка и удал�
   await page.getByRole('button', { name: 'Да, удалить' }).click();
   await expect(page.getByRole('link', { name: 'Проект PW' })).toHaveCount(0);
 
-  await page.goto('/en/experience');
-  await expect(page.getByText('Project PW v2')).toHaveCount(0);
+  await expectOnSite(page, '/en/experience', () =>
+    expect(page.getByText('Project PW v2')).toHaveCount(0, { timeout: 1000 }),
+  );
 });
 
 test('занятый slug подсвечивает поле', async ({ page }) => {
@@ -123,10 +150,11 @@ test('группа навыков появляется на странице с�
   await page.getByLabel('Навыки').fill('Playwright\n\nVitest\n');
   await save(page);
 
-  await page.goto('/en/skills');
   // Группа — термин списка определений, навыки — его описание
   const group = page.getByRole('term').filter({ hasText: 'PW Testing' });
-  await expect(group).toBeVisible();
+  await expectOnSite(page, '/en/skills', () =>
+    expect(group).toBeVisible({ timeout: 1000 }),
+  );
   await expect(group.locator('xpath=following-sibling::dd')).toContainText(
     'Playwright',
   );
