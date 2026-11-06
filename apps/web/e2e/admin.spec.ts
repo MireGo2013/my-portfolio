@@ -1,65 +1,14 @@
-import { randomUUID } from 'node:crypto';
 import { expect, test, type Page } from '@playwright/test';
-import pg from 'pg';
+import { logIn as logInAs, randomIp, setupTestAdmin } from './admin-helpers';
 
-const DATABASE_URL =
-  process.env.DATABASE_URL ??
-  'postgresql://portfolio:portfolio@127.0.0.1:5432/portfolio';
 const EMAIL = 'admin@playwright-e2e.example.com';
-const PASSWORD = 'playwright-admin-password';
-// Хеш argon2 для PASSWORD: у сайта нет argon2, поэтому хеш посчитан заранее
-const PASSWORD_HASH =
-  '$argon2id$v=19$m=65536,t=3,p=4$Z2PgXnf3Y6VDRkUr1s7NEA$pr0DYUYqLJYjBJTY/9UCHVPRaPrk7u4xMKoFBZjmdoQ';
 
-async function withDb(run: (client: pg.Client) => Promise<void>) {
-  const client = new pg.Client({ connectionString: DATABASE_URL });
-  await client.connect();
-  try {
-    await run(client);
-  } finally {
-    await client.end();
-  }
-}
-
-test.beforeAll(async () => {
-  await withDb(async (db) => {
-    await db.query('DELETE FROM admin_users WHERE email = $1', [EMAIL]);
-    await db.query(
-      `INSERT INTO admin_users (id, email, password_hash, updated_at)
-       VALUES ($1, $2, $3, now())`,
-      [randomUUID(), EMAIL, PASSWORD_HASH],
-    );
-  });
-});
-
-test.afterAll(async () => {
-  // Сессии удалятся каскадом
-  await withDb((db) =>
-    db
-      .query('DELETE FROM admin_users WHERE email = $1', [EMAIL])
-      .then(() => undefined),
-  );
-});
-
-// Каждому тесту свой IP посетителя: сайт передаёт его в API вместе с
-// PROXY_SECRET, и лимит попыток входа у тестов не общий. На Vercel этот
-// заголовок выставляет платформа, а здесь его подставляет браузер теста
-let ipCounter = 0;
-test.beforeEach(async ({ page }) => {
-  ipCounter += 1;
-  await page.setExtraHTTPHeaders({
-    'x-real-ip': `198.51.100.${(Date.now() + ipCounter) % 250}`,
-  });
-});
+setupTestAdmin(EMAIL);
 
 // У Next.js на странице есть свой role="alert" для объявлений о переходах
 const formAlert = (page: Page) => page.locator('form').getByRole('alert');
 
-async function logIn(page: Page, password = PASSWORD) {
-  await page.getByLabel('Почта').fill(EMAIL);
-  await page.getByLabel('Пароль').fill(password);
-  await page.getByRole('button', { name: 'Войти' }).click();
-}
+const logIn = (page: Page, password?: string) => logInAs(page, EMAIL, password);
 
 test('без входа страница админки ведёт на вход и возвращает обратно', async ({
   page,
@@ -149,7 +98,7 @@ test('чужой лимит попыток не блокирует вход ав
   );
 
   // Автор приходит с другого адреса
-  await page.setExtraHTTPHeaders({ 'x-real-ip': '192.0.2.77' });
+  await page.setExtraHTTPHeaders({ 'x-real-ip': randomIp() });
   await logIn(page);
 
   await expect(page).toHaveURL(/\/admin\/messages$/);

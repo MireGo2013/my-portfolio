@@ -177,6 +177,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Сообщения с фильтрами, поиском, сортировкой и пагинацией */
+        get: operations["AdminMessagesController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/messages/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Сколько сообщений в каждом статусе */
+        get: operations["AdminMessagesController_counts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/messages/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Одно сообщение */
+        get: operations["AdminMessagesController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Сменить статус сообщения */
+        patch: operations["AdminMessagesController_updateStatus"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -311,6 +363,47 @@ export interface components {
             /** Format: email */
             email: string;
             role: components["schemas"]["AdminRole"];
+        };
+        /** @enum {string} */
+        MessageStatus: "NEW" | "READ" | "REPLIED" | "ARCHIVED" | "SPAM";
+        MessageDto: {
+            /** Format: uuid */
+            id: string;
+            /** @example Анна */
+            name: string;
+            /**
+             * Format: email
+             * @example anna@example.com
+             */
+            email: string;
+            /** @example Здравствуйте! Хотим обсудить вакансию. */
+            message: string;
+            status: components["schemas"]["MessageStatus"];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        MessagePageDto: {
+            items: components["schemas"]["MessageDto"][];
+            /** @description Сколько сообщений подходит под фильтры */
+            total: number;
+            page: number;
+            pageSize: number;
+            /** @description Не меньше 1, даже если сообщений нет */
+            pageCount: number;
+        };
+        MessageCountsDto: {
+            NEW: number;
+            READ: number;
+            REPLIED: number;
+            ARCHIVED: number;
+            SPAM: number;
+            /** @description Всего, во всех статусах */
+            total: number;
+        };
+        UpdateMessageStatusDto: {
+            status: components["schemas"]["MessageStatus"];
         };
     };
     responses: never;
@@ -592,6 +685,189 @@ export interface operations {
             };
             /** @description Нет прав или запрос с чужого сайта */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminMessagesController_list: {
+        parameters: {
+            query?: {
+                /** @description Без него — все */
+                status?: components["schemas"]["MessageStatus"];
+                /** @description Поиск по имени, почте и тексту без учёта регистра */
+                q?: string;
+                /** @description Создано не раньше этого момента (включительно) */
+                from?: string;
+                /** @description Создано раньше этого момента (не включительно) */
+                to?: string;
+                sort?: "createdAt" | "name" | "email" | "status";
+                order?: "asc" | "desc";
+                page?: number;
+                pageSize?: 10 | 20 | 50;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessagePageDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidationErrorDto"];
+                };
+            };
+            /** @description Нет сессии или она истекла */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет прав или запрос с чужого сайта */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminMessagesController_counts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageCountsDto"];
+                };
+            };
+            /** @description Нет сессии или она истекла */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет прав или запрос с чужого сайта */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminMessagesController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageDto"];
+                };
+            };
+            /** @description Нет сессии или она истекла */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет прав или запрос с чужого сайта */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Сообщение не найдено */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminMessagesController_updateStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMessageStatusDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidationErrorDto"];
+                };
+            };
+            /** @description Нет сессии или она истекла */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет прав или запрос с чужого сайта */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Сообщение не найдено */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { SectionPlaceholder } from '@/components/admin/section-placeholder';
+import { MessagesView } from '@/components/admin/messages-view';
 
 export const metadata: Metadata = { title: 'Сообщения' };
 
-export default function Page() {
-  return <SectionPlaceholder title="Сообщения" step={4} />;
+export default function MessagesPage() {
+  return <MessagesView />;
 }

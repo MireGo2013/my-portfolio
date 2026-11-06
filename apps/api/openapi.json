@@ -327,6 +327,282 @@
           "Вход в админку"
         ]
       }
+    },
+    "/api/v1/admin/messages": {
+      "get": {
+        "operationId": "AdminMessagesController_list",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Без него — все",
+            "schema": {
+              "$ref": "#/components/schemas/MessageStatus"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Поиск по имени, почте и тексту без учёта регистра",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Создано не раньше этого момента (включительно)",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "description": "Создано раньше этого момента (не включительно)",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "createdAt",
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "name",
+                "email",
+                "status"
+              ]
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "number",
+              "enum": [
+                10,
+                20,
+                50
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessagePageDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Сообщения с фильтрами, поиском, сортировкой и пагинацией",
+        "tags": [
+          "Админка: сообщения"
+        ]
+      }
+    },
+    "/api/v1/admin/messages/counts": {
+      "get": {
+        "operationId": "AdminMessagesController_counts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageCountsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Сколько сообщений в каждом статусе",
+        "tags": [
+          "Админка: сообщения"
+        ]
+      }
+    },
+    "/api/v1/admin/messages/{id}": {
+      "get": {
+        "operationId": "AdminMessagesController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "404": {
+            "description": "Сообщение не найдено"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Одно сообщение",
+        "tags": [
+          "Админка: сообщения"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminMessagesController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMessageStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии или она истекла"
+          },
+          "403": {
+            "description": "Нет прав или запрос с чужого сайта"
+          },
+          "404": {
+            "description": "Сообщение не найдено"
+          }
+        },
+        "security": [
+          {
+            "admin_access": []
+          }
+        ],
+        "summary": "Сменить статус сообщения",
+        "tags": [
+          "Админка: сообщения"
+        ]
+      }
     }
   },
   "info": {
@@ -688,6 +964,141 @@
           "id",
           "email",
           "role"
+        ]
+      },
+      "MessageStatus": {
+        "type": "string",
+        "enum": [
+          "NEW",
+          "READ",
+          "REPLIED",
+          "ARCHIVED",
+          "SPAM"
+        ]
+      },
+      "MessageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "Анна"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "anna@example.com"
+          },
+          "message": {
+            "type": "string",
+            "example": "Здравствуйте! Хотим обсудить вакансию."
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MessageStatus"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "message",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "MessagePageDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Сколько сообщений подходит под фильтры"
+          },
+          "page": {
+            "type": "number"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "pageCount": {
+            "type": "number",
+            "description": "Не меньше 1, даже если сообщений нет"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize",
+          "pageCount"
+        ]
+      },
+      "MessageCountsDto": {
+        "type": "object",
+        "properties": {
+          "NEW": {
+            "type": "number"
+          },
+          "READ": {
+            "type": "number"
+          },
+          "REPLIED": {
+            "type": "number"
+          },
+          "ARCHIVED": {
+            "type": "number"
+          },
+          "SPAM": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number",
+            "description": "Всего, во всех статусах"
+          }
+        },
+        "required": [
+          "NEW",
+          "READ",
+          "REPLIED",
+          "ARCHIVED",
+          "SPAM",
+          "total"
+        ]
+      },
+      "UpdateMessageStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MessageStatus"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status"
         ]
       }
     }

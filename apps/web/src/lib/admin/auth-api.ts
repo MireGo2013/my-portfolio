@@ -1,16 +1,7 @@
 import type { LoginCredentials } from '@portfolio/shared';
-import createClient from 'openapi-fetch';
-import type { paths } from '../api/schema';
+import { adminClient } from './admin-client';
 
 export type LoginResult = 'ok' | 'invalid' | 'rate-limited' | 'failed';
-
-/**
- * Клиент API админки для браузера. Запросы идут на адрес сайта (/admin/api/v1/...),
- * а прокси передаёт их в API, поэтому пути и типы те же, что у самого API.
- */
-function adminClient() {
-  return createClient<paths>({ baseUrl: `${window.location.origin}/admin` });
-}
 
 /** Вызывается из браузера, поэтому при любом сбое возвращает результат, а не бросает. */
 export async function login(body: LoginCredentials): Promise<LoginResult> {

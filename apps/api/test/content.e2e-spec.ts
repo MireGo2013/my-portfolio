@@ -134,6 +134,9 @@ describe('API контента', () => {
 
     expect(Object.keys(body.paths).sort()).toEqual(
       [
+        'admin/messages',
+        'admin/messages/counts',
+        'admin/messages/{id}',
         'auth/login',
         'auth/logout',
         'auth/me',
