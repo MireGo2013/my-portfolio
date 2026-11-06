@@ -59,7 +59,12 @@ describe(`POST ${URL}`, () => {
     await post({ ...valid, name: '  Анна  ' }).expect(204);
 
     expect(await savedMessages()).toMatchObject([
-      { name: 'Анна', email: valid.email, message: valid.message },
+      {
+        name: 'Анна',
+        email: valid.email,
+        message: valid.message,
+        status: 'NEW',
+      },
     ]);
     expect(notifyContactMessage).toHaveBeenCalledWith({
       name: 'Анна',
