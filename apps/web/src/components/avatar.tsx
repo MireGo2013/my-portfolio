@@ -4,7 +4,7 @@ import { Monogram } from './monogram';
 // Пока фото нет, показываем логотип с инициалами. Чтобы поставить фото,
 // положи файл в public/assets и укажи здесь путь, например '/assets/avatar.jpg'.
 // Папка assets важна: файлы вне её proxy считает несуществующими (см. proxy.ts).
-const AVATAR_SRC: string | null = null;
+const AVATAR_SRC: string | null = '/assets/ava1.jpg';
 
 export function Avatar({ alt }: { alt: string }) {
   if (!AVATAR_SRC) {
