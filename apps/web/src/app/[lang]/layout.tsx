@@ -1,23 +1,12 @@
 import type { Metadata } from 'next';
-import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
 import { REVEAL_GUARD_SCRIPT } from '@/components/reveal';
 import { SiteHeader } from '@/components/site-header';
 import { SideRails, SiteFooter } from '@/components/social-links';
 import { LOCALES } from '@/i18n/config';
 import { getDictionary, pageMetadata, resolveLocale } from '@/i18n/server';
 import { getProfile } from '@/lib/content';
+import { FONT_CLASSES } from '../fonts';
 import '../globals.css';
-
-const sans = IBM_Plex_Sans({
-  variable: '--font-plex-sans',
-  subsets: ['latin', 'cyrillic'],
-});
-
-const mono = IBM_Plex_Mono({
-  variable: '--font-plex-mono',
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400'],
-});
 
 // На Vercel адрес подставляется сам. Нужен для абсолютных ссылок в метаданных
 const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -62,7 +51,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${sans.variable} ${mono.variable} antialiased`}
+      className={FONT_CLASSES}
       // Скрипт ниже меняет классы html до гидратации, это ожидаемо
       suppressHydrationWarning
     >

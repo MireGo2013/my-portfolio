@@ -38,6 +38,8 @@ jobs:
       NEXT_PUBLIC_API_URL: http://127.0.0.1:3001
       # Тестовый секрет подписи токенов админки, не используется нигде, кроме CI
       JWT_SECRET: ci-only-secret-for-signing-test-tokens
+      # API и сайт запускаются отдельными шагами, и секрет нужен обоим
+      PROXY_SECRET: ci-only-proxy-secret
     services:
       postgres:
         image: postgres:18-alpine

@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { hasLocale, LOCALE_COOKIE, type Locale } from './i18n/config';
 import { pickLocale } from './i18n/pick-locale';
+import { adminProxy } from './lib/admin/admin-proxy';
+import { isAdminPath } from './lib/admin/paths';
 import { isSitePath, NOT_FOUND_PATH } from './lib/site-sections';
 
 /**
@@ -32,6 +34,11 @@ async function notFoundResponse(
 /** Адрес без языка ведёт на тот же адрес с языком: / -> /ru, /skills -> /en/skills. */
 export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
+  // Админка живёт отдельно от разделов сайта и без языка в адресе
+  if (isAdminPath(pathname)) {
+    return adminProxy(request);
+  }
+
   const firstSegment = pathname.split('/')[1] ?? '';
   const hasLocalePrefix = hasLocale(firstSegment);
   const locale = hasLocalePrefix

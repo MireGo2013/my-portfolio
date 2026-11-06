@@ -2,6 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 const API_URL = 'http://127.0.0.1:3001';
 const WEB_URL = 'http://127.0.0.1:3000';
+// Тестовый секрет: с ним API верит IP посетителя, который передаёт сайт.
+// Если серверы уже запущены (reuseExistingServer), у них должен быть тот же
+const PROXY_SECRET = process.env.PROXY_SECRET ?? 'playwright-proxy-secret';
 
 // Нужны база с миграциями и seed и собранный API: pnpm db:up, pnpm db:seed, pnpm build:deps
 export default defineConfig({
@@ -21,6 +24,7 @@ export default defineConfig({
       reuseExistingServer: true,
       env: {
         CORS_ORIGIN: WEB_URL,
+        PROXY_SECRET,
         // Тесты не должны слать настоящие уведомления
         TELEGRAM_BOT_TOKEN: '',
         TELEGRAM_CHAT_ID: '',
@@ -31,7 +35,7 @@ export default defineConfig({
       url: WEB_URL,
       reuseExistingServer: true,
       timeout: 120_000,
-      env: { API_URL, NEXT_PUBLIC_API_URL: API_URL },
+      env: { API_URL, NEXT_PUBLIC_API_URL: API_URL, PROXY_SECRET },
     },
   ],
 });

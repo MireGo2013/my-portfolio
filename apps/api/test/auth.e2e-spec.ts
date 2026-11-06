@@ -11,9 +11,11 @@ import {
   describe,
   expect,
   it,
+  vi,
 } from 'vitest';
 import { AppModule } from '../src/app.module.js';
 import { configureApp } from '../src/app.setup.js';
+import { PROXY_HEADERS } from '../src/common/client-ip-throttler.guard.js';
 import { LOGIN_RATE_LIMIT } from '../src/auth/auth.constants.js';
 import { hashPassword } from '../src/auth/passwords.js';
 import { hashToken } from '../src/auth/tokens.js';
@@ -157,6 +159,43 @@ describe(AUTH, () => {
       }
 
       await login().expect(429);
+    });
+
+    describe('посетитель за сервером сайта', () => {
+      const SECRET = 'proxy-secret-for-e2e';
+      const loginFrom = (ip: string, secret = SECRET) =>
+        login({ email: EMAIL, password: 'nope' })
+          .set(PROXY_HEADERS.secret, secret)
+          .set(PROXY_HEADERS.clientIp, ip);
+      const exhaustLimit = async (ip: string, secret?: string) => {
+        for (let i = 0; i < LOGIN_RATE_LIMIT; i += 1) {
+          await loginFrom(ip, secret).expect(401);
+        }
+      };
+
+      beforeEach(() => {
+        vi.stubEnv('PROXY_SECRET', SECRET);
+      });
+      afterEach(() => {
+        vi.unstubAllEnvs();
+      });
+
+      it('с верным секретом лимит считается для каждого посетителя отдельно', async () => {
+        await exhaustLimit('203.0.113.1');
+
+        await loginFrom('203.0.113.1').expect(429);
+        // Злоумышленник исчерпал свой лимит, а автор с другого адреса входит
+        await login()
+          .set(PROXY_HEADERS.secret, SECRET)
+          .set(PROXY_HEADERS.clientIp, '203.0.113.2')
+          .expect(204);
+      });
+
+      it('с неверным секретом присланный IP игнорируется', async () => {
+        await exhaustLimit('203.0.113.1', 'guess');
+
+        await loginFrom('203.0.113.2', 'guess').expect(429);
+      });
     });
   });
 

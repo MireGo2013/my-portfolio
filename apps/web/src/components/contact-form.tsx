@@ -7,48 +7,15 @@ import {
   type ContactErrorCode,
   type ContactMessage,
 } from '@portfolio/shared';
-import { useId, useState, type ComponentProps } from 'react';
+import { useState } from 'react';
 import { useForm, type FieldError } from 'react-hook-form';
+import { FormField, INPUT_CLASS } from '@/components/form-field';
 import type { Dictionary } from '@/i18n/dictionaries/ru';
 import { isOneOf } from '@/lib/guards';
 import { sendContactMessage, type SendResult } from '@/lib/api/contact-api';
 
-const inputClass =
-  'w-full rounded-sm border border-line bg-surface px-3 py-2 outline-none transition-colors focus-visible:border-accent aria-invalid:border-accent';
-
 function isContactErrorCode(value: string): value is ContactErrorCode {
   return isOneOf(CONTACT_ERROR_CODES, value);
-}
-
-function Field({
-  label,
-  error,
-  children,
-}: {
-  label: string;
-  error: string | undefined;
-  children: (props: ComponentProps<'input'>) => React.ReactNode;
-}) {
-  const id = useId();
-  const errorId = `${id}-error`;
-
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="font-medium">
-        {label}
-      </label>
-      {children({
-        id,
-        'aria-invalid': error ? true : undefined,
-        'aria-describedby': error ? errorId : undefined,
-      })}
-      {error && (
-        <p id={errorId} className="text-sm text-accent">
-          {error}
-        </p>
-      )}
-    </div>
-  );
 }
 
 export function ContactForm({
@@ -106,30 +73,30 @@ export function ContactForm({
       noValidate
       className="relative flex max-w-xl flex-col gap-5"
     >
-      <Field label={dictionary.name} error={errorText(errors.name)}>
+      <FormField label={dictionary.name} error={errorText(errors.name)}>
         {(props) => (
           <input
             {...props}
             {...register('name', { onBlur: () => trimField('name') })}
             autoComplete="name"
-            className={inputClass}
+            className={INPUT_CLASS}
           />
         )}
-      </Field>
+      </FormField>
 
-      <Field label={dictionary.email} error={errorText(errors.email)}>
+      <FormField label={dictionary.email} error={errorText(errors.email)}>
         {(props) => (
           <input
             {...props}
             {...register('email', { onBlur: () => trimField('email') })}
             type="email"
             autoComplete="email"
-            className={inputClass}
+            className={INPUT_CLASS}
           />
         )}
-      </Field>
+      </FormField>
 
-      <Field label={dictionary.message} error={errorText(errors.message)}>
+      <FormField label={dictionary.message} error={errorText(errors.message)}>
         {({ id, 'aria-invalid': invalid, 'aria-describedby': describedBy }) => (
           <textarea
             id={id}
@@ -139,10 +106,10 @@ export function ContactForm({
               onBlur: () => trimField('message'),
             })}
             rows={6}
-            className={inputClass}
+            className={INPUT_CLASS}
           />
         )}
-      </Field>
+      </FormField>
 
       {/* Honeypot: убран за экран, а не через display:none, который боты распознают */}
       <div aria-hidden="true" className="absolute -left-[9999px]">
