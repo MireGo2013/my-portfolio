@@ -11,6 +11,7 @@
     "db:down": "docker compose down",
     "db:migrate": "pnpm --filter @portfolio/api db:migrate",
     "db:seed": "pnpm --filter @portfolio/api db:seed",
+    "db:seed:reset": "pnpm --filter @portfolio/api db:seed:reset",
     "dev:api": "pnpm --filter @portfolio/shared build && pnpm --filter @portfolio/api start:dev",
     "dev:web": "pnpm --filter @portfolio/shared build && pnpm --filter @portfolio/web dev",
     "gen:api": "pnpm --filter @portfolio/shared --filter @portfolio/api build && pnpm --filter @portfolio/api openapi:export && pnpm --filter @portfolio/web gen:api",
