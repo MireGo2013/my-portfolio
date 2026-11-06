@@ -8,6 +8,7 @@ import {
   type Project,
   type SkillCategory,
 } from './api/content-api';
+import { withSnapshot } from './content-fallback';
 import { CONTENT_TAGS } from './content-tags';
 
 function contentApi() {
@@ -20,6 +21,7 @@ function contentApi() {
 
 // Результаты попадают в статический HTML страниц. Профиль кэша content описан
 // в next.config.ts, а метки сбрасывает прокси админки после сохранения.
+// Если API лежит при сборке, данные берутся из снимка (content-fallback.ts).
 // Аргумент locale входит в ключ кэша, поэтому у каждого языка своя запись.
 
 export async function getProfile(locale: Locale): Promise<Profile> {
@@ -27,7 +29,7 @@ export async function getProfile(locale: Locale): Promise<Profile> {
   cacheLife('content');
   cacheTag(CONTENT_TAGS.profile);
 
-  return contentApi().getProfile(locale);
+  return withSnapshot('profile', locale, () => contentApi().getProfile(locale));
 }
 
 export async function getExperience(locale: Locale): Promise<Experience[]> {
@@ -35,7 +37,9 @@ export async function getExperience(locale: Locale): Promise<Experience[]> {
   cacheLife('content');
   cacheTag(CONTENT_TAGS.experience);
 
-  return contentApi().getExperience(locale);
+  return withSnapshot('experience', locale, () =>
+    contentApi().getExperience(locale),
+  );
 }
 
 export async function getProjects(locale: Locale): Promise<Project[]> {
@@ -43,7 +47,9 @@ export async function getProjects(locale: Locale): Promise<Project[]> {
   cacheLife('content');
   cacheTag(CONTENT_TAGS.projects);
 
-  return contentApi().getProjects(locale);
+  return withSnapshot('projects', locale, () =>
+    contentApi().getProjects(locale),
+  );
 }
 
 export async function getSkills(locale: Locale): Promise<SkillCategory[]> {
@@ -51,5 +57,5 @@ export async function getSkills(locale: Locale): Promise<SkillCategory[]> {
   cacheLife('content');
   cacheTag(CONTENT_TAGS.skills);
 
-  return contentApi().getSkills(locale);
+  return withSnapshot('skills', locale, () => contentApi().getSkills(locale));
 }

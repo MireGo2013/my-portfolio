@@ -1,12 +1,15 @@
 import type { LoginCredentials } from '@portfolio/shared';
 import { adminClient } from './admin-client';
 
-export type LoginResult = 'ok' | 'mfa' | 'invalid' | 'rate-limited' | 'failed';
+export type LoginResult =
+  'ok' | 'mfa' | 'invalid' | 'rate-limited' | 'unavailable' | 'failed';
 
 function resultOf(response: Response): Exclude<LoginResult, 'mfa'> {
   if (response.ok) return 'ok';
   if (response.status === 401) return 'invalid';
   if (response.status === 429) return 'rate-limited';
+  // Прокси сайта отвечает 503, если API не отвечает вовсе
+  if (response.status === 503) return 'unavailable';
   return 'failed';
 }
 

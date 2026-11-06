@@ -27,12 +27,16 @@ const FIELD_ERRORS: Record<LoginErrorCode, string> = {
 const PASSWORD_ERRORS: Record<Failure, string> = {
   invalid: 'Неверная почта или пароль',
   'rate-limited': 'Слишком много попыток. Подождите 15 минут',
+  unavailable:
+    'API сейчас недоступен, войти нельзя. Сайт-портфолио при этом работает',
   failed: 'Не удалось войти. Попробуйте ещё раз',
 };
 
 const CODE_ERRORS: Record<Failure, string> = {
   invalid: 'Неверный код. Если не помогает, начните вход заново',
   'rate-limited': 'Слишком много попыток. Подождите 15 минут',
+  unavailable:
+    'API сейчас недоступен, войти нельзя. Сайт-портфолио при этом работает',
   failed: 'Не удалось войти. Попробуйте ещё раз',
 };
 

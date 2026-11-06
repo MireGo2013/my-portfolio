@@ -87,7 +87,17 @@ async function handle(
     mfa: request.cookies.get(ADMIN_COOKIES.mfa)?.value,
   };
 
-  let response = await callApi(apiPath, { ...call, cookies });
+  let response: Response;
+  try {
+    response = await callApi(apiPath, { ...call, cookies });
+  } catch {
+    // API не отвечает вовсе (выключен, нет сети): понятный 503 вместо голого
+    // 500, чтобы админка могла сказать «API недоступен»
+    return Response.json(
+      { code: 'apiUnavailable', message: 'API недоступен' },
+      { status: 503 },
+    );
+  }
   const setCookies: string[] = [];
 
   // Токен доступа истёк: обновляем и повторяем запрос, клиент этого не замечает.

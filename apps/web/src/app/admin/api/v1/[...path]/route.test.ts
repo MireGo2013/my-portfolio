@@ -315,4 +315,15 @@ describe('прокси админки', () => {
       expect(revalidate).not.toHaveBeenCalled();
     });
   });
+
+  it('если API не отвечает вовсе, отдаёт понятный 503', async () => {
+    server.use(
+      http.get(API + '/api/v1/admin/things', () => HttpResponse.error()),
+    );
+
+    const response = await call(GET, ['admin', 'things']);
+
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({ code: 'apiUnavailable' });
+  });
 });
