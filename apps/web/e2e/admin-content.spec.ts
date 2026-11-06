@@ -1,5 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
-import { openAdmin, setupTestAdmin, withDb } from './admin-helpers';
+import {
+  expectOnSite,
+  openAdmin,
+  setupTestAdmin,
+  withDb,
+} from './admin-helpers';
 
 const EMAIL = 'admin@playwright-content.example.com';
 // Записи теста помечены slug: их удаляем после тестов, даже если тест упал
@@ -24,29 +29,6 @@ const inLocale = (page: Page, locale: 'Русский' | 'English') =>
 async function save(page: Page) {
   await page.getByRole('button', { name: 'Сохранить' }).click();
   await expect(page.getByRole('status')).toHaveText(/^Сохранено/);
-}
-
-/**
- * Открывает публичную страницу и ждёт правку, перезагружая страницу.
- * Тесты сайта в соседних воркерах открывают те же страницы. Если в момент
- * сохранения кто-то уже пересобирал страницу на старых данных, его результат
- * может лечь в кэш после сброса, и первый заход покажет старое. Следующий
- * заход — уже новое. Правка должна появиться, а не обязательно с первого раза.
- */
-async function expectOnSite(
-  page: Page,
-  path: string,
-  check: () => Promise<void>,
-) {
-  await page.goto(path);
-  await expect(async () => {
-    try {
-      await check();
-    } catch (error) {
-      await page.reload();
-      throw error;
-    }
-  }).toPass({ timeout: 10_000 });
 }
 
 test('профиль загружается в форму и сохраняется', async ({ page }) => {

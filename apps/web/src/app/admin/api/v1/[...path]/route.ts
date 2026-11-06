@@ -50,6 +50,18 @@ async function handle(
   ) {
     return notFound();
   }
+  // Адрес резюме и сам файл в Blob меняются только вместе, через
+  // /admin/api/cv/[locale]. Прямая запись адреса оставила бы старый файл
+  // в хранилище навсегда или указала бы на файл, который не загружали
+  const [root, area, section] = path;
+  if (
+    root === 'admin' &&
+    area === 'content' &&
+    section === 'cv' &&
+    request.method !== 'GET'
+  ) {
+    return notFound();
+  }
   const apiPath =
     path.map(encodeURIComponent).join('/') + request.nextUrl.search;
 

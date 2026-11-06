@@ -71,3 +71,26 @@ export async function openAdmin(page: Page, email: string) {
   await logIn(page, email);
   await expect(page).toHaveURL(/\/admin\/messages$/);
 }
+
+/**
+ * Открывает публичную страницу и ждёт правку, перезагружая страницу.
+ * Тесты сайта в соседних воркерах открывают те же страницы. Если в момент
+ * сохранения кто-то уже пересобирал страницу на старых данных, его результат
+ * может лечь в кэш после сброса, и первый заход покажет старое. Следующий
+ * заход — уже новое. Правка должна появиться, а не обязательно с первого раза.
+ */
+export async function expectOnSite(
+  page: Page,
+  path: string,
+  check: () => Promise<void>,
+) {
+  await page.goto(path);
+  await expect(async () => {
+    try {
+      await check();
+    } catch (error) {
+      await page.reload();
+      throw error;
+    }
+  }).toPass({ timeout: 10_000 });
+}

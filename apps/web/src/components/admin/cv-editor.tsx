@@ -92,6 +92,13 @@ function CvCard({ locale, url }: { locale: Locale; url: string | null }) {
       : failure && ERRORS.failed;
   const busy = upload.isPending || remove.isPending;
 
+  // Новое действие — старые результаты и ошибки обеих операций больше не нужны
+  const startAction = () => {
+    setDone(null);
+    upload.reset();
+    remove.reset();
+  };
+
   return (
     <article className="flex flex-col gap-4 rounded-sm border border-line p-4">
       <h2 className="font-medium">{LOCALE_TITLES[locale]}</h2>
@@ -112,7 +119,7 @@ function CvCard({ locale, url }: { locale: Locale; url: string | null }) {
         className="flex flex-col gap-3"
         onSubmit={(event) => {
           event.preventDefault();
-          setDone(null);
+          startAction();
           if (file) upload.mutate(file);
         }}
       >
@@ -125,8 +132,7 @@ function CvCard({ locale, url }: { locale: Locale; url: string | null }) {
           type="file"
           accept="application/pdf"
           onChange={(event) => {
-            setDone(null);
-            upload.reset();
+            startAction();
             setFile(event.target.files?.[0] ?? null);
           }}
           className="text-sm file:mr-3 file:rounded-sm file:border file:border-line file:bg-surface file:px-3 file:py-1.5 file:text-ink"
@@ -144,7 +150,7 @@ function CvCard({ locale, url }: { locale: Locale; url: string | null }) {
               type="button"
               disabled={busy}
               onClick={() => {
-                setDone(null);
+                startAction();
                 remove.mutate();
               }}
               className={BUTTON_CLASS}

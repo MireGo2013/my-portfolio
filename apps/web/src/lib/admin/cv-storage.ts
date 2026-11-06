@@ -1,18 +1,33 @@
 import 'server-only';
 import { BLOB_PUBLIC_HOST_SUFFIX, CV_LIMITS } from '@portfolio/shared';
-import { del, put } from '@vercel/blob';
+import {
+  BlobAccessError,
+  BlobError,
+  BlobStoreNotFoundError,
+  del,
+  put,
+} from '@vercel/blob';
 
 // Работа с хранилищем Vercel Blob. Ключи доступа есть только у сервера сайта:
-// на Vercel это OIDC (VERCEL_OIDC_TOKEN и BLOB_STORE_ID добавляет сама
-// платформа при подключении хранилища), вне Vercel — BLOB_READ_WRITE_TOKEN
+// на Vercel это OIDC (BLOB_STORE_ID добавляет платформа при подключении
+// хранилища, токен приходит с запросом), вне Vercel — BLOB_READ_WRITE_TOKEN
 
-/** Подключено ли хранилище. Без него сайт отдаёт PDF из сборки. */
+/**
+ * Подключено ли хранилище. Без него сайт отдаёт PDF из сборки.
+ *
+ * Смотрим только на BLOB_STORE_ID (его ставит Vercel при подключении) или
+ * BLOB_READ_WRITE_TOKEN. Токен OIDC на Vercel приходит в заголовке запроса,
+ * а не в переменной окружения: SDK найдёт его сам. Если доступа всё же нет,
+ * put() бросит BlobError, и загрузка ответит тем же «не подключено».
+ */
 export function isStorageConfigured(): boolean {
   return Boolean(
-    process.env.BLOB_READ_WRITE_TOKEN ||
-    (process.env.BLOB_STORE_ID && process.env.VERCEL_OIDC_TOKEN),
+    process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID,
   );
 }
+
+/** Хранилище отказало в доступе: ключей нет или они не подходят. */
+export class StorageUnavailable extends Error {}
 
 export type CvFileError = 'missing' | 'tooLarge' | 'notPdf';
 
@@ -43,16 +58,30 @@ export async function checkCvFile(
  * файлы, и посетители ещё долго получали бы старое резюме.
  */
 export async function uploadCv(locale: string, file: File): Promise<string> {
-  const { url } = await put(
-    `cv/Sobol_Vladislav_CV_${locale.toUpperCase()}.pdf`,
-    file,
-    {
-      access: 'public',
-      addRandomSuffix: true,
-      contentType: 'application/pdf',
-    },
-  );
-  return url;
+  try {
+    const { url } = await put(
+      `cv/Sobol_Vladislav_CV_${locale.toUpperCase()}.pdf`,
+      file,
+      {
+        access: 'public',
+        addRandomSuffix: true,
+        contentType: 'application/pdf',
+      },
+    );
+    return url;
+  } catch (error) {
+    // Нет ключей (базовый BlobError «No blob credentials»), ключ не подходит
+    // или хранилище удалено — это «не подключено». Остальное, например
+    // временная недоступность сервиса, — обычная ошибка сервера
+    if (
+      error instanceof BlobAccessError ||
+      error instanceof BlobStoreNotFoundError ||
+      (error instanceof BlobError && error.constructor === BlobError)
+    ) {
+      throw new StorageUnavailable(error.message);
+    }
+    throw error;
+  }
 }
 
 /**

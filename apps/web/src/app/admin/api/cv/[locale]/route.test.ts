@@ -43,17 +43,38 @@ afterAll(() => server.close());
 
 const PDF = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x37]); // %PDF-1.7
 
-function upload(
+/**
+ * Запрос, как его шлёт браузер: multipart с границей и Content-Length.
+ * Тело собираем через обычный Request, чтобы узнать его длину.
+ */
+async function upload(
   body: BlobPart = PDF,
-  { type = 'application/pdf', locale = 'ru', site = 'same-origin' } = {},
+  {
+    type = 'application/pdf',
+    locale = 'ru',
+    site = 'same-origin',
+    cookie = 'admin_access=a1',
+    withLength = true,
+  } = {},
 ) {
   const form = new FormData();
   form.set('file', new File([body], 'cv.pdf', { type }));
+  const encoded = new Request('http://site.test', {
+    method: 'POST',
+    body: form,
+  });
+  const bytes = await encoded.arrayBuffer();
+  const headers: Record<string, string> = {
+    cookie,
+    'sec-fetch-site': site,
+    'content-type': encoded.headers.get('content-type') ?? '',
+  };
+  if (withLength) headers['content-length'] = String(bytes.byteLength);
   return POST(
     new NextRequest(`http://site.test/admin/api/cv/${locale}`, {
       method: 'POST',
-      headers: { cookie: 'admin_access=a1', 'sec-fetch-site': site },
-      body: form,
+      headers,
+      body: bytes,
     }),
     { params: Promise.resolve({ locale }) },
   );
@@ -149,20 +170,92 @@ describe('загрузка резюме', () => {
     );
   });
 
-  it('если API не сохранил адрес, удаляет только что загруженный файл', async () => {
+  it('если API точно не сохранил адрес, удаляет только что загруженный файл', async () => {
     server.use(
       http.get(`${API}/auth/me`, () => HttpResponse.json({})),
-      http.put(
-        `${API}/admin/content/cv/ru`,
-        () => new HttpResponse(null, { status: 500 }),
+      http.put(`${API}/admin/content/cv/ru`, () =>
+        HttpResponse.json({ errors: { url: ['urlInvalid'] } }, { status: 400 }),
       ),
     );
 
     const response = await upload();
 
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(400);
     expect(delMock).toHaveBeenCalledWith(`${BLOB}/new.pdf`);
     expect(revalidate).not.toHaveBeenCalled();
+  });
+
+  it('если API упал, но адрес сохранил, файл не удаляет', async () => {
+    server.use(
+      http.get(`${API}/auth/me`, () => HttpResponse.json({})),
+      http.put(
+        `${API}/admin/content/cv/ru`,
+        () => new HttpResponse(null, { status: 502 }),
+      ),
+      // Проверка показывает: адрес уже в базе
+      http.get(`${API}/admin/content/cv`, () =>
+        HttpResponse.json({ ru: `${BLOB}/new.pdf`, en: null }),
+      ),
+    );
+
+    const response = await upload();
+
+    expect(response.status).toBe(502);
+    expect(delMock).not.toHaveBeenCalled();
+  });
+
+  it('если неизвестно, сохранён ли адрес, файл тоже не удаляет', async () => {
+    server.use(
+      http.get(`${API}/auth/me`, () => HttpResponse.json({})),
+      http.put(`${API}/admin/content/cv/ru`, () => HttpResponse.error()),
+      http.get(`${API}/admin/content/cv`, () => HttpResponse.error()),
+    );
+
+    const response = await upload();
+
+    expect(response.status).toBe(502);
+    expect(delMock).not.toHaveBeenCalled();
+  });
+
+  it('без Content-Length не читает тело', async () => {
+    apiAccepts();
+
+    const response = await upload(PDF, { withLength: false });
+
+    expect(response.status).toBe(411);
+    expect(putMock).not.toHaveBeenCalled();
+  });
+
+  it('новые cookie сессии уходят и в ответе с ошибкой', async () => {
+    server.use(
+      http.get(`${API}/auth/me`, ({ request }) =>
+        request.headers.get('cookie')?.includes('admin_access=fresh')
+          ? HttpResponse.json({})
+          : new HttpResponse(null, { status: 401 }),
+      ),
+      http.post(
+        `${API}/auth/refresh`,
+        () =>
+          new HttpResponse(null, {
+            status: 204,
+            headers: [
+              ['set-cookie', 'admin_access=fresh; Path=/'],
+              ['set-cookie', 'admin_refresh=r2; Path=/'],
+            ],
+          }),
+      ),
+    );
+
+    // Токен доступа истёк, а файл — не PDF
+    const response = await upload(new Uint8Array([1, 2, 3]), {
+      cookie: 'admin_refresh=r1',
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.headers.getSetCookie()).toEqual([
+      'admin_access=fresh; Path=/',
+      'admin_refresh=r2; Path=/',
+    ]);
   });
 
   it('неизвестный язык — 404', async () => {

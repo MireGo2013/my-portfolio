@@ -353,17 +353,23 @@ export class AdminContentService {
     locale: Locale,
     url: string | null,
   ): Promise<AdminCvDto & { previous: string | null }> {
-    const current = await this.prisma.profileTranslation.findUnique({
-      where: { profileId_locale: { profileId: 1, locale } },
-      select: { cvUrl: true },
+    // Прочитать прежний адрес и записать новый — одной транзакцией с блокировкой
+    // строки. Без неё две загрузки разом прочитали бы одинаковый previous,
+    // и файл одной из них никто бы не удалил
+    const previous = await this.prisma.$transaction(async (tx) => {
+      const rows = await tx.$queryRaw<{ cv_url: string | null }[]>`
+        SELECT cv_url FROM profile_translations
+        WHERE profile_id = 1 AND locale = ${locale}::"Locale"
+        FOR UPDATE`;
+      const [current] = rows;
+      if (!current) throw notFound('Профиль ещё не заполнен');
+      await tx.profileTranslation.update({
+        where: { profileId_locale: { profileId: 1, locale } },
+        data: { cvUrl: url },
+      });
+      return current.cv_url;
     });
-    if (!current) throw notFound('Профиль ещё не заполнен');
-
-    await this.prisma.profileTranslation.update({
-      where: { profileId_locale: { profileId: 1, locale } },
-      data: { cvUrl: url },
-    });
-    return { ...(await this.getCv()), previous: current.cvUrl };
+    return { ...(await this.getCv()), previous };
   }
 
   // ---------- Общее ----------
