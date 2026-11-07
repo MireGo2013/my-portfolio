@@ -5,7 +5,7 @@
 import type { Locale } from '@portfolio/shared';
 
 export const profile = {
-  title: 'Fullstack Engineer',
+  title: 'Software Engineer',
   specialization: 'React / TypeScript / Node.js / NestJS',
   email: 'sobol.work.v92@gmail.com',
   telegramUrl: 'https://t.me/VladilenS_tg',
@@ -16,23 +16,23 @@ export const profile = {
       fullName: 'Владислав Соболь',
       shortName: 'Влад',
       about: [
-        'Я frontend-разработчик с 6+ годами коммерческого опыта на React и TypeScript. Работал над высоконагруженными SPA, B2B-системами и CRM с ролевым доступом в банковском секторе, LegalTech, логистике и микромобильности.',
+        'Я Software Engineer с 6+ годами коммерческого опыта на React и TypeScript. Работал над высоконагруженными SPA, B2B-системами и CRM с ролевым доступом в банковском секторе, LegalTech, логистике и микромобильности.',
         'Проектирую архитектуру frontend-приложений, микрофронтендов и UI Kit, запускаю проекты с нуля, оптимизирую производительность и строю системы тестирования. Провожу code review, онбординг и менторинг, работаю в кросс-функциональной команде полного цикла.',
         'Работаю с Node.js (NestJS, Express), проектирую и интегрирую REST API (OpenAPI), имею практический опыт с PostgreSQL, MongoDB, Docker и Nginx.',
       ],
       summary:
-        'Frontend Engineer с 6+ годами коммерческого опыта на React и TypeScript: высоконагруженные SPA, B2B-системы и CRM с ролевым доступом. Проектирую архитектуру frontend-приложений, микрофронтендов и UI Kit, запускаю проекты с нуля, оптимизирую производительность и строю системы тестирования. Backend на Node.js и NestJS, REST API, PostgreSQL и Docker знаю достаточно, чтобы закрыть вертикаль фичи end-to-end.',
+        'Software Engineer с 6+ годами коммерческого опыта на React и TypeScript: высоконагруженные SPA, B2B-системы и CRM с ролевым доступом. Проектирую архитектуру frontend-приложений, микрофронтендов и UI Kit, запускаю проекты с нуля, оптимизирую производительность и строю системы тестирования. Backend на Node.js и NestJS, REST API, PostgreSQL и Docker знаю достаточно, чтобы закрыть вертикаль фичи end-to-end.',
     },
     en: {
       fullName: 'Vladislav Sobol',
       shortName: 'Vlad',
       about: [
-        'I am a Frontend Engineer with 6+ years of commercial experience in React and TypeScript. I have worked on high-load SPAs, B2B systems and CRMs with role-based access in banking, LegalTech, logistics and micromobility.',
+        'I am a Software Engineer with 6+ years of commercial experience in React and TypeScript. I have worked on high-load SPAs, B2B systems and CRMs with role-based access in banking, LegalTech, logistics and micromobility.',
         'I design the architecture of frontend applications, microfrontends and UI Kits, launch projects from scratch, optimize performance and build testing systems. I conduct code review, onboarding and mentoring, and work in cross-functional full-cycle teams.',
         'I work with Node.js (NestJS, Express), design and integrate REST APIs (OpenAPI), and have hands-on experience with PostgreSQL, MongoDB, Docker and Nginx.',
       ],
       summary:
-        'Frontend Engineer with 6+ years of commercial experience in React and TypeScript: high-load SPAs, B2B systems and CRMs with role-based access. I design the architecture of frontend applications, microfrontends and UI Kits, launch projects from scratch, optimize performance and build testing systems. I work with Node.js and NestJS, REST APIs, PostgreSQL and Docker, enough to deliver a feature vertical end-to-end.',
+        'Software Engineer with 6+ years of commercial experience in React and TypeScript: high-load SPAs, B2B systems and CRMs with role-based access. I design the architecture of frontend applications, microfrontends and UI Kits, launch projects from scratch, optimize performance and build testing systems. I work with Node.js and NestJS, REST APIs, PostgreSQL and Docker, enough to deliver a feature vertical end-to-end.',
     },
   },
 };
