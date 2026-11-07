@@ -318,6 +318,32 @@ export const projects = [
     },
   },
   {
+    slug: 'my-portfolio',
+    kind: 'OPEN_SOURCE' as const,
+    stack: [
+      'Next.js 16',
+      'NestJS',
+      'PostgreSQL',
+      'Prisma',
+      'Docker',
+      'Playwright',
+    ],
+    repoUrl: `${github}/my-portfolio`,
+    liveUrl: 'https://my-portfolio-sigma-taupe.vercel.app',
+    translations: {
+      ru: {
+        name: 'Портфолио',
+        description:
+          'Этот сайт: Next.js и NestJS в монорепозитории, контент в PostgreSQL, админка со входом по паролю и TOTP, CI и тесты всех уровней.',
+      },
+      en: {
+        name: 'Portfolio',
+        description:
+          'This site: Next.js and NestJS in a monorepo, content in PostgreSQL, an admin panel with password and TOTP sign-in, CI and tests at every level.',
+      },
+    },
+  },
+  {
     slug: 'music-platform',
     kind: 'OPEN_SOURCE' as const,
     stack: ['Next.js 16', 'NestJS', 'MongoDB', 'Docker Compose'],
