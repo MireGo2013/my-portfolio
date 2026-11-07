@@ -1,4 +1,4 @@
-# Портфолио Владислава Соболя
+# Портфолио
 
 **Сайт:** <https://my-portfolio-sigma-taupe.vercel.app>
 
