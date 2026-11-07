@@ -7,6 +7,7 @@ import type { App } from 'supertest/types.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AppModule } from '../src/app.module.js';
 import { configureApp } from '../src/app.setup.js';
+import { projects as seedProjects } from '../src/database/seed-data.js';
 
 // Нужна запущенная база с применёнными миграциями и seed: pnpm db:seed
 describe('API контента', () => {
@@ -118,7 +119,7 @@ describe('API контента', () => {
       );
       const skills = await get(`${API_PREFIX}/skills?locale=en`).expect(200);
 
-      expect(projects.body).toHaveLength(10);
+      expect(projects.body).toHaveLength(seedProjects.length);
       expect(skills.body[0].name).toBe('Languages');
     });
 
