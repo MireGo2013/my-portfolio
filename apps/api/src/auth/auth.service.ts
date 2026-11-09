@@ -13,7 +13,7 @@ import {
 } from './auth.constants.js';
 import { verifyPassword } from './passwords.js';
 import { generateRefreshToken, hashToken } from './tokens.js';
-import { TwoFactorService } from './two-factor.service.js';
+import { TwoFactorService } from './two-factor/two-factor.service.js';
 
 /** Что лежит в токене доступа. */
 type AccessTokenPayload = {

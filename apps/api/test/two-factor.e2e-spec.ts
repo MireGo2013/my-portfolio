@@ -15,7 +15,7 @@ import {
 } from 'vitest';
 import { AppModule } from '../src/app.module.js';
 import { configureApp } from '../src/app.setup.js';
-import { base32Decode, hotp, totpStep } from '../src/auth/totp.js';
+import { base32Decode, hotp, totpStep } from '../src/auth/two-factor/totp.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 import { createAdminSession } from './admin-session.js';
 
