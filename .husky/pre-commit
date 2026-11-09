@@ -1,1 +1,4 @@
-./node_modules/.bin/lint-staged
+# На Windows prettier запускается через cmd.exe, а у него лимит командной
+# строки около 8 КБ. Без лимита lint-staged режет список файлов под больший
+# лимит, и большой коммит падает с «Слишком длинная командная строка».
+./node_modules/.bin/lint-staged --max-arg-length 7000
