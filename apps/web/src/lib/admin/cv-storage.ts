@@ -60,7 +60,7 @@ export async function checkCvFile(
 export async function uploadCv(locale: string, file: File): Promise<string> {
   try {
     const { url } = await put(
-      `cv/Sobol_Vladislav_CV_${locale.toUpperCase()}.pdf`,
+      `cv/CV_Sobol_Software_Engineer_${locale.toUpperCase()}.pdf`,
       file,
       {
         access: 'public',

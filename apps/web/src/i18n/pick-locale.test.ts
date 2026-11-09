@@ -42,7 +42,7 @@ describe('switchLocalePath', () => {
 
 describe('resumeUrl', () => {
   it('ведёт на PDF нужного языка', () => {
-    expect(resumeUrl('ru')).toBe('/cv/Sobol_Vladislav_CV_RU.pdf');
-    expect(resumeUrl('en')).toBe('/cv/Sobol_Vladislav_CV_EN.pdf');
+    expect(resumeUrl('ru')).toBe('/cv/CV_Sobol_Software_Engineer_RU.pdf');
+    expect(resumeUrl('en')).toBe('/cv/CV_Sobol_Software_Engineer_EN.pdf');
   });
 });

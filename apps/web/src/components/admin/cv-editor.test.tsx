@@ -54,7 +54,7 @@ describe('CvEditor', () => {
     const ru = within(card('Русская версия'));
     expect(ru.getByText(/Файл из сборки сайта/)).toBeTruthy();
     expect(ru.getByRole('link', { name: 'открыть' }).getAttribute('href')).toBe(
-      '/cv/Sobol_Vladislav_CV_RU.pdf',
+      '/cv/CV_Sobol_Software_Engineer_RU.pdf',
     );
     // У загруженного файла есть кнопка «вернуть из сборки», у файла из сборки нет
     expect(ru.queryByRole('button', { name: /Вернуть/ })).toBe(null);

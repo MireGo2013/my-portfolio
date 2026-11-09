@@ -114,7 +114,7 @@ describe('загрузка резюме', () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ ru: `${BLOB}/new.pdf`, en: null });
     expect(putMock).toHaveBeenCalledWith(
-      'cv/Sobol_Vladislav_CV_RU.pdf',
+      'cv/CV_Sobol_Software_Engineer_RU.pdf',
       expect.any(File),
       expect.objectContaining({ access: 'public', addRandomSuffix: true }),
     );

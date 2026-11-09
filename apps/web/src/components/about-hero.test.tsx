@@ -50,8 +50,8 @@ describe('AboutHero', () => {
   });
 
   it.each([
-    ['ru', ru.about, '/cv/Sobol_Vladislav_CV_RU.pdf'],
-    ['en', en.about, '/cv/Sobol_Vladislav_CV_EN.pdf'],
+    ['ru', ru.about, '/cv/CV_Sobol_Software_Engineer_RU.pdf'],
+    ['en', en.about, '/cv/CV_Sobol_Software_Engineer_EN.pdf'],
   ] as const)(
     'резюме на языке %s открывается и скачивается отдельно',
     (locale, dictionary, url) => {

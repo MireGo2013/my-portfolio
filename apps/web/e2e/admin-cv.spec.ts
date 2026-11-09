@@ -87,7 +87,7 @@ test('загруженное резюме на главной и возврат 
   await expectOnSite(page, '/en', async () => {
     await expect(
       page.getByRole('link', { name: 'View resume' }),
-    ).toHaveAttribute('href', '/cv/Sobol_Vladislav_CV_EN.pdf', {
+    ).toHaveAttribute('href', '/cv/CV_Sobol_Software_Engineer_EN.pdf', {
       timeout: 1000,
     });
   });

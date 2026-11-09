@@ -15,7 +15,7 @@ export function hasLocale(value: string): value is Locale {
 
 /** Адрес PDF с резюме на нужном языке. */
 export function resumeUrl(locale: Locale): string {
-  return `/cv/Sobol_Vladislav_CV_${locale.toUpperCase()}.pdf`;
+  return `/cv/CV_Sobol_Software_Engineer_${locale.toUpperCase()}.pdf`;
 }
 
 /** Адрес той же страницы на другом языке: /ru/skills -> /en/skills. */

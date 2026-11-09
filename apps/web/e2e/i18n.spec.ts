@@ -45,8 +45,8 @@ test('переключатель сохраняет страницу и запо
 
 test.describe('резюме', () => {
   for (const [locale, name, file] of [
-    ['ru', 'Посмотреть резюме', 'Sobol_Vladislav_CV_RU.pdf'],
-    ['en', 'View resume', 'Sobol_Vladislav_CV_EN.pdf'],
+    ['ru', 'Посмотреть резюме', 'CV_Sobol_Software_Engineer_RU.pdf'],
+    ['en', 'View resume', 'CV_Sobol_Software_Engineer_EN.pdf'],
   ] as const) {
     test(`на языке ${locale} ведёт на свой PDF`, async ({ page, request }) => {
       await page.goto(`/${locale}`);
