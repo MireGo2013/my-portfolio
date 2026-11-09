@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client.js';
-import { experience, projects, skillCategories } from './seed-data.js';
+import { work, projects, skillCategories } from './seed-data.js';
 import { seedContent } from './seed-content.js';
 
 // Запуск: node dist/database/seed.js [--reset]
@@ -36,7 +36,7 @@ try {
   console.log(
     result === 'skipped'
       ? 'Seed пропущен: контент уже есть, его правят в админке. Перезаписать: --reset'
-      : `Seed готов: опыт ${experience.length}, проекты ${projects.length}, категории навыков ${skillCategories.length}`,
+      : `Seed готов: опыт ${work.length}, проекты ${projects.length}, категории навыков ${skillCategories.length}`,
   );
 } finally {
   await prisma.$disconnect();

@@ -10,7 +10,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const LOCALES = ['ru', 'en'];
-const SECTIONS = ['profile', 'experience', 'projects', 'skills'];
+const SECTIONS = ['profile', 'work', 'projects', 'skills'];
 const target = fileURLToPath(
   new URL('../src/shared/content/content-snapshot.json', import.meta.url),
 );

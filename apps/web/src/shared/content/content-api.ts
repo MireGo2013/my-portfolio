@@ -3,7 +3,7 @@ import type { Locale } from '@portfolio/shared';
 import type { components, paths } from '@/shared/api/schema';
 
 export type Profile = components['schemas']['ProfileDto'];
-export type Experience = components['schemas']['ExperienceDto'];
+export type Work = components['schemas']['WorkDto'];
 export type Project = components['schemas']['ProjectDto'];
 export type SkillCategory = components['schemas']['SkillCategoryDto'];
 
@@ -38,10 +38,10 @@ export function createContentApi(baseUrl: string) {
         await client.GET('/api/v1/profile', { params: { query: { locale } } }),
       );
     },
-    async getExperience(locale: Locale): Promise<Experience[]> {
+    async getWork(locale: Locale): Promise<Work[]> {
       return unwrap(
-        '/experience',
-        await client.GET('/api/v1/experience', {
+        '/work',
+        await client.GET('/api/v1/work', {
           params: { query: { locale } },
         }),
       );

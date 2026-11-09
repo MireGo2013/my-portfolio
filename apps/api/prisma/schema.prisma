@@ -133,31 +133,32 @@ model ProfileTranslation {
   @@map("profile_translations")
 }
 
-model Experience {
-  id           String                  @id @default(uuid(7)) @db.Uuid
-  slug         String                  @unique
+/// Места работы: на сайте это страница «Проекты» (/projects)
+model Work {
+  id           String            @id @default(uuid(7)) @db.Uuid
+  slug         String            @unique
   role         String
-  startDate    DateTime                @map("start_date") @db.Date
-  endDate      DateTime?               @map("end_date") @db.Date
+  startDate    DateTime          @map("start_date") @db.Date
+  endDate      DateTime?         @map("end_date") @db.Date
   stack        String[]
   position     Int
-  translations ExperienceTranslation[]
+  translations WorkTranslation[]
 
-  @@map("experience")
+  @@map("work")
 }
 
-model ExperienceTranslation {
-  experienceId     String     @map("experience_id") @db.Uuid
+model WorkTranslation {
+  workId           String   @map("work_id") @db.Uuid
   locale           Locale
   company          String?
   project          String
   summary          String
   responsibilities String[]
   achievements     String[]
-  experience       Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  work             Work     @relation(fields: [workId], references: [id], onDelete: Cascade)
 
-  @@id([experienceId, locale])
-  @@map("experience_translations")
+  @@id([workId, locale])
+  @@map("work_translations")
 }
 
 model Project {

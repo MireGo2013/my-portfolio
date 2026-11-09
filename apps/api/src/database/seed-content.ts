@@ -1,6 +1,6 @@
 import { LOCALES, type Locale } from '@portfolio/shared';
 import type { PrismaClient } from '../generated/prisma/client.js';
-import { experience, profile, projects, skillCategories } from './seed-data.js';
+import { work, profile, projects, skillCategories } from './seed-data.js';
 
 /** Тип требует тексты на всех языках: пропущенный перевод не пройдёт компиляцию. */
 function toRows<T extends object>(
@@ -37,7 +37,7 @@ export async function seedContent(
         return 'skipped';
       }
 
-      await tx.experience.deleteMany();
+      await tx.work.deleteMany();
       await tx.project.deleteMany();
       await tx.skillCategory.deleteMany(); // навыки и переводы удалятся каскадом
 
@@ -55,8 +55,8 @@ export async function seedContent(
         })),
       });
 
-      for (const [position, item] of experience.entries()) {
-        await tx.experience.create({
+      for (const [position, item] of work.entries()) {
+        await tx.work.create({
           data: {
             slug: item.slug,
             role: item.role,

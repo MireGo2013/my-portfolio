@@ -33,7 +33,7 @@ export class AdminProfileDto {
 
 // ---------- Коммерческие проекты (опыт работы) ----------
 
-export class ExperienceTextDto {
+export class WorkTextDto {
   @ApiProperty({ type: String, nullable: true }) company!: string | null;
   @ApiProperty() project!: string;
   @ApiProperty() summary!: string;
@@ -41,12 +41,12 @@ export class ExperienceTextDto {
   @ApiProperty({ type: [String] }) achievements!: string[];
 }
 
-export class ExperienceTranslationsDto {
-  @ApiProperty({ type: ExperienceTextDto }) ru!: ExperienceTextDto;
-  @ApiProperty({ type: ExperienceTextDto }) en!: ExperienceTextDto;
+export class WorkTranslationsDto {
+  @ApiProperty({ type: WorkTextDto }) ru!: WorkTextDto;
+  @ApiProperty({ type: WorkTextDto }) en!: WorkTextDto;
 }
 
-export class AdminExperienceInputDto {
+export class AdminWorkInputDto {
   @ApiProperty({ example: 'scooter-admin-crm' }) slug!: string;
   @ApiProperty() role!: string;
   @ApiProperty({ example: '2025-08', description: 'YYYY-MM' })
@@ -59,11 +59,11 @@ export class AdminExperienceInputDto {
   })
   endDate!: string | null;
   @ApiProperty({ type: [String] }) stack!: string[];
-  @ApiProperty({ type: ExperienceTranslationsDto })
-  translations!: ExperienceTranslationsDto;
+  @ApiProperty({ type: WorkTranslationsDto })
+  translations!: WorkTranslationsDto;
 }
 
-export class AdminExperienceDto extends AdminExperienceInputDto {
+export class AdminWorkDto extends AdminWorkInputDto {
   @ApiProperty({ format: 'uuid' }) id!: string;
 }
 

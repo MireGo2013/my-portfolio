@@ -39,8 +39,8 @@ describe('API контента', () => {
     expect(body).not.toHaveProperty('id');
   });
 
-  it('GET /experience отдаёт опыт в заданном порядке, с датами YYYY-MM', async () => {
-    const { body } = await get(`${API_PREFIX}/experience`).expect(200);
+  it('GET /work отдаёт опыт в заданном порядке, с датами YYYY-MM', async () => {
+    const { body } = await get(`${API_PREFIX}/work`).expect(200);
 
     expect(body[0]).toMatchObject({
       slug: 'vtb',
@@ -97,10 +97,10 @@ describe('API контента', () => {
     });
 
     it('общие данные одинаковы на обоих языках, а тексты различаются', async () => {
-      const { body: ru } = await get(`${API_PREFIX}/experience`).expect(200);
-      const { body: en } = await get(
-        `${API_PREFIX}/experience?locale=en`,
-      ).expect(200);
+      const { body: ru } = await get(`${API_PREFIX}/work`).expect(200);
+      const { body: en } = await get(`${API_PREFIX}/work?locale=en`).expect(
+        200,
+      );
 
       expect(en[0]).toMatchObject({
         slug: ru[0].slug,
@@ -135,9 +135,6 @@ describe('API контента', () => {
       [
         'admin/content/cv',
         'admin/content/cv/{locale}',
-        'admin/content/experience',
-        'admin/content/experience/order',
-        'admin/content/experience/{id}',
         'admin/content/profile',
         'admin/content/projects',
         'admin/content/projects/order',
@@ -145,6 +142,9 @@ describe('API контента', () => {
         'admin/content/skills',
         'admin/content/skills/order',
         'admin/content/skills/{id}',
+        'admin/content/work',
+        'admin/content/work/order',
+        'admin/content/work/{id}',
         'admin/messages',
         'admin/messages/counts',
         'admin/messages/{id}',
@@ -158,16 +158,16 @@ describe('API контента', () => {
         'auth/me',
         'auth/refresh',
         'contact',
-        'experience',
         'health',
         'profile',
         'projects',
         'skills',
+        'work',
       ].map((path) => `${API_PREFIX}/${path}`),
     );
-    expect(
-      body.components.schemas.ExperienceDto.properties.endDate,
-    ).toMatchObject({ nullable: true });
+    expect(body.components.schemas.WorkDto.properties.endDate).toMatchObject({
+      nullable: true,
+    });
     expect(body.components.schemas.ProjectKind.enum).toEqual([
       'OPEN_SOURCE',
       'FREELANCE',

@@ -3,11 +3,7 @@ import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { seedContent } from '../src/database/seed-content.js';
-import {
-  experience,
-  projects,
-  skillCategories,
-} from '../src/database/seed-data.js';
+import { work, projects, skillCategories } from '../src/database/seed-data.js';
 import { PrismaClient } from '../src/generated/prisma/client.js';
 
 // Тест стирает и заполняет контент целиком, поэтому работает в своей схеме
@@ -28,18 +24,18 @@ describe('seedContent', () => {
   let prisma: PrismaClient;
 
   const counts = async () => ({
-    experience: await prisma.experience.count(),
+    work: await prisma.work.count(),
     projects: await prisma.project.count(),
     skills: await prisma.skillCategory.count(),
     profile: await prisma.profile.count(),
   });
   const seeded = {
-    experience: experience.length,
+    work: work.length,
     projects: projects.length,
     skills: skillCategories.length,
     profile: 1,
   };
-  const empty = { experience: 0, projects: 0, skills: 0, profile: 0 };
+  const empty = { work: 0, projects: 0, skills: 0, profile: 0 };
 
   beforeAll(() => {
     admin = new PrismaClient({
@@ -102,7 +98,7 @@ describe('seedContent', () => {
   });
 
   it('два одновременных запуска на пустой базе заполняют её один раз', async () => {
-    await prisma.experience.deleteMany();
+    await prisma.work.deleteMany();
     await prisma.project.deleteMany();
     await prisma.skillCategory.deleteMany();
     await prisma.profile.deleteMany();

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type {
-  ExperienceData,
+  WorkData,
   Locale,
   ProfileData,
   ProjectData,
@@ -10,11 +10,11 @@ import { mapPrismaError, notFound } from '../../common/prisma-errors.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import type {
   AdminCvDto,
-  AdminExperienceDto,
+  AdminWorkDto,
   AdminProfileDto,
   AdminProjectDto,
   AdminSkillCategoryDto,
-  ExperienceTextDto,
+  WorkTextDto,
   ProjectTextDto,
 } from './admin-content.dto.js';
 import {
@@ -25,9 +25,9 @@ import {
   toTranslationRows,
 } from './content-helpers.js';
 
-type Delegate = 'experience' | 'project' | 'skillCategory';
+type Delegate = 'work' | 'project' | 'skillCategory';
 
-const experienceSelect = {
+const workSelect = {
   id: true,
   slug: true,
   role: true,
@@ -114,55 +114,52 @@ export class AdminContentService {
 
   // ---------- Коммерческие проекты ----------
 
-  async listExperience(): Promise<AdminExperienceDto[]> {
-    const rows = await this.prisma.experience.findMany({
+  async listWork(): Promise<AdminWorkDto[]> {
+    const rows = await this.prisma.work.findMany({
       orderBy: { position: 'asc' },
-      select: experienceSelect,
+      select: workSelect,
     });
-    return rows.map(toExperienceDto);
+    return rows.map(toWorkDto);
   }
 
-  async getExperience(id: string): Promise<AdminExperienceDto> {
-    const row = await this.prisma.experience.findUnique({
+  async getWork(id: string): Promise<AdminWorkDto> {
+    const row = await this.prisma.work.findUnique({
       where: { id },
-      select: experienceSelect,
+      select: workSelect,
     });
     if (!row) throw notFound();
-    return toExperienceDto(row);
+    return toWorkDto(row);
   }
 
-  async createExperience(input: ExperienceData): Promise<AdminExperienceDto> {
+  async createWork(input: WorkData): Promise<AdminWorkDto> {
     const { translations, ...data } = input;
     try {
-      const row = await this.prisma.experience.create({
+      const row = await this.prisma.work.create({
         data: {
-          ...experienceData(data),
-          position: await this.nextPosition('experience'),
+          ...workData(data),
+          position: await this.nextPosition('work'),
           translations: { create: toTranslationRows(translations) },
         },
-        select: experienceSelect,
+        select: workSelect,
       });
-      return toExperienceDto(row);
+      return toWorkDto(row);
     } catch (error) {
       mapPrismaError(error);
     }
   }
 
-  async updateExperience(
-    id: string,
-    input: ExperienceData,
-  ): Promise<AdminExperienceDto> {
+  async updateWork(id: string, input: WorkData): Promise<AdminWorkDto> {
     const { translations, ...data } = input;
     try {
       await this.prisma.$transaction([
-        this.prisma.experience.update({
+        this.prisma.work.update({
           where: { id },
-          data: experienceData(data),
+          data: workData(data),
         }),
         ...toTranslationRows(translations).map(({ locale, ...text }) =>
-          this.prisma.experienceTranslation.upsert({
-            where: { experienceId_locale: { experienceId: id, locale } },
-            create: { experienceId: id, locale, ...text },
+          this.prisma.workTranslation.upsert({
+            where: { workId_locale: { workId: id, locale } },
+            create: { workId: id, locale, ...text },
             update: text,
           }),
         ),
@@ -170,18 +167,16 @@ export class AdminContentService {
     } catch (error) {
       mapPrismaError(error);
     }
-    return this.getExperience(id);
+    return this.getWork(id);
   }
 
-  async deleteExperience(id: string): Promise<void> {
-    await this.prisma.experience
-      .delete({ where: { id } })
-      .catch(mapPrismaError);
+  async deleteWork(id: string): Promise<void> {
+    await this.prisma.work.delete({ where: { id } }).catch(mapPrismaError);
   }
 
-  async reorderExperience(ids: string[]): Promise<AdminExperienceDto[]> {
-    await this.reorder('experience', ids);
-    return this.listExperience();
+  async reorderWork(ids: string[]): Promise<AdminWorkDto[]> {
+    await this.reorder('work', ids);
+    return this.listWork();
   }
 
   // ---------- Открытые проекты и фриланс ----------
@@ -409,12 +404,12 @@ export class AdminContentService {
       update(args: {
         where: { id: string };
         data: { position: number };
-      }): ReturnType<PrismaService['experience']['update']>;
+      }): ReturnType<PrismaService['work']['update']>;
     };
   }
 }
 
-function experienceData(data: Omit<ExperienceData, 'translations'>) {
+function workData(data: Omit<WorkData, 'translations'>) {
   return {
     ...data,
     startDate: monthToDate(data.startDate),
@@ -428,16 +423,13 @@ function skillRows(skills: string[]) {
 
 type Translated<T> = (T & { locale: Locale })[];
 
-type ExperienceRow = Omit<
-  AdminExperienceDto,
-  'startDate' | 'endDate' | 'translations'
-> & {
+type WorkRow = Omit<AdminWorkDto, 'startDate' | 'endDate' | 'translations'> & {
   startDate: Date;
   endDate: Date | null;
-  translations: Translated<ExperienceTextDto>;
+  translations: Translated<WorkTextDto>;
 };
 
-function toExperienceDto(row: ExperienceRow): AdminExperienceDto {
+function toWorkDto(row: WorkRow): AdminWorkDto {
   return {
     ...row,
     startDate: dateToMonth(row.startDate),

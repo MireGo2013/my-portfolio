@@ -4,7 +4,7 @@ import { ProjectCard } from '@/features/site/projects/project-card';
 import { Reveal } from '@/shared/ui/reveal';
 import { WorkItem } from '@/features/site/work/work-item';
 import { getDictionary, pageMetadata, resolveLocale } from '@/i18n/server';
-import { getExperience, getProjects } from '@/shared/content/content';
+import { getWork, getProjects } from '@/shared/content/content';
 
 export async function generateMetadata({
   params,
@@ -22,30 +22,33 @@ export default async function ProjectsPage({
   params,
 }: PageProps<'/[lang]/projects'>) {
   const locale = await resolveLocale(params);
-  // Раздел «Проекты» показывает коммерческий опыт: в API это эндпоинт /experience
-  const { projects: work, links } = getDictionary(locale);
-  const [experience, projects] = await Promise.all([
-    getExperience(locale),
+  // Раздел «Проекты»: места работы (API /work) и фриланс (API /projects)
+  const { projects: dictionary, links } = getDictionary(locale);
+  const [work, projects] = await Promise.all([
+    getWork(locale),
     getProjects(locale),
   ]);
 
   return (
     <>
-      <PageHeading title={work.title} description={work.description} />
+      <PageHeading
+        title={dictionary.title}
+        description={dictionary.description}
+      />
       <div className="flex flex-col gap-14">
         <div className="flex flex-col gap-12">
-          {experience.map((item, index) => (
+          {work.map((item, index) => (
             <WorkItem
               key={item.slug}
               item={item}
-              labels={work}
+              labels={dictionary}
               from={index % 2 === 0 ? 'left' : 'right'}
             />
           ))}
         </div>
         <section className="flex flex-col gap-6 border-t border-line pt-8">
           <h2 className="text-2xl font-semibold tracking-tight">
-            {work.freelance}
+            {dictionary.freelance}
           </h2>
           <ul className="grid gap-4 sm:grid-cols-2">
             {projects

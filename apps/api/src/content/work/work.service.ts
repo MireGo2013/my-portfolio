@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { Locale } from '@portfolio/shared';
 import { singleTranslation } from '../../common/locale-query.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
-import type { ExperienceDto } from './experience.dto.js';
+import type { WorkDto } from './work.dto.js';
 
 /** Дата хранится в UTC с точностью до месяца: 2021-12-01 -> "2021-12". */
 function toMonth(date: Date): string {
@@ -10,11 +10,11 @@ function toMonth(date: Date): string {
 }
 
 @Injectable()
-export class ExperienceService {
+export class WorkService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async list(locale: Locale): Promise<ExperienceDto[]> {
-    const items = await this.prisma.experience.findMany({
+  async list(locale: Locale): Promise<WorkDto[]> {
+    const items = await this.prisma.work.findMany({
       orderBy: { position: 'asc' },
       select: {
         slug: true,

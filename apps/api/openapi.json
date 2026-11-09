@@ -65,9 +65,9 @@
         ]
       }
     },
-    "/api/v1/experience": {
+    "/api/v1/work": {
       "get": {
-        "operationId": "ExperienceController_list",
+        "operationId": "WorkController_list",
         "parameters": [
           {
             "name": "locale",
@@ -91,7 +91,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ExperienceDto"
+                    "$ref": "#/components/schemas/WorkDto"
                   }
                 }
               }
@@ -906,9 +906,9 @@
         ]
       }
     },
-    "/api/v1/admin/content/experience": {
+    "/api/v1/admin/content/work": {
       "get": {
-        "operationId": "AdminExperienceController_list",
+        "operationId": "AdminWorkController_list",
         "parameters": [],
         "responses": {
           "200": {
@@ -918,7 +918,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/AdminExperienceDto"
+                    "$ref": "#/components/schemas/AdminWorkDto"
                   }
                 }
               }
@@ -942,14 +942,14 @@
         ]
       },
       "post": {
-        "operationId": "AdminExperienceController_create",
+        "operationId": "AdminWorkController_create",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AdminExperienceInputDto"
+                "$ref": "#/components/schemas/AdminWorkInputDto"
               }
             }
           }
@@ -960,7 +960,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AdminExperienceDto"
+                  "$ref": "#/components/schemas/AdminWorkDto"
                 }
               }
             }
@@ -1003,9 +1003,9 @@
         ]
       }
     },
-    "/api/v1/admin/content/experience/order": {
+    "/api/v1/admin/content/work/order": {
       "put": {
-        "operationId": "AdminExperienceController_reorder",
+        "operationId": "AdminWorkController_reorder",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1025,7 +1025,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/AdminExperienceDto"
+                    "$ref": "#/components/schemas/AdminWorkDto"
                   }
                 }
               }
@@ -1059,9 +1059,9 @@
         ]
       }
     },
-    "/api/v1/admin/content/experience/{id}": {
+    "/api/v1/admin/content/work/{id}": {
       "get": {
-        "operationId": "AdminExperienceController_get",
+        "operationId": "AdminWorkController_get",
         "parameters": [
           {
             "name": "id",
@@ -1078,7 +1078,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AdminExperienceDto"
+                  "$ref": "#/components/schemas/AdminWorkDto"
                 }
               }
             }
@@ -1103,7 +1103,7 @@
         ]
       },
       "put": {
-        "operationId": "AdminExperienceController_update",
+        "operationId": "AdminWorkController_update",
         "parameters": [
           {
             "name": "id",
@@ -1119,7 +1119,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AdminExperienceInputDto"
+                "$ref": "#/components/schemas/AdminWorkInputDto"
               }
             }
           }
@@ -1130,7 +1130,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AdminExperienceDto"
+                  "$ref": "#/components/schemas/AdminWorkDto"
                 }
               }
             }
@@ -1176,7 +1176,7 @@
         ]
       },
       "delete": {
-        "operationId": "AdminExperienceController_remove",
+        "operationId": "AdminWorkController_remove",
         "parameters": [
           {
             "name": "id",
@@ -2071,7 +2071,7 @@
           "cvUrl"
         ]
       },
-      "ExperienceDto": {
+      "WorkDto": {
         "type": "object",
         "properties": {
           "slug": {
@@ -2624,7 +2624,7 @@
           "translations"
         ]
       },
-      "ExperienceTextDto": {
+      "WorkTextDto": {
         "type": "object",
         "properties": {
           "company": {
@@ -2658,14 +2658,14 @@
           "achievements"
         ]
       },
-      "ExperienceTranslationsDto": {
+      "WorkTranslationsDto": {
         "type": "object",
         "properties": {
           "ru": {
-            "$ref": "#/components/schemas/ExperienceTextDto"
+            "$ref": "#/components/schemas/WorkTextDto"
           },
           "en": {
-            "$ref": "#/components/schemas/ExperienceTextDto"
+            "$ref": "#/components/schemas/WorkTextDto"
           }
         },
         "required": [
@@ -2673,7 +2673,7 @@
           "en"
         ]
       },
-      "AdminExperienceDto": {
+      "AdminWorkDto": {
         "type": "object",
         "properties": {
           "slug": {
@@ -2701,7 +2701,7 @@
             }
           },
           "translations": {
-            "$ref": "#/components/schemas/ExperienceTranslationsDto"
+            "$ref": "#/components/schemas/WorkTranslationsDto"
           },
           "id": {
             "type": "string",
@@ -2718,7 +2718,7 @@
           "id"
         ]
       },
-      "AdminExperienceInputDto": {
+      "AdminWorkInputDto": {
         "type": "object",
         "properties": {
           "slug": {
@@ -2746,7 +2746,7 @@
             }
           },
           "translations": {
-            "$ref": "#/components/schemas/ExperienceTranslationsDto"
+            "$ref": "#/components/schemas/WorkTranslationsDto"
           }
         },
         "required": [

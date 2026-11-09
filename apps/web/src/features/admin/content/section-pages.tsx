@@ -3,11 +3,7 @@
 import { useParams } from 'next/navigation';
 import { ContentEditor } from './content-editor';
 import { ContentList } from './content-list';
-import {
-  ExperienceForm,
-  ProjectForm,
-  SkillCategoryForm,
-} from './section-forms';
+import { WorkForm, ProjectForm, SkillCategoryForm } from './section-forms';
 
 // Страницы разделов контента. id записи берём из адреса: данные админки
 // грузятся в браузере, как и в сообщениях
@@ -17,10 +13,10 @@ const useRecordId = () => useParams<{ id?: string }>().id;
 const period = (start: string, end: string | null) =>
   `${start} — ${end ?? 'сейчас'}`;
 
-export function ExperienceListPage() {
+export function WorkListPage() {
   return (
     <ContentList
-      section="experience"
+      section="work"
       title="Проекты"
       description="Коммерческие проекты: работа в компаниях, обязанности и достижения"
       describe={(item) => ({
@@ -37,15 +33,15 @@ export function ExperienceListPage() {
   );
 }
 
-export function ExperienceEditPage() {
+export function WorkEditPage() {
   const id = useRecordId();
   return (
     <ContentEditor
-      section="experience"
+      section="work"
       id={id}
       title={(record) => record?.translations.ru.project ?? 'Новый проект'}
     >
-      {(record) => <ExperienceForm record={record} />}
+      {(record) => <WorkForm record={record} />}
     </ContentEditor>
   );
 }

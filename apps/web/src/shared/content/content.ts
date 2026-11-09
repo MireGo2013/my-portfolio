@@ -3,7 +3,7 @@ import type { Locale } from '@portfolio/shared';
 import { cacheLife, cacheTag } from 'next/cache';
 import {
   createContentApi,
-  type Experience,
+  type Work,
   type Profile,
   type Project,
   type SkillCategory,
@@ -32,14 +32,12 @@ export async function getProfile(locale: Locale): Promise<Profile> {
   return withSnapshot('profile', locale, () => contentApi().getProfile(locale));
 }
 
-export async function getExperience(locale: Locale): Promise<Experience[]> {
+export async function getWork(locale: Locale): Promise<Work[]> {
   'use cache';
   cacheLife('content');
-  cacheTag(CONTENT_TAGS.experience);
+  cacheTag(CONTENT_TAGS.work);
 
-  return withSnapshot('experience', locale, () =>
-    contentApi().getExperience(locale),
-  );
+  return withSnapshot('work', locale, () => contentApi().getWork(locale));
 }
 
 export async function getProjects(locale: Locale): Promise<Project[]> {

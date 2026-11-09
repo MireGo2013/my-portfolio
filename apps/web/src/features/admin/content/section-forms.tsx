@@ -2,12 +2,12 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  experienceInputSchema,
+  workInputSchema,
   PROJECT_KINDS,
   projectInputSchema,
   skillCategoryInputSchema,
-  type ExperienceData,
-  type ExperienceInput,
+  type WorkData,
+  type WorkInput,
   type ProjectData,
   type ProjectInput,
   type SkillCategoryData,
@@ -27,7 +27,7 @@ import { INPUT_CLASS } from '@/shared/ui/form-field';
 import {
   contentKeys,
   sections,
-  type AdminExperience,
+  type AdminWork,
   type AdminProject,
   type AdminSkillCategory,
   type ListSection,
@@ -116,9 +116,9 @@ function SlugField() {
   );
 }
 
-// ---------- Коммерческие проекты (API /experience) ----------
+// ---------- Коммерческие проекты (API /work) ----------
 
-const EMPTY_EXPERIENCE_TEXT = {
+const EMPTY_WORK_TEXT = {
   company: null,
   project: '',
   summary: '',
@@ -126,14 +126,13 @@ const EMPTY_EXPERIENCE_TEXT = {
   achievements: [],
 };
 
-const experienceValues = (record: AdminExperience): ExperienceInput =>
-  withoutId(record);
+const workValues = (record: AdminWork): WorkInput => withoutId(record);
 
-export function ExperienceForm({ record }: { record?: AdminExperience }) {
-  const form = useForm<ExperienceInput, unknown, ExperienceData>({
-    resolver: zodResolver(experienceInputSchema),
+export function WorkForm({ record }: { record?: AdminWork }) {
+  const form = useForm<WorkInput, unknown, WorkData>({
+    resolver: zodResolver(workInputSchema),
     defaultValues: record
-      ? experienceValues(record)
+      ? workValues(record)
       : {
           slug: '',
           role: '',
@@ -141,16 +140,16 @@ export function ExperienceForm({ record }: { record?: AdminExperience }) {
           endDate: null,
           stack: [],
           translations: {
-            ru: EMPTY_EXPERIENCE_TEXT,
-            en: EMPTY_EXPERIENCE_TEXT,
+            ru: EMPTY_WORK_TEXT,
+            en: EMPTY_WORK_TEXT,
           },
         },
   });
   const { onSubmit, pending, status } = useSectionSave(
-    'experience',
+    'work',
     record?.id,
     form,
-    experienceValues,
+    workValues,
   );
 
   return (

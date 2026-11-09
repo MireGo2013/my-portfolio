@@ -38,7 +38,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/experience": {
+    "/api/v1/work": {
         parameters: {
             query?: never;
             header?: never;
@@ -46,7 +46,7 @@ export interface paths {
             cookie?: never;
         };
         /** Опыт работы в порядке показа на сайте */
-        get: operations["ExperienceController_list"];
+        get: operations["WorkController_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -332,7 +332,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/admin/content/experience": {
+    "/api/v1/admin/content/work": {
         parameters: {
             query?: never;
             header?: never;
@@ -340,17 +340,17 @@ export interface paths {
             cookie?: never;
         };
         /** Коммерческие проекты в порядке показа */
-        get: operations["AdminExperienceController_list"];
+        get: operations["AdminWorkController_list"];
         put?: never;
         /** Добавить проект в конец списка */
-        post: operations["AdminExperienceController_create"];
+        post: operations["AdminWorkController_create"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/admin/content/experience/order": {
+    "/api/v1/admin/content/work/order": {
         parameters: {
             query?: never;
             header?: never;
@@ -359,7 +359,7 @@ export interface paths {
         };
         get?: never;
         /** Новый порядок записей раздела */
-        put: operations["AdminExperienceController_reorder"];
+        put: operations["AdminWorkController_reorder"];
         post?: never;
         delete?: never;
         options?: never;
@@ -367,18 +367,18 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/admin/content/experience/{id}": {
+    "/api/v1/admin/content/work/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["AdminExperienceController_get"];
+        get: operations["AdminWorkController_get"];
         /** Сохранить проект */
-        put: operations["AdminExperienceController_update"];
+        put: operations["AdminWorkController_update"];
         post?: never;
-        delete: operations["AdminExperienceController_remove"];
+        delete: operations["AdminWorkController_remove"];
         options?: never;
         head?: never;
         patch?: never;
@@ -563,7 +563,7 @@ export interface components {
              */
             cvUrl: string | null;
         };
-        ExperienceDto: {
+        WorkDto: {
             /** @example scooter-admin-crm */
             slug: string;
             /**
@@ -754,18 +754,18 @@ export interface components {
             linkedinUrl: string;
             translations: components["schemas"]["ProfileTranslationsDto"];
         };
-        ExperienceTextDto: {
+        WorkTextDto: {
             company: string | null;
             project: string;
             summary: string;
             responsibilities: string[];
             achievements: string[];
         };
-        ExperienceTranslationsDto: {
-            ru: components["schemas"]["ExperienceTextDto"];
-            en: components["schemas"]["ExperienceTextDto"];
+        WorkTranslationsDto: {
+            ru: components["schemas"]["WorkTextDto"];
+            en: components["schemas"]["WorkTextDto"];
         };
-        AdminExperienceDto: {
+        AdminWorkDto: {
             /** @example scooter-admin-crm */
             slug: string;
             role: string;
@@ -780,11 +780,11 @@ export interface components {
              */
             endDate: string | null;
             stack: string[];
-            translations: components["schemas"]["ExperienceTranslationsDto"];
+            translations: components["schemas"]["WorkTranslationsDto"];
             /** Format: uuid */
             id: string;
         };
-        AdminExperienceInputDto: {
+        AdminWorkInputDto: {
             /** @example scooter-admin-crm */
             slug: string;
             role: string;
@@ -799,7 +799,7 @@ export interface components {
              */
             endDate: string | null;
             stack: string[];
-            translations: components["schemas"]["ExperienceTranslationsDto"];
+            translations: components["schemas"]["WorkTranslationsDto"];
         };
         ReorderDto: {
             /** @description Все id раздела в новом порядке */
@@ -952,7 +952,7 @@ export interface operations {
             };
         };
     };
-    ExperienceController_list: {
+    WorkController_list: {
         parameters: {
             query?: {
                 /** @description Язык контента, по умолчанию ru */
@@ -969,7 +969,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ExperienceDto"][];
+                    "application/json": components["schemas"]["WorkDto"][];
                 };
             };
         };
@@ -1664,7 +1664,7 @@ export interface operations {
             };
         };
     };
-    AdminExperienceController_list: {
+    AdminWorkController_list: {
         parameters: {
             query?: never;
             header?: never;
@@ -1678,7 +1678,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AdminExperienceDto"][];
+                    "application/json": components["schemas"]["AdminWorkDto"][];
                 };
             };
             /** @description Нет сессии или она истекла */
@@ -1697,7 +1697,7 @@ export interface operations {
             };
         };
     };
-    AdminExperienceController_create: {
+    AdminWorkController_create: {
         parameters: {
             query?: never;
             header?: never;
@@ -1706,7 +1706,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["AdminExperienceInputDto"];
+                "application/json": components["schemas"]["AdminWorkInputDto"];
             };
         };
         responses: {
@@ -1715,7 +1715,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AdminExperienceDto"];
+                    "application/json": components["schemas"]["AdminWorkDto"];
                 };
             };
             400: {
@@ -1751,7 +1751,7 @@ export interface operations {
             };
         };
     };
-    AdminExperienceController_reorder: {
+    AdminWorkController_reorder: {
         parameters: {
             query?: never;
             header?: never;
@@ -1769,7 +1769,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AdminExperienceDto"][];
+                    "application/json": components["schemas"]["AdminWorkDto"][];
                 };
             };
             400: {
@@ -1796,7 +1796,7 @@ export interface operations {
             };
         };
     };
-    AdminExperienceController_get: {
+    AdminWorkController_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1812,7 +1812,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AdminExperienceDto"];
+                    "application/json": components["schemas"]["AdminWorkDto"];
                 };
             };
             /** @description Нет сессии или она истекла */
@@ -1838,7 +1838,7 @@ export interface operations {
             };
         };
     };
-    AdminExperienceController_update: {
+    AdminWorkController_update: {
         parameters: {
             query?: never;
             header?: never;
@@ -1849,7 +1849,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["AdminExperienceInputDto"];
+                "application/json": components["schemas"]["AdminWorkInputDto"];
             };
         };
         responses: {
@@ -1858,7 +1858,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AdminExperienceDto"];
+                    "application/json": components["schemas"]["AdminWorkDto"];
                 };
             };
             400: {
@@ -1901,7 +1901,7 @@ export interface operations {
             };
         };
     };
-    AdminExperienceController_remove: {
+    AdminWorkController_remove: {
         parameters: {
             query?: never;
             header?: never;

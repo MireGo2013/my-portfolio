@@ -1,5 +1,5 @@
 import type {
-  ExperienceData,
+  WorkData,
   ProfileData,
   ProjectData,
   SkillCategoryData,
@@ -12,7 +12,7 @@ import {
 } from '@/features/admin/shell/admin-client';
 
 export type AdminProfile = components['schemas']['AdminProfileDto'];
-export type AdminExperience = components['schemas']['AdminExperienceDto'];
+export type AdminWork = components['schemas']['AdminWorkDto'];
 export type AdminProject = components['schemas']['AdminProjectDto'];
 export type AdminSkillCategory = components['schemas']['AdminSkillCategoryDto'];
 
@@ -46,41 +46,34 @@ export async function saveProfile(body: ProfileData) {
  * операция расписана явно: так openapi-fetch проверяет и путь, и тело.
  */
 export const sections = {
-  experience: {
-    list: async (signal?: AbortSignal): Promise<AdminExperience[]> =>
+  work: {
+    list: async (signal?: AbortSignal): Promise<AdminWork[]> =>
+      unwrap(await adminClient().GET('/api/v1/admin/content/work', { signal })),
+    get: async (id: string, signal?: AbortSignal): Promise<AdminWork> =>
       unwrap(
-        await adminClient().GET('/api/v1/admin/content/experience', { signal }),
-      ),
-    get: async (id: string, signal?: AbortSignal): Promise<AdminExperience> =>
-      unwrap(
-        await adminClient().GET('/api/v1/admin/content/experience/{id}', {
+        await adminClient().GET('/api/v1/admin/content/work/{id}', {
           params: { path: { id } },
           signal,
         }),
       ),
-    create: async (body: ExperienceData): Promise<AdminExperience> =>
+    create: async (body: WorkData): Promise<AdminWork> =>
+      unwrap(await adminClient().POST('/api/v1/admin/content/work', { body })),
+    update: async (id: string, body: WorkData): Promise<AdminWork> =>
       unwrap(
-        await adminClient().POST('/api/v1/admin/content/experience', { body }),
-      ),
-    update: async (
-      id: string,
-      body: ExperienceData,
-    ): Promise<AdminExperience> =>
-      unwrap(
-        await adminClient().PUT('/api/v1/admin/content/experience/{id}', {
+        await adminClient().PUT('/api/v1/admin/content/work/{id}', {
           params: { path: { id } },
           body,
         }),
       ),
     remove: async (id: string): Promise<void> =>
       unwrapEmpty(
-        await adminClient().DELETE('/api/v1/admin/content/experience/{id}', {
+        await adminClient().DELETE('/api/v1/admin/content/work/{id}', {
           params: { path: { id } },
         }),
       ),
-    reorder: async (ids: string[]): Promise<AdminExperience[]> =>
+    reorder: async (ids: string[]): Promise<AdminWork[]> =>
       unwrap(
-        await adminClient().PUT('/api/v1/admin/content/experience/order', {
+        await adminClient().PUT('/api/v1/admin/content/work/order', {
           body: { ids },
         }),
       ),

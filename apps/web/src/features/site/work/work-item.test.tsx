@@ -2,10 +2,10 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { ru } from '@/i18n/dictionaries/ru';
-import type { Experience } from '@/shared/content/content-api';
+import type { Work } from '@/shared/content/content-api';
 import { WorkItem } from './work-item';
 
-const item: Experience = {
+const item: Work = {
   slug: 'a',
   company: 'Компания',
   project: 'Проект',

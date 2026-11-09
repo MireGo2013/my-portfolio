@@ -13,7 +13,7 @@ import { createAdminSession } from './admin-session.js';
 const ADMIN = `${API_PREFIX}/admin/content`;
 const MARK = 'content-e2e';
 
-const experienceInput = (slug: string) => ({
+const workInput = (slug: string) => ({
   slug,
   role: 'Тестовая роль',
   startDate: '2024-01',
@@ -81,7 +81,7 @@ describe(ADMIN, () => {
 
   it('без сессии не пускает', async () => {
     await http().get(`${ADMIN}/profile`).expect(401);
-    await http().put(`${ADMIN}/experience/order`).send({ ids: [] }).expect(401);
+    await http().put(`${ADMIN}/work/order`).send({ ids: [] }).expect(401);
   });
 
   describe('профиль', () => {
@@ -131,11 +131,11 @@ describe(ADMIN, () => {
 
   describe('коммерческие проекты', () => {
     it('создание, правка, порядок и удаление', async () => {
-      const before = await publicList('/experience');
+      const before = await publicList('/work');
 
       // Создание: в конец списка, пустые пункты выброшены, пустая компания — null
-      const { body: created } = await admin('post', '/experience')
-        .send(experienceInput(`${MARK}-exp`))
+      const { body: created } = await admin('post', '/work')
+        .send(workInput(`${MARK}-exp`))
         .expect(201);
       expect(created).toMatchObject({
         stack: ['React', 'NestJS'],
@@ -143,27 +143,24 @@ describe(ADMIN, () => {
           ru: { company: null, responsibilities: ['Делал'] },
         },
       });
-      const afterCreate = await publicList('/experience', 'en');
+      const afterCreate = await publicList('/work', 'en');
       expect(afterCreate.at(-1)?.slug).toBe(`${MARK}-exp`);
 
       try {
         // Тот же slug второй раз — 409 с полем для формы
-        const conflict = await admin('post', '/experience')
-          .send(experienceInput(`${MARK}-exp`))
+        const conflict = await admin('post', '/work')
+          .send(workInput(`${MARK}-exp`))
           .expect(409);
         expect(conflict.body.errors).toEqual({ slug: ['slugTaken'] });
 
         // Конец раньше начала — 400
-        await admin('put', `/experience/${created.id}`)
-          .send({ ...experienceInput(`${MARK}-exp`), endDate: '2023-12' })
+        await admin('put', `/work/${created.id}`)
+          .send({ ...workInput(`${MARK}-exp`), endDate: '2023-12' })
           .expect(400);
 
-        const { body: updated } = await admin(
-          'put',
-          `/experience/${created.id}`,
-        )
+        const { body: updated } = await admin('put', `/work/${created.id}`)
           .send({
-            ...experienceInput(`${MARK}-exp`),
+            ...workInput(`${MARK}-exp`),
             role: 'Новая роль',
             endDate: '2025-06',
           })
@@ -174,27 +171,25 @@ describe(ADMIN, () => {
         });
 
         // Порядок: новую запись в начало, затем вернуть как было
-        const { body: list } = await admin('get', '/experience').expect(200);
+        const { body: list } = await admin('get', '/work').expect(200);
         const ids: string[] = list.map((item: { id: string }) => item.id);
         const moved = [created.id, ...ids.filter((id) => id !== created.id)];
-        await admin('put', '/experience/order')
-          .send({ ids: moved })
-          .expect(200);
-        expect((await publicList('/experience'))[0]?.slug).toBe(`${MARK}-exp`);
+        await admin('put', '/work/order').send({ ids: moved }).expect(200);
+        expect((await publicList('/work'))[0]?.slug).toBe(`${MARK}-exp`);
 
         // Неполный список id отклоняется
-        await admin('put', '/experience/order')
+        await admin('put', '/work/order')
           .send({ ids: moved.slice(1) })
           .expect(400);
 
-        await admin('put', '/experience/order').send({ ids }).expect(200);
+        await admin('put', '/work/order').send({ ids }).expect(200);
       } finally {
-        await admin('delete', `/experience/${created.id}`).expect(204);
+        await admin('delete', `/work/${created.id}`).expect(204);
       }
 
-      await admin('get', `/experience/${created.id}`).expect(404);
-      await admin('delete', `/experience/${created.id}`).expect(404);
-      expect(await publicList('/experience')).toEqual(before);
+      await admin('get', `/work/${created.id}`).expect(404);
+      await admin('delete', `/work/${created.id}`).expect(404);
+      expect(await publicList('/work')).toEqual(before);
     });
   });
 

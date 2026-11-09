@@ -110,7 +110,7 @@ export const profileInputSchema = z.object({
 export type ProfileInput = z.input<typeof profileInputSchema>;
 export type ProfileData = z.output<typeof profileInputSchema>;
 
-export const experienceInputSchema = z
+export const workInputSchema = z
   .object({
     slug,
     role: text(CONTENT_LIMITS.shortText),
@@ -135,8 +135,8 @@ export const experienceInputSchema = z
     message: 'endBeforeStart',
     path: ['endDate'],
   });
-export type ExperienceInput = z.input<typeof experienceInputSchema>;
-export type ExperienceData = z.output<typeof experienceInputSchema>;
+export type WorkInput = z.input<typeof workInputSchema>;
+export type WorkData = z.output<typeof workInputSchema>;
 
 export const PROJECT_KINDS = ['OPEN_SOURCE', 'FREELANCE'] as const;
 

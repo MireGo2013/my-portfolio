@@ -37,7 +37,7 @@ export const profile = {
   },
 };
 
-interface ExperienceSeed {
+interface WorkSeed {
   slug: string;
   role: string;
   startDate: string;
@@ -55,7 +55,7 @@ interface ExperienceSeed {
   >;
 }
 
-export const experience: ExperienceSeed[] = [
+export const work: WorkSeed[] = [
   {
     slug: 'vtb',
     role: 'Senior Frontend Engineer',

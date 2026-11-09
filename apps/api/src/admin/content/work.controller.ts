@@ -8,16 +8,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {
-  experienceInputSchema,
+  workInputSchema,
   reorderSchema,
-  type ExperienceData,
+  type WorkData,
   type ReorderInput,
 } from '@portfolio/shared';
 import { AdminOnly } from '../../auth/auth.decorators.js';
-import {
-  AdminExperienceDto,
-  AdminExperienceInputDto,
-} from './admin-content.dto.js';
+import { AdminWorkDto, AdminWorkInputDto } from './admin-content.dto.js';
 import { AdminContentService } from './admin-content.service.js';
 import {
   ApiRecord,
@@ -28,48 +25,45 @@ import {
 } from './admin-content.decorators.js';
 
 @ApiTags('Админка: контент')
-@Controller('admin/content/experience')
+@Controller('admin/content/work')
 @AdminOnly()
-export class AdminExperienceController {
+export class AdminWorkController {
   constructor(private readonly content: AdminContentService) {}
 
   @Get()
   @ApiOperation({ summary: 'Коммерческие проекты в порядке показа' })
-  @ApiOkResponse({ type: [AdminExperienceDto] })
-  list(): Promise<AdminExperienceDto[]> {
-    return this.content.listExperience();
+  @ApiOkResponse({ type: [AdminWorkDto] })
+  list(): Promise<AdminWorkDto[]> {
+    return this.content.listWork();
   }
 
   @Post()
   @ApiOperation({ summary: 'Добавить проект в конец списка' })
-  @ApiCreatedResponse({ type: AdminExperienceDto })
-  @ApiSaveResponses(AdminExperienceInputDto)
-  create(@body(experienceInputSchema) input: ExperienceData) {
-    return this.content.createExperience(input);
+  @ApiCreatedResponse({ type: AdminWorkDto })
+  @ApiSaveResponses(AdminWorkInputDto)
+  create(@body(workInputSchema) input: WorkData) {
+    return this.content.createWork(input);
   }
 
   // Раньше :id, иначе «order» приняли бы за id
   @Put('order')
-  @ApiReorder(AdminExperienceDto)
+  @ApiReorder(AdminWorkDto)
   reorder(@body(reorderSchema) input: ReorderInput) {
-    return this.content.reorderExperience(input.ids);
+    return this.content.reorderWork(input.ids);
   }
 
   @Get(':id')
-  @ApiRecord(AdminExperienceDto)
-  get(@id() recordId: string): Promise<AdminExperienceDto> {
-    return this.content.getExperience(recordId);
+  @ApiRecord(AdminWorkDto)
+  get(@id() recordId: string): Promise<AdminWorkDto> {
+    return this.content.getWork(recordId);
   }
 
   @Put(':id')
   @ApiOperation({ summary: 'Сохранить проект' })
-  @ApiRecord(AdminExperienceDto)
-  @ApiSaveResponses(AdminExperienceInputDto)
-  update(
-    @id() recordId: string,
-    @body(experienceInputSchema) input: ExperienceData,
-  ) {
-    return this.content.updateExperience(recordId, input);
+  @ApiRecord(AdminWorkDto)
+  @ApiSaveResponses(AdminWorkInputDto)
+  update(@id() recordId: string, @body(workInputSchema) input: WorkData) {
+    return this.content.updateWork(recordId, input);
   }
 
   @Delete(':id')
@@ -77,6 +71,6 @@ export class AdminExperienceController {
   @ApiNoContentResponse({ description: 'Удалено' })
   @ApiNotFoundResponse({ description: 'Запись не найдена' })
   remove(@id() recordId: string): Promise<void> {
-    return this.content.deleteExperience(recordId);
+    return this.content.deleteWork(recordId);
   }
 }

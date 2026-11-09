@@ -1,11 +1,6 @@
 import { PROJECT_KINDS, type Locale } from '@portfolio/shared';
 import { PHASE_PRODUCTION_BUILD } from 'next/constants';
-import type {
-  Experience,
-  Profile,
-  Project,
-  SkillCategory,
-} from './content-api';
+import type { Work, Profile, Project, SkillCategory } from './content-api';
 import rawSnapshot from './content-snapshot.json';
 import { isOneOf } from '@/shared/utils/guards';
 
@@ -17,7 +12,7 @@ import { isOneOf } from '@/shared/utils/guards';
 type ContentSnapshot = {
   generatedAt: string;
   profile: Record<Locale, Profile>;
-  experience: Record<Locale, Experience[]>;
+  work: Record<Locale, Work[]>;
   projects: Record<Locale, Project[]>;
   skills: Record<Locale, SkillCategory[]>;
 };

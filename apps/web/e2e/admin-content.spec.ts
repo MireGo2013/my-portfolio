@@ -15,7 +15,7 @@ setupTestAdmin(EMAIL);
 test.afterAll(async () => {
   await withDb(async (db) => {
     await db.query('DELETE FROM projects WHERE slug LIKE $1', [`${MARK}%`]);
-    await db.query('DELETE FROM experience WHERE slug LIKE $1', [`${MARK}%`]);
+    await db.query('DELETE FROM work WHERE slug LIKE $1', [`${MARK}%`]);
     await db.query('DELETE FROM skill_categories WHERE slug LIKE $1', [
       `${MARK}%`,
     ]);

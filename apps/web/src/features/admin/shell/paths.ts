@@ -9,7 +9,7 @@ export const ADMIN_PATH_HEADER = 'x-admin-path';
 /** Обновление токена для серверных компонентов, которые не умеют ставить cookie. */
 export const ADMIN_SESSION_REFRESH = '/admin/api/session/refresh';
 
-/** Разделы меню. В API коммерческие проекты лежат в /experience, а открытые в /projects. */
+/** Разделы меню. Названия и адреса — как на сайте, разделы API указаны в CONTENT_PATHS. */
 export const ADMIN_SECTIONS = [
   { href: ADMIN_MESSAGES, label: 'Сообщения' },
   { href: '/admin/profile', label: 'Профиль' },
@@ -51,11 +51,10 @@ export function safeNextPath(next: string | null | undefined): string {
 
 /**
  * Где в админке редактируется раздел API. Названия в меню идут от сайта:
- * коммерческие проекты (API /experience) — «Проекты», GitHub и фриланс
- * (API /projects) — «Опыт».
+ * места работы (API /work) — «Проекты», GitHub и фриланс (API /projects) — «Опыт».
  */
 export const CONTENT_PATHS = {
-  experience: '/admin/projects',
+  work: '/admin/projects',
   projects: '/admin/experience',
   skills: '/admin/skills',
 } as const;

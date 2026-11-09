@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ExperienceDto {
+export class WorkDto {
   @ApiProperty({ example: 'scooter-admin-crm' })
   slug!: string;
 

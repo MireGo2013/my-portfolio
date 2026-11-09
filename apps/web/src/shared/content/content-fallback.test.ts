@@ -40,7 +40,7 @@ describe('withSnapshot', () => {
 describe('снимок', () => {
   it.each(['ru', 'en'] as const)('на языке %s есть весь контент', (locale) => {
     expect(snapshot.profile[locale].shortName).toBeTruthy();
-    expect(snapshot.experience[locale].length).toBeGreaterThan(0);
+    expect(snapshot.work[locale].length).toBeGreaterThan(0);
     expect(snapshot.projects[locale].length).toBeGreaterThan(0);
     expect(snapshot.skills[locale].length).toBeGreaterThan(0);
   });

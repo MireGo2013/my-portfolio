@@ -13,7 +13,7 @@ afterAll(() => server.close());
 
 const endpoints = [
   ['getProfile', '/api/v1/profile', { fullName: 'Тест Тестов' }],
-  ['getExperience', '/api/v1/experience', [{ slug: 'a' }]],
+  ['getWork', '/api/v1/work', [{ slug: 'a' }]],
   ['getProjects', '/api/v1/projects', [{ slug: 'b' }]],
   ['getSkills', '/api/v1/skills', [{ slug: 'c' }]],
 ] as const;

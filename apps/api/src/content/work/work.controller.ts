@@ -2,19 +2,19 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Locale } from '@portfolio/shared';
 import { ApiLocaleQuery, LocaleQuery } from '../../common/locale-query.js';
-import { ExperienceDto } from './experience.dto.js';
-import { ExperienceService } from './experience.service.js';
+import { WorkDto } from './work.dto.js';
+import { WorkService } from './work.service.js';
 
 @ApiTags('Контент')
-@Controller('experience')
-export class ExperienceController {
-  constructor(private readonly experience: ExperienceService) {}
+@Controller('work')
+export class WorkController {
+  constructor(private readonly work: WorkService) {}
 
   @Get()
   @ApiLocaleQuery()
   @ApiOperation({ summary: 'Опыт работы в порядке показа на сайте' })
-  @ApiOkResponse({ type: [ExperienceDto] })
-  list(@LocaleQuery() locale: Locale): Promise<ExperienceDto[]> {
-    return this.experience.list(locale);
+  @ApiOkResponse({ type: [WorkDto] })
+  list(@LocaleQuery() locale: Locale): Promise<WorkDto[]> {
+    return this.work.list(locale);
   }
 }

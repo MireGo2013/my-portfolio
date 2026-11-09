@@ -19,7 +19,7 @@ export default async function ExperiencePage({
   params,
 }: PageProps<'/[lang]/experience'>) {
   const locale = await resolveLocale(params);
-  // Раздел «Опыт» показывает открытые проекты: в API это эндпоинт /projects
+  // Раздел «Опыт»: открытые проекты с GitHub (API /projects, kind OPEN_SOURCE)
   const { experience: dictionary, links } = getDictionary(locale);
   const [projects, profile] = await Promise.all([
     getProjects(locale),

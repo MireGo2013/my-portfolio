@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import type { PrismaService } from '../../prisma/prisma.service.js';
-import { ExperienceService } from './experience.service.js';
+import { WorkService } from './work.service.js';
 
-function createService(items: unknown[]): ExperienceService {
+function createService(items: unknown[]): WorkService {
   const prisma = {
-    experience: { findMany: () => Promise.resolve(items) },
+    work: { findMany: () => Promise.resolve(items) },
   } as unknown as PrismaService;
-  return new ExperienceService(prisma);
+  return new WorkService(prisma);
 }
 
-describe('ExperienceService', () => {
+describe('WorkService', () => {
   it('отдаёт даты в формате YYYY-MM', async () => {
     const service = createService([
       {

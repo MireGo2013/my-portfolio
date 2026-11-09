@@ -1,5 +1,5 @@
 import type { Dictionary } from '@/i18n/dictionaries/ru';
-import type { Experience } from '@/shared/content/content-api';
+import type { Work } from '@/shared/content/content-api';
 import { formatPeriod } from '@/features/site/work/format-period';
 import { Reveal } from '@/shared/ui/reveal';
 import { StackList } from '@/features/site/skills/stack-list';
@@ -31,7 +31,7 @@ export function WorkItem({
   labels,
   from = 'left',
 }: {
-  item: Experience;
+  item: Work;
   labels: Pick<
     Dictionary['projects'],
     'present' | 'responsibilities' | 'achievements' | 'stack'
