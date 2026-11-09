@@ -6,8 +6,8 @@ import {
   clientIpFrom,
   redirectTo,
   refreshSession,
-} from '@/lib/admin/api-forward';
-import { loginPath, safeNextPath } from '@/lib/admin/paths';
+} from '@/features/admin/server/api-forward';
+import { loginPath, safeNextPath } from '@/features/admin/shell/paths';
 
 /**
  * Сюда layout админки отправляет, когда API отверг токен доступа: истёк

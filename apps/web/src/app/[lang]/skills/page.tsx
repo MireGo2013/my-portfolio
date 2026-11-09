@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { PageHeading } from '@/components/page-heading';
-import { StackList } from '@/components/stack-list';
+import { PageHeading } from '@/shared/ui/page-heading';
+import { StackList } from '@/features/site/skills/stack-list';
 import { getDictionary, pageMetadata, resolveLocale } from '@/i18n/server';
-import { getSkills } from '@/lib/content';
+import { getSkills } from '@/shared/content/content';
 
 export async function generateMetadata({
   params,

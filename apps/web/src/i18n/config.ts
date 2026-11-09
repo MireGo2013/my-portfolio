@@ -1,5 +1,5 @@
 import { LOCALES, type Locale } from '@portfolio/shared';
-import { isOneOf } from '@/lib/guards';
+import { isOneOf } from '@/shared/utils/guards';
 
 export { LOCALES, type Locale };
 

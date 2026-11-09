@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { LoginForm } from '@/components/admin/login-form';
+import { LoginForm } from '@/features/admin/auth/login-form';
 
 export const metadata: Metadata = { title: 'Вход' };
 

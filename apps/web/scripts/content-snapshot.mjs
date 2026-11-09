@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 const LOCALES = ['ru', 'en'];
 const SECTIONS = ['profile', 'experience', 'projects', 'skills'];
 const target = fileURLToPath(
-  new URL('../src/lib/content-snapshot.json', import.meta.url),
+  new URL('../src/shared/content/content-snapshot.json', import.meta.url),
 );
 
 function apiUrlFromEnvFile() {

@@ -1,18 +1,21 @@
 import { CV_LIMITS, LOCALES, type Locale } from '@portfolio/shared';
 import { revalidateTag } from 'next/cache';
 import type { NextRequest } from 'next/server';
-import { callApi, type AdminCookies } from '@/lib/admin/api-forward';
-import { isCrossSite } from '@/lib/admin/csrf';
+import {
+  callApi,
+  type AdminCookies,
+} from '@/features/admin/server/api-forward';
+import { isCrossSite } from '@/features/admin/server/csrf';
 import {
   checkCvFile,
   deleteCv,
   isStorageConfigured,
   StorageUnavailable,
   uploadCv,
-} from '@/lib/admin/cv-storage';
-import { authorizeAdmin } from '@/lib/admin/route-auth';
-import { CONTENT_TAGS } from '@/lib/content-tags';
-import { isOneOf } from '@/lib/guards';
+} from '@/features/admin/cv/cv-storage';
+import { authorizeAdmin } from '@/features/admin/server/route-auth';
+import { CONTENT_TAGS } from '@/shared/content/content-tags';
+import { isOneOf } from '@/shared/utils/guards';
 
 // Загрузка резюме. Файл кладёт в Vercel Blob сервер сайта: ключи от
 // хранилища есть только у него. API хранит лишь адрес файла

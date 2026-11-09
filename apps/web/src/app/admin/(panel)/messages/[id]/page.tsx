@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { MessageCard } from '@/components/admin/message-card';
+import { MessageCard } from '@/features/admin/messages/message-card';
 
 export const metadata: Metadata = { title: 'Сообщение' };
 

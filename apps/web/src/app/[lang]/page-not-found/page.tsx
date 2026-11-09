@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { PageHeading } from '@/components/page-heading';
+import { PageHeading } from '@/shared/ui/page-heading';
 import { getDictionary, resolveLocale } from '@/i18n/server';
-import { TEXT_LINK_CLASS } from '@/lib/styles';
+import { TEXT_LINK_CLASS } from '@/shared/utils/styles';
 
 // Обычная страница, поэтому сервер присылает её с готовой разметкой. Статус 404
 // ставит proxy, который показывает её вместо несуществующего адреса

@@ -6,9 +6,9 @@ import {
   clientIpFrom,
   refreshSession,
   type AdminCookies,
-} from '@/lib/admin/api-forward';
-import { isCrossSite } from '@/lib/admin/csrf';
-import { CONTENT_TAGS, isContentSection } from '@/lib/content-tags';
+} from '@/features/admin/server/api-forward';
+import { isCrossSite } from '@/features/admin/server/csrf';
+import { CONTENT_TAGS, isContentSection } from '@/shared/content/content-tags';
 
 // Прокси админки: браузер ходит на свой же адрес, а сервер сайта передаёт
 // запрос в API. Так cookie сессии принадлежат сайту, а не чужому домену API.

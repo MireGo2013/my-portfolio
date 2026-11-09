@@ -1,9 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { hasLocale, LOCALE_COOKIE, type Locale } from './i18n/config';
 import { pickLocale } from './i18n/pick-locale';
-import { adminProxy } from './lib/admin/admin-proxy';
-import { isAdminPath } from './lib/admin/paths';
-import { isSitePath, NOT_FOUND_PATH } from './lib/site-sections';
+import { adminProxy } from '@/features/admin/server/admin-proxy';
+import { isAdminPath } from '@/features/admin/shell/paths';
+import {
+  isSitePath,
+  NOT_FOUND_PATH,
+} from '@/features/site/layout/site-sections';
 
 /**
  * Обычная страница «не найдено» с кодом 404. Встроенный not-found здесь не

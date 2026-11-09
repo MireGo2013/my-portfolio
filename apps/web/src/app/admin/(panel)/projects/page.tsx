@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ExperienceListPage } from '@/components/admin/section-pages';
+import { ExperienceListPage } from '@/features/admin/content/section-pages';
 
 export const metadata: Metadata = { title: 'Проекты' };
 

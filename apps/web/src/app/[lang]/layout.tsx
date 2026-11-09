@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { REVEAL_GUARD_SCRIPT } from '@/components/reveal';
-import { SiteHeader } from '@/components/site-header';
-import { SideRails, SiteFooter } from '@/components/social-links';
+import { REVEAL_GUARD_SCRIPT } from '@/shared/ui/reveal';
+import { SiteHeader } from '@/features/site/layout/site-header';
+import { SideRails, SiteFooter } from '@/features/site/layout/social-links';
 import { LOCALES } from '@/i18n/config';
 import { getDictionary, pageMetadata, resolveLocale } from '@/i18n/server';
-import { getProfile } from '@/lib/content';
+import { getProfile } from '@/shared/content/content';
 import { FONT_CLASSES } from '../fonts';
 import '../globals.css';
 

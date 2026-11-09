@@ -12,7 +12,7 @@ export default defineConfig([
     '**/playwright-report/**',
     '**/test-results/**',
     'apps/api/src/generated/**',
-    'apps/web/src/lib/api/schema.d.ts',
+    'apps/web/src/shared/api/schema.d.ts',
     '**/next-env.d.ts',
     'private/**',
   ]),

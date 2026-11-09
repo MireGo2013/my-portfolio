@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { ContactForm } from '@/components/contact-form';
-import { PageHeading } from '@/components/page-heading';
+import { ContactForm } from '@/features/site/contact/contact-form';
+import { PageHeading } from '@/shared/ui/page-heading';
 import { getDictionary, pageMetadata, resolveLocale } from '@/i18n/server';
-import { getProfile } from '@/lib/content';
-import { TEXT_LINK_CLASS } from '@/lib/styles';
+import { getProfile } from '@/shared/content/content';
+import { TEXT_LINK_CLASS } from '@/shared/utils/styles';
 
 export async function generateMetadata({
   params,

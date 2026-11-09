@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { PageHeading } from '@/components/page-heading';
-import { ProjectCard } from '@/components/project-card';
-import { Reveal } from '@/components/reveal';
-import { WorkItem } from '@/components/work-item';
+import { PageHeading } from '@/shared/ui/page-heading';
+import { ProjectCard } from '@/features/site/projects/project-card';
+import { Reveal } from '@/shared/ui/reveal';
+import { WorkItem } from '@/features/site/work/work-item';
 import { getDictionary, pageMetadata, resolveLocale } from '@/i18n/server';
-import { getExperience, getProjects } from '@/lib/content';
+import { getExperience, getProjects } from '@/shared/content/content';
 
 export async function generateMetadata({
   params,

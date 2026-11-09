@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { AdminNav } from '@/components/admin/admin-nav';
-import { AdminProviders } from '@/components/admin/admin-providers';
-import { LogoutButton } from '@/components/admin/logout-button';
-import { requireAdmin } from '@/lib/admin/session';
+import { AdminNav } from '@/features/admin/shell/admin-nav';
+import { AdminProviders } from '@/features/admin/shell/admin-providers';
+import { LogoutButton } from '@/features/admin/auth/logout-button';
+import { requireAdmin } from '@/features/admin/server/session';
 
 /**
  * Проверка сессии читает cookie, то есть зависит от запроса. С Cache Components

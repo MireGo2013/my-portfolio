@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { MessagesView } from '@/components/admin/messages-view';
+import { MessagesView } from '@/features/admin/messages/messages-view';
 
 export const metadata: Metadata = { title: 'Сообщения' };
 

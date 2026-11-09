@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { CvEditor } from '@/components/admin/cv-editor';
+import { CvEditor } from '@/features/admin/cv/cv-editor';
 
 export const metadata: Metadata = { title: 'Резюме' };
 

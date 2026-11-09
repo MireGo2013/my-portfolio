@@ -8,7 +8,7 @@
     "start": "next start",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
-    "gen:api": "openapi-typescript ../api/openapi.json -o src/lib/api/schema.d.ts",
+    "gen:api": "openapi-typescript ../api/openapi.json -o src/shared/api/schema.d.ts",
     "test:e2e": "node scripts/e2e.mjs",
     "content:snapshot": "node scripts/content-snapshot.mjs"
   },

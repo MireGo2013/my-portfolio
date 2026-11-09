@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { SkillCategoryEditPage } from '@/components/admin/section-pages';
+import { SkillCategoryEditPage } from '@/features/admin/content/section-pages';
 
 export const metadata: Metadata = { title: 'Группа навыков' };
 

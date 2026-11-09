@@ -1,9 +1,9 @@
-import { AboutHero } from '@/components/about-hero';
-import { enterDelay } from '@/components/animated-text';
-import { SkillMarquee } from '@/components/skill-marquee';
+import { AboutHero } from '@/features/site/home/about-hero';
+import { enterDelay } from '@/features/site/home/animated-text';
+import { SkillMarquee } from '@/features/site/skills/skill-marquee';
 import { getDictionary, resolveLocale } from '@/i18n/server';
-import { getProfile } from '@/lib/content';
-import { SKILL_LOGOS } from '@/lib/skill-logos';
+import { getProfile } from '@/shared/content/content';
+import { SKILL_LOGOS } from '@/features/site/skills/skill-logos';
 
 export default async function AboutPage({ params }: PageProps<'/[lang]'>) {
   const locale = await resolveLocale(params);
