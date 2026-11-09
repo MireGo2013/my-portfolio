@@ -55,8 +55,6 @@ describe('API контента', () => {
       'vtb',
       'scooter-admin-crm',
       'law-portal',
-      'kitchen-space',
-      'vezetvsem',
     ]);
   });
 

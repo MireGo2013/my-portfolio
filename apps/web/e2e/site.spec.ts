@@ -106,7 +106,7 @@ test.describe('анимации', () => {
     page,
   }) => {
     await page.goto('/ru/projects');
-    const last = page.getByRole('heading', { name: 'Vezetvsem' });
+    const last = page.getByRole('heading', { name: 'Law Portal' });
     const block = last.locator(
       'xpath=ancestor::*[contains(@class,"reveal")][1]',
     );

@@ -9,30 +9,30 @@ export const profile = {
   specialization: 'React / TypeScript / Node.js / NestJS',
   email: 'sobol.work.v92@gmail.com',
   telegramUrl: 'https://t.me/VladilenS_tg',
-  githubUrl: 'https://github.com/mirego2013',
+  githubUrl: 'https://github.com/MireGo2013?tab=repositories',
   linkedinUrl: 'https://www.linkedin.com/in/vlad-sobol-59458b214/',
   translations: {
     ru: {
       fullName: 'Владислав Соболь',
       shortName: 'Влад',
       about: [
-        'Я Software Engineer с 6+ годами коммерческого опыта на React и TypeScript. Работал над высоконагруженными SPA, B2B-системами и CRM с ролевым доступом в банковском секторе, LegalTech, логистике и микромобильности.',
+        'Я Software Engineer с 5+ годами коммерческого опыта на React и TypeScript. Работал над высоконагруженными SPA, B2B-системами и CRM с ролевым доступом в банковском секторе, LegalTech, логистике и микромобильности.',
         'Проектирую архитектуру frontend-приложений, микрофронтендов и UI Kit, запускаю проекты с нуля, оптимизирую производительность и строю системы тестирования. Провожу code review, онбординг и менторинг, работаю в кросс-функциональной команде полного цикла.',
         'Работаю с Node.js (NestJS, Express), проектирую и интегрирую REST API (OpenAPI), имею практический опыт с PostgreSQL, MongoDB, Docker и Nginx.',
       ],
       summary:
-        'Software Engineer с 6+ годами коммерческого опыта на React и TypeScript: высоконагруженные SPA, B2B-системы и CRM с ролевым доступом. Проектирую архитектуру frontend-приложений, микрофронтендов и UI Kit, запускаю проекты с нуля, оптимизирую производительность и строю системы тестирования. Backend на Node.js и NestJS, REST API, PostgreSQL и Docker знаю достаточно, чтобы закрыть вертикаль фичи end-to-end.',
+        'Software Engineer с 5+ годами коммерческого опыта на React и TypeScript: высоконагруженные SPA, B2B-системы и CRM с ролевым доступом. Проектирую архитектуру frontend-приложений, микрофронтендов и UI Kit, запускаю проекты с нуля, оптимизирую производительность и строю системы тестирования. Backend на Node.js и NestJS, REST API, PostgreSQL и Docker знаю достаточно, чтобы закрыть вертикаль фичи end-to-end.',
     },
     en: {
       fullName: 'Vladislav Sobol',
       shortName: 'Vlad',
       about: [
-        'I am a Software Engineer with 6+ years of commercial experience in React and TypeScript. I have worked on high-load SPAs, B2B systems and CRMs with role-based access in banking, LegalTech, logistics and micromobility.',
+        'I am a Software Engineer with 5+ years of commercial experience in React and TypeScript. I have worked on high-load SPAs, B2B systems and CRMs with role-based access in banking, LegalTech, logistics and micromobility.',
         'I design the architecture of frontend applications, microfrontends and UI Kits, launch projects from scratch, optimize performance and build testing systems. I conduct code review, onboarding and mentoring, and work in cross-functional full-cycle teams.',
         'I work with Node.js (NestJS, Express), design and integrate REST APIs (OpenAPI), and have hands-on experience with PostgreSQL, MongoDB, Docker and Nginx.',
       ],
       summary:
-        'Software Engineer with 6+ years of commercial experience in React and TypeScript: high-load SPAs, B2B systems and CRMs with role-based access. I design the architecture of frontend applications, microfrontends and UI Kits, launch projects from scratch, optimize performance and build testing systems. I work with Node.js and NestJS, REST APIs, PostgreSQL and Docker, enough to deliver a feature vertical end-to-end.',
+        'Software Engineer with 5+ years of commercial experience in React and TypeScript: high-load SPAs, B2B systems and CRMs with role-based access. I design the architecture of frontend applications, microfrontends and UI Kits, launch projects from scratch, optimize performance and build testing systems. I work with Node.js and NestJS, REST APIs, PostgreSQL and Docker, enough to deliver a feature vertical end-to-end.',
     },
   },
 };
@@ -185,8 +185,8 @@ export const experience: ExperienceSeed[] = [
   {
     slug: 'law-portal',
     role: 'Frontend Engineer',
-    startDate: '2020-08-01',
-    endDate: '2021-09-01',
+    startDate: '2021-08-01',
+    endDate: '2021-12-01',
     stack: [
       'React',
       'JavaScript',
@@ -233,56 +233,6 @@ export const experience: ExperienceSeed[] = [
           'Optimized interface performance when working with large data volumes and financial dashboards.',
           'Enabled real-time messaging between case participants.',
         ],
-      },
-    },
-  },
-  {
-    slug: 'kitchen-space',
-    role: 'Frontend Engineer',
-    startDate: '2020-03-01',
-    endDate: '2020-08-01',
-    stack: ['React', 'JavaScript', 'Formik', 'Axios', 'Styled Components'],
-    translations: {
-      ru: {
-        company: null,
-        project: 'Kitchen Space',
-        summary:
-          'Платформа аренды коммерческих кухонь: интерфейс управления заказами и заявками, валидация форм, интеграция с API платежей и счетов.',
-        responsibilities: [],
-        achievements: [],
-      },
-      en: {
-        company: null,
-        project: 'Kitchen Space',
-        summary:
-          'A commercial kitchen rental platform: order and request management interface, form validation, integration with payment and invoicing APIs.',
-        responsibilities: [],
-        achievements: [],
-      },
-    },
-  },
-  {
-    slug: 'vezetvsem',
-    role: 'Frontend Engineer',
-    startDate: '2019-05-01',
-    endDate: '2019-12-01',
-    stack: ['React', 'JavaScript', 'Flux', 'SCSS', 'Axios'],
-    translations: {
-      ru: {
-        company: null,
-        project: 'Vezetvsem',
-        summary:
-          'Платформа заявок на грузоперевозки: интерфейсы заявок с фильтрацией, сортировкой и поиском, интеграция API статусов доставки.',
-        responsibilities: [],
-        achievements: [],
-      },
-      en: {
-        company: null,
-        project: 'Vezetvsem',
-        summary:
-          'A freight transportation request platform: request interfaces with filtering, sorting and search, integration with delivery status APIs.',
-        responsibilities: [],
-        achievements: [],
       },
     },
   },
