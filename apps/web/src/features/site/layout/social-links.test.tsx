@@ -2,7 +2,7 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { ru } from '@/i18n/dictionaries/ru';
-import { SideRails, SiteFooter } from './social-links';
+import { SideRails, SiteFooter, SocialList } from './social-links';
 
 const contacts = {
   email: 'test@example.com',
@@ -27,5 +27,27 @@ describe.each([
     expect(href('Telegram')).toBe(contacts.telegramUrl);
     expect(href('LinkedIn')).toBe(contacts.linkedinUrl);
     expect(href(contacts.email)).toBe(`mailto:${contacts.email}`);
+  });
+});
+
+describe('SocialList', () => {
+  it('без emailIconClassName не показывает почту', () => {
+    render(<SocialList contacts={contacts} className="" />);
+
+    expect(screen.queryByRole('link', { name: contacts.email })).toBeNull();
+  });
+
+  it('с emailIconClassName добавляет иконку почты с классом', () => {
+    render(
+      <SocialList
+        contacts={contacts}
+        className=""
+        emailIconClassName="lg:hidden"
+      />,
+    );
+
+    const mail = screen.getByRole('link', { name: contacts.email });
+    expect(mail.getAttribute('href')).toBe(`mailto:${contacts.email}`);
+    expect(mail.closest('li')?.className).toBe('lg:hidden');
   });
 });

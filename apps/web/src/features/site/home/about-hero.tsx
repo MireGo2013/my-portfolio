@@ -7,6 +7,7 @@ import {
   animatedTextDuration,
   enterDelay,
 } from './animated-text';
+import { SocialList } from '@/features/site/layout/social-links';
 import { Avatar } from './avatar';
 
 const TEXT_START_MS = 450;
@@ -92,8 +93,26 @@ export function AboutHero({
         </div>
       </div>
 
-      <div className="enter-scale" style={enterDelay(200)}>
+      {/* Контакты под аватаркой, а на узком экране справа от неё: там адрес
+          почты не помещается, поэтому вместо него иконка */}
+      <div
+        className="enter-scale flex items-center gap-6 lg:flex-col"
+        style={enterDelay(200)}
+      >
         <Avatar alt={profile.fullName} />
+        <div className="flex flex-col items-center gap-4">
+          <SocialList
+            contacts={profile}
+            className="flex flex-col items-center gap-5 lg:flex-row"
+            emailIconClassName="lg:hidden"
+          />
+          <a
+            href={`mailto:${profile.email}`}
+            className="hidden font-mono text-sm text-muted transition-colors hover:text-accent lg:block"
+          >
+            {profile.email}
+          </a>
+        </div>
       </div>
     </section>
   );

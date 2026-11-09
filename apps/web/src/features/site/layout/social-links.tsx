@@ -27,12 +27,33 @@ function LinkedInIcon() {
   );
 }
 
-function SocialList({
+// Конверт для почты: в Simple Icons только логотипы брендов
+function MailIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="size-5 fill-none stroke-current"
+      strokeWidth={1.8}
+    >
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3.5 6 8.5 7 8.5-7" />
+    </svg>
+  );
+}
+
+/**
+ * Иконки профилей. emailIconClassName добавляет в конец иконку почты: класс
+ * нужен, чтобы скрыть её там, где адрес и так написан текстом.
+ */
+export function SocialList({
   contacts,
   className,
+  emailIconClassName,
 }: {
   contacts: Contacts;
   className: string;
+  emailIconClassName?: string;
 }) {
   const linkClass = 'block text-muted transition-colors hover:text-accent';
 
@@ -61,6 +82,17 @@ function SocialList({
           <LinkedInIcon />
         </a>
       </li>
+      {emailIconClassName !== undefined && (
+        <li className={emailIconClassName}>
+          <a
+            href={`mailto:${contacts.email}`}
+            aria-label={contacts.email}
+            className={linkClass}
+          >
+            <MailIcon />
+          </a>
+        </li>
+      )}
     </ul>
   );
 }

@@ -28,7 +28,6 @@ export default async function ContactPage({
     <>
       <PageHeading title={title} description={description} />
       <div className="flex flex-col gap-12">
-        <ContactForm dictionary={form} />
         <ul className="flex flex-wrap gap-x-6 gap-y-2">
           <li>
             <a href={`mailto:${profile.email}`} className={TEXT_LINK_CLASS}>
@@ -51,6 +50,7 @@ export default async function ContactPage({
             </a>
           </li>
         </ul>
+        <ContactForm dictionary={form} />
       </div>
     </>
   );
